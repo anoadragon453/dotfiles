@@ -29,7 +29,6 @@ apt_packages+=(
   docker.io # Needs to be downloaded in a special way?
   docker-compose
   fastboot
-  git
 	git-extras
   jq
   neovim
@@ -44,6 +43,7 @@ apt_packages+=(
   htop
   ncdu
   nmap
+  pass
   peek
   ripgrep
   thefuck

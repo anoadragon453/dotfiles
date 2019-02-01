@@ -458,9 +458,9 @@ if [[ ! "$(type -P gcc)" ]] && is_osx; then
   exit 1
 fi
 
-# If Git is not installed, install it (Ubuntu only, since Git comes standard
+# If Git is not installed, install it (Debian/Ubuntu only, since Git comes standard
 # with recent XCode or CLT)
-if [[ ! "$(type -P git)" ]] && is_ubuntu; then
+if [[ ! "$(type -P git)" ]] && (is_ubuntu || is_debian); then
   e_header "Installing Git"
   sudo apt-get -qq install git-core
 fi
