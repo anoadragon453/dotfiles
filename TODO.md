@@ -7,3 +7,4 @@
 * Figure out .ssh situation
 * Install Signal
 * Steam requires 32bit repos enable
+* Set up 1.1.1.1 DNS
