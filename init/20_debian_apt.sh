@@ -16,7 +16,7 @@ installers_path="$DOTFILES/caches/installers"
 
 # Applications
 apt_packages+=(
-  chromium-browser
+  chromium
   mpv
   rofi
   vlc
