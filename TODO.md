@@ -1,4 +1,6 @@
 * vim - gruvbox theme not found
+* vscode list got installed twice?
+* vim just seems a bit broken in general
 * Fix nave?
 * Install passff script in passwordstore init file
 * Install rofi-pass
