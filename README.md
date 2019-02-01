@@ -91,7 +91,7 @@ will be installed, but _only_ if they aren't already.
 
 * Homebrew casks via the [init/30_osx_homebrew_casks.sh](init/30_osx_homebrew_casks.sh) script
 
-* [Fonts](/cowboy/dotfiles/tree/master/conf/osx/fonts) via the [init/50_osx_fonts.sh](init/50_osx_fonts.sh) script
+* [Fonts](/anoadragon453/dotfiles/tree/master/conf/osx/fonts) via the [init/50_osx_fonts.sh](init/50_osx_fonts.sh) script
 
 #### Ubuntu
 
@@ -116,8 +116,8 @@ and `/init` subdirectories, which will be ignored if they are empty or don't
 exist.
 
 If you modify things and notice a bug or an improvement, [file an
-issue](https://github.com/cowboy/dotfiles/issues) or [a pull
-request](https://github.com/cowboy/dotfiles/pulls) and let me know.
+issue](https://github.com/anoadragon453/dotfiles/issues) or [a pull
+request](https://github.com/anoadragon453/dotfiles/pulls) and let me know.
 
 Also, before installing, be sure to [read my gently-worded
 note](#heed-this-critically-important-warning-before-you-install).
@@ -141,7 +141,7 @@ _Tested in OSX 10.10_
 ### Ubuntu Notes
 
 You might want to set up your ubuntu server [like I do
-it](https://github.com/cowboy/dotfiles/wiki/ubuntu-setup), but then again, you
+it](https://github.com/anoadragon453/dotfiles/wiki/ubuntu-setup), but then again, you
 might not.
 
 Either way, you should at least update/upgrade APT with `sudo apt-get -qq update && sudo apt-get -qq dist-upgrade` first.
@@ -161,12 +161,12 @@ but it will be very messy.
 
 1. [Read my gently-worded note](#heed-this-critically-important-warning-before-you-install)
 1. Fork this repo
-1. Open a terminal/shell and do this (change `cowboy` and `master` as appropriate):
+1. Open a terminal/shell and do this (change `anoadragon453` and `master` as appropriate):
 
 #### Ubuntu
 
 ```sh
-export DOTFILES_GH_USER=cowboy
+export DOTFILES_GH_USER=anoadragon453
 export DOTFILES_GH_BRANCH=master
 bash -c "$(wget -qO- https://raw.github.com/$DOTFILES_GH_USER/dotfiles/$DOTFILES_GH_BRANCH/bin/dotfiles)" && source ~/.bashrc
 ```
@@ -174,7 +174,7 @@ bash -c "$(wget -qO- https://raw.github.com/$DOTFILES_GH_USER/dotfiles/$DOTFILES
 #### macOS
 
 ```sh
-export DOTFILES_GH_USER=cowboy
+export DOTFILES_GH_USER=anoadragon453
 export DOTFILES_GH_BRANCH=master
 bash -c "$(curl -fsSL https://raw.github.com/$DOTFILES_GH_USER/dotfiles/$DOTFILES_GH_BRANCH/bin/dotfiles)" && source ~/.bashrc
 ```
@@ -192,13 +192,13 @@ you might need to enter your password here or there.
 #### Ubuntu
 
 ```sh
-bash -c "$(wget -qO- https://bit.ly/cowboy-dotfiles)" && source ~/.bashrc
+bash -c "$(wget -qO- https://bit.ly/anoadragon453-dotfiles)" && source ~/.bashrc
 ```
 
 #### macOS
 
 ```sh
-bash -c "$(curl -fsSL https://bit.ly/cowboy-dotfiles)" && source ~/.bashrc
+bash -c "$(curl -fsSL https://bit.ly/anoadragon453-dotfiles)" && source ~/.bashrc
 ```
 
 ## Aliases and Functions
