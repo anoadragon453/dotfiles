@@ -1,4 +1,3 @@
-
 # Git shortcuts
 
 alias g='git'
@@ -15,12 +14,12 @@ alias gd='git diff'
 alias gdc='gd --cached'
 alias gm='git commit -m'
 alias gma='git commit -am'
-alias gb='git branch'
-alias gba='git branch -a'
+alias gbr='git branch'
+alias gbra='git branch -a'
 function gc() { git checkout "${@:-master}"; } # Checkout master by default
 alias gco='gc'
 alias gcb='gc -b'
-alias gbc='gc -b' # Dyslexia
+alias gbrc='gc -b' # Dyslexia
 alias gr='git remote'
 alias grv='gr -v'
 #alias gra='git remote add'
@@ -29,7 +28,7 @@ alias gcl='git clone'
 alias gcd='git rev-parse 2>/dev/null && cd "./$(git rev-parse --show-cdup)"'
 
 # Current branch or SHA if detached.
-alias gbs='git branch | perl -ne '"'"'/^\* (?:\(detached from (.*)\)|(.*))/ && print "$1$2"'"'"''
+alias gbrs='git branch | perl -ne '"'"'/^\* (?:\(detached from (.*)\)|(.*))/ && print "$1$2"'"'"''
 
 # Run commands in each subdirectory.
 alias gu-all='eachdir git pull'

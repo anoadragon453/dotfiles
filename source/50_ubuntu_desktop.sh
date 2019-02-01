@@ -1,7 +1,8 @@
 # Ubuntu desktop-only stuff. Abort if not Ubuntu desktop.
-is_ubuntu_desktop || return 1
+# TODO: Redefine is_debian vs is_debian_desktop
+is_ubuntu_desktop || is_debian || return 1
 
-export BROWSER=google-chrome
+export BROWSER=firefox
 alias manh='man -H'
 
 alias pbcopy='xclip -i -selection clipboard'
