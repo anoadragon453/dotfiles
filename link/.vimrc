@@ -134,7 +134,7 @@ set wildignore+=*/vendor/*,*/.git/*,*/.hg/*,*/.svn/*,*/log/*,*/tmp/*
 " Vim commands
 set hidden " When a buffer is brought to foreground, remember undo history and marks.
 set report=0 " Show all changes.
-set mouse=a " Enable mouse in all modes.
+set mouse=c " Disable mouse support
 set ttymouse=xterm2 " Ensure mouse works inside tmux
 set shortmess+=I " Hide intro menu.
 
