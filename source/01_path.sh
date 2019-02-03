@@ -1,4 +1,7 @@
 paths=(
+  /usr/bin
+  /bin
+  /usr/local/bin
   ~/.local/bin
   $DOTFILES/bin
 )

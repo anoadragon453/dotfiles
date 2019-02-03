@@ -10,7 +10,7 @@ fi
 
 if [[ ! "$SSH_TTY" ]]; then
   if [[ ! "$TMUX" ]]; then
-    is_osx && EDITOR=mvim || EDITOR=gvim
+    is_osx && EDITOR=mvim || EDITOR=vim
   fi
   export LESSEDIT="$EDITOR ?lm+%lm -- %f"
   export GIT_EDITOR="$EDITOR -f"

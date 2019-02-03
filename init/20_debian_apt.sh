@@ -19,6 +19,7 @@ apt_packages+=(
   chromium
   mpv
   rofi
+  thunderbird
   vlc
 )
 
@@ -56,6 +57,7 @@ apt_packages+=(
   apt-transport-https
   grub-customizer
   imagemagick
+  nitrogen
   xclip
   zsh
 )

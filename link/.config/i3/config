@@ -287,6 +287,7 @@ for_window [class="(?i)gvim"] border none
 for_window [class="(?i)vivaldi"] border none
 
 # Float by name
+for_window [title="System Settings"] floating enable
 for_window [title="Nitrogen"] floating enable
 for_window [title="Install user style"] floating enable
 for_window [title="KCalc"] floating enable
