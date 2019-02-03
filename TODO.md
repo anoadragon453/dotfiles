@@ -10,3 +10,4 @@
 * Set up 1.1.1.1 DNS
 * Sync VSCode preferences
 * Install oh-my-zsh
+* Optional packages (Godot)
