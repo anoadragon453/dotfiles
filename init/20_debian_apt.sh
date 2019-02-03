@@ -42,6 +42,7 @@ apt_packages+=(
 apt_packages+=(
   curl
   htop
+  mosh
   ncdu
   nmap
   pass
