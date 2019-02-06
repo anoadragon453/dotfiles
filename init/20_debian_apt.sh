@@ -87,7 +87,7 @@ deb_sources+=("https://discordapp.com/api/download?platform=linux&format=deb")
 
 # https://code.visualstudio.com/docs/setup/linux
 apt_keys+=(https://packages.microsoft.com/keys/microsoft.asc)
-apt_source_files+=(vscode.list)
+apt_source_files+=(vscode)
 apt_source_texts+=("deb [arch=amd64] https://packages.microsoft.com/repos/vscode stable main")
 apt_packages+=(code)
 
