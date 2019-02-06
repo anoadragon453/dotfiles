@@ -3,7 +3,6 @@
 * vim just seems a bit broken in general
 * Fix nave?
 * Install passff script in passwordstore init file
-* Install rofi-pass
 * Figure out .ssh situation
 * Install Signal
 * Steam requires 32bit repos enable

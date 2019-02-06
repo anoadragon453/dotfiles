@@ -94,7 +94,13 @@ apt_packages+=(code)
 function finally() {
   # Install misc bins from zip file.
   #install_from_zip terraform 'https://releases.hashicorp.com/terraform/0.9.2/terraform_0.9.2_linux_amd64.zip'
-  echo "Complete"
+
+  # Install rofipass
+  git clone https://github.com/carnager/rofi-pass
+  cd rofi-pass
+  sudo make
+  cd ..
+  rm -rf rofi-pass
 }
 
 ####################
