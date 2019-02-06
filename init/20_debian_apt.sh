@@ -48,6 +48,7 @@ apt_packages+=(
   pass
   peek
   ripgrep
+  rsync
   thefuck
   tmux
   tree
@@ -59,6 +60,7 @@ apt_packages+=(
   grub-customizer
   imagemagick
   nitrogen
+  pkg-config
   xclip
   zsh
 )

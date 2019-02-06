@@ -1,5 +1,3 @@
-#!/usr/bin/env bash
-
 # Declare a dictionary
 declare -A aliases
 aliases=(
