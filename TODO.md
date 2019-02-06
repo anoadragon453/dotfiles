@@ -11,3 +11,6 @@
 * Sync VSCode preferences
 * Install oh-my-zsh
 * Optional packages (Godot)
+* apt install -f after each install of a wild .deb
+* Make apt not install one-by-freaking-one
+* Install Firefox nightly
