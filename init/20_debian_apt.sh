@@ -61,7 +61,7 @@ apt_packages+=(
   imagemagick
   nitrogen
   pkg-config
-  xclip
+  xcompmgr
   zsh
 )
 
