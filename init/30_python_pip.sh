@@ -7,6 +7,8 @@ for pip3_cmd in pip3 pip FAIL; do [[ "$(which $pip3_cmd)" ]] && break; done
 
 # Add pip packages
 pip2_packages=(
+  msgpack 		# zeronet
+  gevent 		# zeronet
   psutil
   tmuxp
 )
