@@ -4,7 +4,6 @@
 * Fix nave?
 * Install passff script in passwordstore init file
 * Figure out .ssh situation
-* Install Signal
 * Steam requires 32bit repos enable
 * Set up 1.1.1.1 DNS
 * Sync VSCode preferences

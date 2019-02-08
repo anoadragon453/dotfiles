@@ -83,6 +83,12 @@ function deb_source_steam() {
 deb_installed+=(/usr/bin/discord)
 deb_sources+=("https://discordapp.com/api/download?platform=linux&format=deb")
 
+# https://signal.org/download/
+apt_keys+=(https://updates.signal.org/desktop/apt/keys.asc)
+apt_source_files+=(signal)
+apt_source_texts+=("deb [arch=amd64] https://updates.signal.org/desktop/apt xenial main")
+apt_packages+=(signal-desktop)
+
 ## Development
 
 # https://code.visualstudio.com/docs/setup/linux
