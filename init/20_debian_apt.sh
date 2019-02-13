@@ -16,7 +16,9 @@ installers_path="$DOTFILES/caches/installers"
 
 # Applications
 apt_packages+=(
+  blender
   chromium
+  krita
   mpv
   rofi
   thunderbird
@@ -30,11 +32,12 @@ apt_packages+=(
   docker.io # Needs to be downloaded in a special way?
   docker-compose
   fastboot
-	git-extras
+  git-extras
   jq
   neovim
   python-pip
   python3-pip
+  sqlite3
   zenmap
 )
 

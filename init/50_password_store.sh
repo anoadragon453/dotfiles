@@ -16,3 +16,10 @@ read -p "Enter your GitLab Oauth key: " key; echo
 read -p "Enter the repo address (e.g. gitlab.com/bob/my-store): " repo; echo
 
 git clone https://oauth2:$key@$repo $HOME/.password-store
+
+# Install passff-host application for integration with Firefox
+git clone https://github.com/passff/passff-host/
+cd passff-host
+make BROWSER=firefox install
+cd ..
+rm -rf passff-host
