@@ -22,6 +22,7 @@ apt_packages+=(
   mpv
   rofi
   thunderbird
+  qbittorrent
   vlc
 )
 
