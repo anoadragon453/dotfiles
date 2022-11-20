@@ -27,7 +27,7 @@ in {
 
   };
 
-  config = mkIf desktopMode {
+  config = mkIf (desktopMode && cfg.profiles != []) {
     sys.user.allUsers.files = {
       kanshiConfig = {
         path = ".config/kanshi/config";

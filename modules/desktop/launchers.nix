@@ -10,14 +10,14 @@ in {
   options.sys.desktop.rofi = {
     enable = mkOption {
       type = types.bool;
-      default = true;
+      default = false;
       description = "Enable Rofi";
     };
   };
 
   config = mkIf (cfg.enable && desktopMode) {
 
-    environment.systemPackages = with pkgs; [
+    sys.software = with pkgs; [
       rofi
     ];
 

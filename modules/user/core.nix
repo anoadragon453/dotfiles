@@ -104,83 +104,153 @@ in {
     };
 
     config = let
-      mkUserFile = {user, filename, source}: let
+      # Generates a shell command that creates a symlink from the `source`
+      # filepath to $HOME/.local/share/nix-static/`filename` for the given
+      # `user`. Used for linking all the various files from /nix/store into one
+      # convenient location. Symlinks should then be created from these files to
+      # their respective intended places.
+      #
+      # Returns the generated command.
+      mkUserFile = {user, targetPath, sourcePath}: let
         userProfile = "${config.users.users."${user}".home}";
         staticHome = "${userProfile}/.local/share/nix-static";
+        targetFolder = dirOf "${staticHome}/${targetPath}";
       in ''
-        ln -sf "${source}" "${staticHome}/${filename}"
-      '';
+        if [ -f "${staticHome}/${targetPath}" ]; then
+          # The file already exists, just append the contents of `sourcePath` to the
+          # existing file at `targetPath` under nix-static.
+          cat "${sourcePath}" >> "${staticHome}/${targetPath}"
+        else
+          # The file does not yet exist. Symlink the source file to `targetPath`
+          # under nix-static
+          mkdir -p "${targetFolder}"
+          cp "${sourcePath}" "${staticHome}/${targetPath}"
+        fi
+        '';
 
-      mkUserFileFromText = {user, filename, text}: let
+      # Creates a file in the /nix/store with `filename`, containing the
+      # contents of `text`. Makes use of mkUserFile to then generate and return a
+      # shell command that symlinks the file into $HOME/.local/share/nix-static
+      # in the home directory of the given `user`.
+      #
+      # Returns the generated command.
+      mkUserFileFromText = {user, filename, targetPath, text}: let
+        # Create a file from the given `text` string
         textfile = toFile filename text;
-      in mkUserFile { inherit user filename; source = textfile; };
+      in mkUserFile { inherit user targetPath; sourcePath = textfile; };
 
-      mkCleanUp = {user, filename, homePath }: let
+      mkCleanUp = {user, targetPathUnderHome}: let
         userProfile = "${config.users.users."${user}".home}";
         staticHome = "${userProfile}/.local/share/nix-static";
-        updatedPath = "${userProfile}/${homePath}";
+        targetPath = "${userProfile}/${targetPathUnderHome}";
       in ''
-        echo "rm ${updatedPath} -fr" >> ${staticHome}/cleanup.sh
-        echo "rm ${staticHome}/${filename} --force" >> ${staticHome}/cleanup.sh
+        echo "rm ${targetPath} -fr" >> ${staticHome}/cleanup.sh
+        echo "rm ${staticHome}/${targetPathUnderHome} --force" >> ${staticHome}/cleanup.sh
       '';
 
-      mkLinker = {user, filename, homePath, group }: let
+      mkLinker = {user, targetPathUnderHome, group}: let
         userProfile = "${config.users.users."${user}".home}";
         staticHome = "${userProfile}/.local/share/nix-static";
-        targetPath = "${userProfile}/${homePath}";
+        targetPath = "${userProfile}/${targetPathUnderHome}";
         targetFolder = dirOf targetPath;
       in ''
         mkdir -p "${targetFolder}"
-        ln -sf "${staticHome}/${filename}" "${targetPath}"
-        chown -h ${user}:${group} ${targetPath} 
+        chown -R ${user}:${group} "${targetFolder}"
+        ln -sf "${staticHome}/${targetPathUnderHome}" "${targetPath}"
+        chown -h ${user}:${group} "${targetPath}"
       '';
 
+      # Iterate over each attribute of `fileSet` and generate a shell command to symlink
+      # from each file in the /nix/store to a file in $HOME/.local/share/nix-static with
+      # the same path as described by the `path` attribute of each `fileSet` entry.
+      #
+      # Example: if the target is $HOME/.config/app.ini, a file will appear at
+      # $HOME/.local/share/nix-static/.config/app.ini.
+      #
+      # If a file already exists in $HOME/.local/share/nix-static with the same path,
+      # a command to append the contents of the file in the /nix/store to those in nix-static
+      # will be generated instead.
       buildFileScript = {username, fileSet}: concatStringsSep "\n" 
         (map (name: (if (hasAttr "source" fileSet."${name}")
-        then mkUserFile {user = username; filename = name; source = fileSet."${name}".source;}
-        else mkUserFileFromText { user = username; filename = name; text = fileSet."${name}".text;}
+          # Return a string that symlinks the `source` file to $HOME/.local/share/nix-static
+          then mkUserFile {user = username; targetPath = fileSet."${name}".path; source = fileSet."${name}".source;}
+          # Save the text into a file first, before returning the same as above
+          else mkUserFileFromText { user = username; filename = name; targetPath = fileSet."${name}".path; text = fileSet."${name}".text;}
         )) (attrNames fileSet));
 
       buildCleanUp = {username, fileSet}: concatStringsSep "\n"
-        (map (name: mkCleanUp { user = username; homePath = fileSet."${name}".path; filename = name;}) (attrNames fileSet));
+        (map (name: mkCleanUp {
+          user = username;
+          targetPathUnderHome = fileSet."${name}".path;
+        }) (attrNames fileSet));
 
+      # Generate a set of 'ln -sf' commands for each file referenced in `fileSet`
       buildLinker = {username, fileSet, group}: concatStringsSep "\n"
-        (map (name: mkLinker { user = username; homePath = fileSet."${name}".path; filename = name; inherit group; }) (attrNames fileSet));
+        (map (name: mkLinker {
+          user = username;
+          targetPathUnderHome = fileSet."${name}".path;
+          inherit group;
+        }) (attrNames fileSet));
 
+      # Builds and returns an activation script for a given user
       mkBuildScript = {username, fileSet, group ? "users"}: let 
         staticPath = "${config.users.users."${username}".home}/.local/share/nix-static";
         allUserFileSet = cfg.user.allUsers.files;
       in ''
+          # Log each line as it executes for easier debugging
+          # (slightly inhibits startup time)
+          # set -x
+
           echo "Setting up user files for ${username}"
+
+          # Run the existing cleanup script if it exists.
+          # Then delete it to make way for the newly generated version
           if [ -f "${staticPath}/cleanup.sh" ]; then
-            ${staticPath}/cleanup.sh
-            rm ${staticPath}/cleanup.sh
+            "${staticPath}/cleanup.sh"
+            rm "${staticPath}/cleanup.sh"
+          fi
+
+          # Create the folder to put everything in
+          mkdir -p "${staticPath}";
+
+          # Creates files in $HOME/.local/share/nix-static to symlink below
+          ${buildFileScript { inherit username fileSet; }} # files declared specifically for this user
+          ${buildFileScript { inherit username; fileSet = allUserFileSet; }} # files declared for all users
+
+          # Populate cleanup.sh with rm's for any existing declared files for this specific user
+          ${buildCleanUp { inherit username fileSet; }}
+
+          # Populate cleanup.sh with rm's for any existing declared files for all users on the system
+          ${buildCleanUp { inherit username; fileSet = allUserFileSet; }}
+
+          # Allow the cleanup script to be executable.
+          # (chmod will fail if the file doesn't exist)
+          if [ -f "${staticPath}/cleanup.sh" ]; then
+            chmod +x "${staticPath}/cleanup.sh"
           fi
 
           echo "Linking user files"
-          mkdir -p ${staticPath}
-          ${buildFileScript { inherit username fileSet; }}
-          ${buildFileScript { inherit username; fileSet = allUserFileSet; }}
 
-          ${buildCleanUp { inherit username fileSet; }}
-          ${buildCleanUp { inherit username; fileSet = allUserFileSet; }}
-
-          if [ -f "${staticPath}/cleanup.sh" ]; then
-            chmod +x ${staticPath}/cleanup.sh
-          fi
-
-          ${buildLinker { inherit username group; fileSet = allUserFileSet; }}
+          # Link files declared for this specific user
           ${buildLinker { inherit username fileSet group; }}
+
+          # Link files declared for all users on the system
+          ${buildLinker { inherit username group; fileSet = allUserFileSet; }}
         '';
+
     usersList = attrNames cfg.user.users;
 
+    # ... does something with roles ...
     getRoleFunctions = roles: foldl' (l: r: r ++ l) [] (map (r: cfg.user.userRoles."${r}") (roles ++ cfg.user.allUserRoles));
     applyRoles = {fns, user}: foldl' (u: fn: fn u) user fns;
+
+    # Applies all configured roles to a user
     buildUser = user: let
         fns = getRoleFunctions user.roles;
     in 
         applyRoles { inherit fns user; }; 
 
+    # Build a set mapping from the attribute "text" to {$username = activation script str}.
     userScripts = mapAttrs (n: v: let
         user = buildUser v;
     in { 
@@ -199,7 +269,7 @@ in {
             shellpkg = if (compiledUser.shell == "nu") then 
                 pkgs.nushell
             else
-                (if (compildUser.shell == "zsh") then
+                (if (compiledUser.shell == "zsh") then
                     pkgs.zsh
                 else
                     pkgs.bash);
@@ -230,6 +300,8 @@ in {
     };
 
     in {
+        # Build a script that is run when this NixOS system configuration is activated.
+        # Executed on every system boot and `nixos-rebuild` run.
         system.activationScripts = {
             user-rootFile.text = mkBuildScript { 
                 username = "root"; 

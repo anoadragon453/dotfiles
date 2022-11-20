@@ -13,32 +13,17 @@ in {
 
     sys.user.userRoles.development = [
         (user: mergeUser user {
-            software = [
-                git
-                git-crypt
-                ansible
-                terraform
-                consul
-                nomad
-                vault
-                docker
-                distrobox
-            ];
-
             files = {
                 gitconfig = {
                     path = ".config/git/config";
                     text = ''
-                        [commit]
-                          gpgSign = "true"
-                        [gpg]
-                          program = "gpg2"
                         [init]
                           defaultBranch = "main"
                         [user]
                           email = "${user.config.email}"
                           name = "${user.config.name}"
-                          signingKey = "${user.config.signingKey}"
+                          # TODO: What signingKey do I want to use?
+                          #signingKey = "${user.config.signingKey}"
                     '';
                 };
                 gpg = {

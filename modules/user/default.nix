@@ -2,7 +2,6 @@
 {
     imports = [
         ./core.nix
-        ./productivity.nix
         ./development.nix
     ];
 }

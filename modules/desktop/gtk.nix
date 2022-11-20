@@ -8,10 +8,11 @@ let
 in {
   config = mkIf desktopMode {
 
-    environment.systemPackages = with pkgs; [
+    sys.software = with pkgs; [
       breeze-gtk
     ];
 
+    # TODO: Leave for now. Do we care about anything here?
     sys.user.allUsers.files = {
       gtkSettings3 = {
         path = ".config/gtk-3.0/settings.ini";

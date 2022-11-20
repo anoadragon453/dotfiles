@@ -35,7 +35,7 @@ in {
           description = "Command to get gpu temp";
         };
 
-        v4l2loopback = mkEnableOption "Enable v4l2loop back on this system";
+        v4l2loopback = mkEnableOption "Enable v4l2loopback on this system";
    };
 
   config = let
@@ -99,6 +99,12 @@ in {
 
     hardware.opengl.extraPackages = mkIf (!headless) (with pkgs;[
       (mkIf amd amdvlk)
+
+      # TODO: Make rocm-* packages a separate option
+      # (rocm is only supported on certain AMD GPUs)
+      (mkIf amd rocm-opencl-icd)
+      (mkIf amd rocm-opencl-runtime)
+
       (mkIf intel intel-media-driver)
       (mkIf intel vaapiIntel)
       (mkIf intel vaapiVdpau)
@@ -123,10 +129,6 @@ in {
       (mkIf gfx.v4l2loopback kernelPackage.v4l2loopback)
       (mkIf gfx.v4l2loopback libv4l)
       (mkIf gfx.v4l2loopback xawtv)
-      (mkIf desktopMode ueberzug)
-      (mkIf desktopMode dfeet)
    ];
-
-    services.autorandr.enable = xorg;
   };
 }

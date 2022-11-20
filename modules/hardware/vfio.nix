@@ -32,7 +32,7 @@ in {
     nvidia = cfg.hardware.vfio.gpuType == "nvidia";
   in mkIf cfg.enable {
 
-    environment.systemPackages = with pkgs; [
+    sys.software = with pkgs; [
       looking-glass-client
       scream
     ];

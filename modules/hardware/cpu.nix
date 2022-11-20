@@ -52,10 +52,15 @@ in {
             (mkIf cfg.cpu.kvm (mkIf (cfg.cpu.type == "intel") "kvm-intel"))
         ];
 
+        # Install microcode update packages
         sys.software = [
             (mkIf (cfg.cpu.type == "amd") microcodeAmd)
             (mkIf (cfg.cpu.type == "intel") microcodeIntel)
         ];
+
+        # Load updated microcode
+        hardware.cpu.amd.updateMicrocode = cfg.cpu.type == "amd";
+        hardware.cpu.intel.updateMicrocode = cfg.cpu.type == "intel";
 
         virtualisation.libvirtd.enable = cfg.cpu.kvm;
    };

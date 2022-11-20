@@ -6,8 +6,9 @@ let
 
   wayland = (elem "wayland" config.sys.hardware.graphics.desktopProtocols);
   xorg = (elem "xorg" config.sys.hardware.graphics.desktopProtocols);
+  desktopGuiType = config.sys.desktop.gui.type;
 
-  desktopMode = if (wayland == null && xorg == null) then false else true;
+  desktopMode = wayland || xorg;
   startupProgramType = with types; submodule {
     options = {
       always = mkOption {
@@ -181,11 +182,13 @@ in {
   };
 
 
-  config = mkIf desktopMode {
+  config = mkIf (desktopMode && desktopGuiType == "tiling") {
 
-    environment.systemPackages = with pkgs; [
+    sys.software = with pkgs; [
       bibata-cursors # Material design style cursors.
     ];
+
+    services.autorandr.enable = xorg;
 
     sys.desktop.tilewm.extraConfig = ''
       # Extra Config

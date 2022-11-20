@@ -7,19 +7,6 @@ in {
   config = {
     sys.script.desktop = [
     {
-        name = "wallpaper";
-        action = ''
-            if [[ "$XDG_SESSION" -eq "wayland" ]]; then
-              killall swaybg
-              ${pkgs.swaybg}/bin/swaybg -i $(find ~/.config/wallpapers/. -type f| shuf -n1) &
-            else 
-              ${pkgs.feh}/bin/feh --bg-fill --randomize ~/.config/wallpapers/*
-            fi
-            '';
-        shortHelp = "Randomly selects a new wallpaper.";
-        longHelp = "Randomly selects a new wallpaper.";
-    }
-    {
         name = "screenshot";
         action = ''
             if [[ "$XDG_SESSION" -eq "wayland" ]]; then

@@ -8,13 +8,13 @@ in {
     locale = mkOption {
       type = types.str;
       description = "The locale for the machine";
-      default = "en_AU.UTF-8";
+      default = "en_GB.UTF-8";
     };
 
     timeZone = mkOption {
       type = types.str;
       description = "The timezone of the machine";
-      default = "Australia/Brisbane";
+      default = "Europe/London";
     };
   };
 

@@ -4,9 +4,10 @@ with builtins;
 let
   xorg = (elem "xorg" config.sys.hardware.graphics.desktopProtocols);
   desktopMode = xorg;
+  desktopGuiType = config.sys.desktop.gui.type;
 in {
 
-  config = mkIf desktopMode {
+  config = mkIf (desktopMode && desktopGuiType == "tiling") {
     services.xserver.windowManager.i3 = {
       enable = true;
       package = pkgs.i3-gaps;

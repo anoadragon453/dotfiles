@@ -1,19 +1,19 @@
 {pkgs, config, lib, ...}:
 {
+    # Software package
     sys.software = with pkgs; [
-        dmidecode
         acpi
-        hwdata
-        pciutils
-        usbutils
         btrfs-progs
-        smartmontools
-        iotop
-        nvme-cli
-        ntfsprogs
+        dmidecode
         exfat
+        hwdata
+        iotop
         lm_sensors
-        rtw88-firmware
+        ntfsprogs
+        nvme-cli
+        pciutils
+        smartmontools
+        usbutils
     ];
 
 }

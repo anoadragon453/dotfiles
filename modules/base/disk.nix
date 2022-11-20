@@ -6,7 +6,7 @@ let
 in {
    options.sys = {
     diskLayout = mkOption {
-      type = types.enum [ "btrfs-crypt" "vm" ];
+      type = types.enum [ "btrfs-crypt" "vm" "disable" ];
       description = "This is the layout of the disk used by the system.";
       default = "btrfs-crypt";
     };
@@ -34,21 +34,24 @@ in {
     boot.loader.systemd-boot.enable = cfg.bootloader == "systemd-boot";
     boot.loader.efi.canTouchEfiVariables = cfg.bootloader == "systemd-boot";
 
+    # TODO: Why does uncommenting this line generate an error?
     # This is the main layout I have on my systems. 
     # It works by using the correct labels for drives.
-    boot.initrd.luks.devices."cryptroot".device = (mkIf (cfg.diskLayout == "btrfs-crypt") "/dev/disk/by-label/CRYPTROOT");
+    # boot.initrd.luks.devices."cryptroot".device = (mkIf (cfg.diskLayout == "btrfs-crypt") "/dev/disk/by-label/CRYPTROOT");
 
-    fileSystems."/" = (if (cfg.diskLayout == "btrfs-crypt") then
-      { device = "/dev/disk/by-label/ROOT";
-        fsType = "btrfs";
-        options = [ "subvol=@" "discard=async" ];
-      } 
-      else 
-      {
-        device = "/dev/disk/by-label/ROOT";
-        fsType = "auto";
-        options = [ ];
-      });
+    fileSystems."/" = (mkMerge [
+      (mkIf (cfg.diskLayout == "btrfs-crypt")
+        { device = "/dev/disk/by-label/ROOT";
+          fsType = "btrfs";
+          options = [ "subvol=@" "discard=async" ];
+        }) 
+      (mkIf (cfg.diskLayout == "vm")
+        {
+          device = "/dev/disk/by-label/ROOT";
+          fsType = "auto";
+          options = [ ];
+        })
+    ]);
 
     fileSystems."/home" = (mkIf (cfg.diskLayout == "btrfs-crypt") 
       { device = "/dev/disk/by-label/ROOT";

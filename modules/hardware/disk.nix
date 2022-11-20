@@ -6,7 +6,7 @@ let
 in {
     options.sys.hardware.usb = {
         udisk2 = mkOption {
-            description = "Enable udisk for easy mounting an unmounting of usb drives";
+            description = "Enable udisk for easy mounting and unmounting of usb drives";
             type = types.bool;
             default = true;
         };

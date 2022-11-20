@@ -21,18 +21,16 @@ in {
         security.rtkit.enable = true;
 
         services.pipewire = mkIf (cfg.hardware.audio.server == "pipewire") {
-           enable = true;
+            enable = true;
             alsa.enable = true;
             alsa.support32Bit = true;
             pulse.enable = true;
             jack.enable = true;
         };
 
-        hardware.pulseaudio = mkIf (cfg.hardware.audio.server == "pulse") {
-            enable = true;
-            support32Bit = true;
-            package = pulseaudioFull;
-        };
+        hardware.pulseaudio.enable = (cfg.hardware.audio.server == "pulse");
+        hardware.pulseaudio.support32Bit = true;
+        hardware.pulseaudio.package = pulseaudioFull;
 
     };
 }
