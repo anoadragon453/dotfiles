@@ -50,11 +50,6 @@ in {
       zshSettingsKeybindings = {
         path = ".zshrc";
         text = concatStrings ([
-          # Disable mouse-mode by default (allow selecting text with mouse)
-          ''
-          set mouse=c
-          ''
-
           # Fix keybindings.
           # Taken from https://wiki.archlinux.org/title/Zsh
           ''
