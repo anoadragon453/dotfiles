@@ -99,14 +99,26 @@
 
           # Disable default disk layout magic and just use the declarations below.
           sys.diskLayout = "disable";
+          sys.bootloaderMountPoint = "/boot/efi";
+
+          # Setup luks full-disk encryption
+          boot.initrd.secrets = {
+            "/crypto_keyfile.bin" = null;
+          };
+
+          boot.initrd.luks.devices."luks-306a410d-8a3b-4ddf-97ad-b39f176a01d4".device = "/dev/disk/by-uuid/306a410d-8a3b-4ddf-97ad-b39f176a01d4";
+
+          # Enable swap on luks
+          boot.initrd.luks.devices."luks-50328598-1b0f-4ba9-9b1b-ea896dcab44b".device = "/dev/disk/by-uuid/50328598-1b0f-4ba9-9b1b-ea896dcab44b";
+          boot.initrd.luks.devices."luks-50328598-1b0f-4ba9-9b1b-ea896dcab44b".keyFile = "/crypto_keyfile.bin";
 
           fileSystems."/" =
-            { device = "/dev/disk/by-uuid/707cd2ad-e024-433e-9c42-9ad132630863";
+            { device = "/dev/disk/by-uuid/cd59f0ed-b749-4c14-8cee-2de37b6b166a";
               fsType = "ext4";
             };
 
           fileSystems."/boot/efi" =
-            { device = "/dev/disk/by-uuid/3305-4C86";
+            { device = "/dev/disk/by-uuid/601A-8328";
               fsType = "vfat";
             };
 
@@ -116,7 +128,7 @@
             };
 
           swapDevices =
-            [ { device = "/dev/disk/by-uuid/db30e46b-d3c5-42c1-af47-6c9309ca0acf"; }
+            [ { device = "/dev/disk/by-uuid/66aa4315-bbd2-4872-8284-983d5f5be994"; }
             ];
 
         };

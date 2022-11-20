@@ -17,6 +17,12 @@ in {
       default = "systemd-boot";
     };
 
+    bootloaderMountPoint = mkOption {
+      type = types.str;
+      description = "The directory the boot loader is mounted at.";
+      default = "/boot";
+    };
+
     biosType = mkOption {
       type = types.enum [ "efi" "bios"];
       description = "Specify the bios type of the machine";
@@ -33,6 +39,10 @@ in {
    config = {
     boot.loader.systemd-boot.enable = cfg.bootloader == "systemd-boot";
     boot.loader.efi.canTouchEfiVariables = cfg.bootloader == "systemd-boot";
+    boot.loader.efi.efiSysMountPoint = cfg.bootloaderMountPoint;
+
+    # Ensure we don't have too many old NixOS generations lying around
+    boot.loader.systemd-boot.configurationLimit = 20;
 
     # TODO: Why does uncommenting this line generate an error?
     # This is the main layout I have on my systems. 
