@@ -58,6 +58,7 @@ in {
       kid3
       rustup
       vscode
+      winetricks
       wineWowPackages.stableFull
       xournalpp
     ] ++ (if (desktopGuiType == "tiling") then [
