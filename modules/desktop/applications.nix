@@ -41,7 +41,11 @@ in {
       kdenlive
       krita
       mpv
-      obs-studio
+      (wrapOBS {
+        plugins = with obs-studio-plugins; [
+          obs-backgroundremoval
+        ];
+      })
       pavucontrol
       qpwgraph
       yabridge
