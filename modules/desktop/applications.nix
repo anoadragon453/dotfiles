@@ -57,6 +57,7 @@ in {
       gnome.gnome-boxes
       kid3
       rustup
+      vscode
       wineWowPackages.stableFull
       xournalpp
     ] ++ (if (desktopGuiType == "tiling") then [
