@@ -18,7 +18,6 @@ in {
         path = ".config/gtk-3.0/settings.ini";
         text = ''
           [Settings]
-          gtk-application-prefer-dark-theme=1
           gtk-button-images=1
           gtk-cursor-theme-name=Adwaita
           gtk-cursor-theme-size=0
@@ -27,7 +26,6 @@ in {
           gtk-font-name=Cantarell 11
           gtk-icon-theme-name=Adwaita
           gtk-menu-images=1
-          gtk-theme-name=Breeze-Dark
           gtk-toolbar-icon-size=GTK_ICON_SIZE_LARGE_TOOLBAR
           gtk-toolbar-style=GTK_TOOLBAR_BOTH
           gtk-xft-antialias=1
@@ -36,13 +34,12 @@ in {
         '';
       };
 
-      gtkSettings4 = {
-        path = ".config/gtk-4.0/settings.ini";
-        text = ''
-          [Settings]
-          gtk-application-prefer-dark-theme=1
-        '';
-      };
+      # gtkSettings4 = {
+      #   path = ".config/gtk-4.0/settings.ini";
+      #   text = ''
+      #     [Settings]
+      #   '';
+      # };
 
     };
   };
