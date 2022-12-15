@@ -56,9 +56,6 @@
         squashfuse # prob not in base
         pstree # prob not in base
 
-        # TODO: Convert to programs.neovim somewhere
-        neovim # prob not in base
-
         python3 # prob not in base 
     ];
 }

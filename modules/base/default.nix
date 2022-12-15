@@ -7,6 +7,7 @@
         ./disk.nix
         ./flatpak.nix
         ./kernel.nix
+        ./neovim.nix
         ./nix.nix
         ./printing.nix
         ./syst.nix
