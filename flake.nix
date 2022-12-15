@@ -8,7 +8,6 @@
   };
 
   outputs = inputs @ {self, nixpkgs, ... }:
-  with builtins;
   let
     lib = import ./lib;
     localpkgs = import ./pkgs;
