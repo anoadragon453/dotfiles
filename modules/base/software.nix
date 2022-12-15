@@ -43,10 +43,10 @@
         git-crypt
         gnupg
 
-        # Base nix tools
+        # Nix tools
         cachix
+        nil
         nix-index
-        manix
 
         # TODO: Not sure which of these I need
         # Ported from core - need to move out to somewhere else
