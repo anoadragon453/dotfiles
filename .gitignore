@@ -1,7 +1,13 @@
 !*.secret
-result
 tmp
 *~
 
+# nix derivation builds
+result
+
+# Virtual machine images
 *.qcow
 *.qcow2
+
+# The direnv directory
+.direnv/
