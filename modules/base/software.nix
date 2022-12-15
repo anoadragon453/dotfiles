@@ -55,7 +55,5 @@
         squashfsTools # prob not in base
         squashfuse # prob not in base
         pstree # prob not in base
-
-        python3 # prob not in base 
     ];
 }
