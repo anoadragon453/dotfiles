@@ -215,7 +215,7 @@
 
           sys.hardware.bluetooth = true;
           sys.hardware.graphics.primaryGPU = "intel";
-          sys.hardware.graphics.displayManager = "lightdm";
+          sys.hardware.graphics.displayManager = "gdm";
           sys.hardware.graphics.desktopProtocols = [ "xorg" "wayland" ];
           sys.hardware.graphics.v4l2loopback = true;
           sys.hardware.graphics.gpuSensorCommand = ''sensors | grep "junction:" | awk '{print $2}' '';
