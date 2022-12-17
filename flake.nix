@@ -64,7 +64,7 @@
               config = {
                 email = "andrew@amorgan.xyz";
                 name = "Andrew Morgan";
-                signingKey = "0xB6840C8AFFAD67EC";
+                signingKey = "0xA7E4A57880C3A4A9";
               };
           };
 
@@ -93,7 +93,10 @@
           sys.hardware.graphics.v4l2loopback = true;
           sys.hardware.graphics.gpuSensorCommand = ''sensors | grep "junction:" | awk '{print $2}' '';
 
-          sys.security.yubikey = false;
+          sys.security.yubikey = {
+            enable = true;
+            legacySSHSupport = false;
+          };
           sys.security.sshd.enable = false;
 
           # Disable default disk layout magic and just use the declarations below.
@@ -129,6 +132,87 @@
           swapDevices =
             [ { device = "/dev/disk/by-uuid/66aa4315-bbd2-4872-8284-983d5f5be994"; }
             ];
+
+        };
+      };
+
+      izzy = lib.mkNixOSConfig {
+        name = "izzy";
+        system = "x86_64-linux";
+        modules = [ ./modules inputs.musnix.nixosModules.musnix ];
+        inherit nixpkgs allPkgs;
+        cfg = let 
+          pkgs = allPkgs.x86_64-linux;
+        in {
+          # TODO
+          boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usbhid" "usb_storage" "sd_mod" ];
+
+          # Not sure if this is needed
+          #sys.hotfix.kernelVectorWarning = true; 
+
+          # TODO
+          networking.interfaces."enp8s0" = { useDHCP = true; };
+          networking.networkmanager.enable = true;
+
+          # Use real-time kernel for audio production.
+          sys.kernelPackage = pkgs.linuxPackages-rt_latest;
+
+          sys.virtualisation.docker.enable = true;
+
+          sys.user.users.user = {
+              # TODO: Move adbusers into android.nix somehow
+              groups = [ "adbusers" "audio" "docker" "networkmanager" "wheel" ];
+              roles = ["development"];
+              shell = "zsh";
+              
+              sshPublicKeys = [
+                "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIGVdcgCRUwCd83w5L+k5yhDHrLDF88GgDWdhvMqYAUiAAAAABHNzaDo="
+              ];
+
+              config = {
+                email = "andrew@amorgan.xyz";
+                name = "Andrew Morgan";
+                signingKey = "0xA7E4A57880C3A4A9";
+              };
+          };
+
+          sys.cpu.type = "intel";
+          sys.cpu.cores = 8;
+          sys.cpu.threadsPerCore = 8;
+          sys.cpu.sensorCommand = ''sensors | grep "Tctl:" | awk '{print $2}' '';
+          sys.biosType = "efi";
+
+          sys.enableFlatpakSupport = true;
+          sys.enablePrintingSupport = true;
+
+          sys.desktop.gui.type = "gnome";
+
+          sys.desktop.kdeconnect.enable = true;
+          sys.desktop.kdeconnect.implementation = "gsconnect";
+
+          sys.hardware.audio.server = "pipewire";
+          # TODO
+          sys.desktop.realTimeAudio.enable = true;
+          sys.desktop.realTimeAudio.soundcardPciId = "00:1f.3";
+
+          sys.hardware.bluetooth = true;
+          sys.hardware.graphics.primaryGPU = "intel";
+          sys.hardware.graphics.displayManager = "lightdm";
+          sys.hardware.graphics.desktopProtocols = [ "xorg" "wayland" ];
+          sys.hardware.graphics.v4l2loopback = true;
+          sys.hardware.graphics.gpuSensorCommand = ''sensors | grep "junction:" | awk '{print $2}' '';
+
+          sys.security.yubikey = {
+            enable = true;
+            legacySSHSupport = true;
+          };
+          sys.security.sshd.enable = false;
+
+          # Disable default disk layout magic and just use the declarations below.
+          sys.diskLayout = "vm";
+          sys.bootloaderMountPoint = "/boot/efi";
+
+          # TODO
 
         };
       };

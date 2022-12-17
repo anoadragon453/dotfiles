@@ -22,7 +22,7 @@ in {
                         [user]
                           email = "${user.config.email}"
                           name = "${user.config.name}"
-                          # TODO: What signingKey do I want to use?
+                          # Disabled as I'm not currently signing my commits
                           #signingKey = "${user.config.signingKey}"
                     '';
                 };
