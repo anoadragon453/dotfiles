@@ -18,6 +18,12 @@ in {
           description = "Extra gpu your system has installed";
         };
 
+        amd.rocm.enable = mkOption {
+          type = types.bool;
+          default = false;
+          description = "Install packages for AMD ROCM support. Only supported on newer AMD GPUs";
+        };
+
         desktopProtocols = mkOption {
           type = with types; listOf (enum ["xorg" "wayland"]);
           default = [];
@@ -100,10 +106,8 @@ in {
     hardware.opengl.extraPackages = mkIf (!headless) (with pkgs;[
       (mkIf amd amdvlk)
 
-      # TODO: Make rocm-* packages a separate option
-      # (rocm is only supported on certain AMD GPUs)
-      (mkIf amd rocm-opencl-icd)
-      (mkIf amd rocm-opencl-runtime)
+      (mkIf cfg.hardware.graphics.amd.rocm.enable rocm-opencl-icd)
+      (mkIf cfg.hardware.graphics.amd.rocm.enable rocm-opencl-runtime)
 
       (mkIf intel intel-media-driver)
       (mkIf intel vaapiIntel)

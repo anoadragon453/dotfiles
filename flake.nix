@@ -88,6 +88,7 @@
 
           sys.hardware.bluetooth = true;
           sys.hardware.graphics.primaryGPU = "amd";
+          sys.hardware.graphics.amd.rocm.enable = true;
           sys.hardware.graphics.displayManager = "gdm";
           sys.hardware.graphics.desktopProtocols = [ "xorg" "wayland" ];
           sys.hardware.graphics.v4l2loopback = true;
