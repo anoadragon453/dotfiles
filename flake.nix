@@ -177,6 +177,23 @@
               };
           };
 
+          sys.user.users.work = {
+              # TODO: Move adbusers into android.nix somehow
+              groups = [ "adbusers" "audio" "docker" "networkmanager" "wheel" ];
+              roles = ["development"];
+              shell = "zsh";
+              
+              sshPublicKeys = [
+                "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIGVdcgCRUwCd83w5L+k5yhDHrLDF88GgDWdhvMqYAUiAAAAABHNzaDo="
+              ];
+
+              config = {
+                email = "andrew@amorgan.xyz";
+                name = "Andrew Morgan";
+                signingKey = "0xA7E4A57880C3A4A9";
+              };
+          };
+
           sys.cpu.type = "intel";
           sys.cpu.cores = 8;
           sys.cpu.threadsPerCore = 8;
