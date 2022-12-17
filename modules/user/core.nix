@@ -111,7 +111,7 @@ in {
       # their respective intended places.
       #
       # Returns the generated command.
-      mkUserFile = {user, targetPath, sourcePath}: let
+      mkUserFile = {user, group, targetPath, sourcePath}: let
         userProfile = "${config.users.users."${user}".home}";
         staticHome = "${userProfile}/.local/share/nix-static";
         targetFolder = dirOf "${staticHome}/${targetPath}";
@@ -123,7 +123,7 @@ in {
         else
           # The file does not yet exist. Symlink the source file to `targetPath`
           # under nix-static
-          mkdir -p "${targetFolder}"
+          install -d -o ${user} -g ${group} "${targetFolder}"
           cp "${sourcePath}" "${staticHome}/${targetPath}"
         fi
         '';
@@ -134,10 +134,10 @@ in {
       # in the home directory of the given `user`.
       #
       # Returns the generated command.
-      mkUserFileFromText = {user, filename, targetPath, text}: let
+      mkUserFileFromText = {user, group, filename, targetPath, text}: let
         # Create a file from the given `text` string
         textfile = toFile filename text;
-      in mkUserFile { inherit user targetPath; sourcePath = textfile; };
+      in mkUserFile { inherit user group targetPath; sourcePath = textfile; };
 
       mkCleanUp = {user, targetPathUnderHome}: let
         userProfile = "${config.users.users."${user}".home}";
@@ -154,8 +154,9 @@ in {
         targetPath = "${userProfile}/${targetPathUnderHome}";
         targetFolder = dirOf targetPath;
       in ''
-        mkdir -p "${targetFolder}"
-        chown -R ${user}:${group} "${targetFolder}"
+        if [[ ! -d "${targetFolder}" ]]; then
+          install -d -o ${user} -g ${group} "${targetFolder}"
+        fi
         ln -sf "${staticHome}/${targetPathUnderHome}" "${targetPath}"
         chown -h ${user}:${group} "${targetPath}"
       '';
@@ -170,12 +171,12 @@ in {
       # If a file already exists in $HOME/.local/share/nix-static with the same path,
       # a command to append the contents of the file in the /nix/store to those in nix-static
       # will be generated instead.
-      buildFileScript = {username, fileSet}: concatStringsSep "\n" 
+      buildFileScript = {username, group, fileSet}: concatStringsSep "\n" 
         (map (name: (if (hasAttr "source" fileSet."${name}")
           # Return a string that symlinks the `source` file to $HOME/.local/share/nix-static
-          then mkUserFile {user = username; targetPath = fileSet."${name}".path; source = fileSet."${name}".source;}
+          then mkUserFile {user = username; group = group; targetPath = fileSet."${name}".path; source = fileSet."${name}".source;}
           # Save the text into a file first, before returning the same as above
-          else mkUserFileFromText { user = username; filename = name; targetPath = fileSet."${name}".path; text = fileSet."${name}".text;}
+          else mkUserFileFromText { user = username; group = group; filename = name; targetPath = fileSet."${name}".path; text = fileSet."${name}".text;}
         )) (attrNames fileSet));
 
       buildCleanUp = {username, fileSet}: concatStringsSep "\n"
@@ -210,12 +211,14 @@ in {
             rm "${staticPath}/cleanup.sh"
           fi
 
-          # Create the folder to put everything in
-          mkdir -p "${staticPath}";
+          # Create the folder to put everything in. We use `install` instead of
+          # `mkdir` here as it allows us to set directory ownership permissions
+          # (we don't want directories to be owned by root)
+          install -d -o ${username} -g ${group} "${staticPath}"
 
           # Creates files in $HOME/.local/share/nix-static to symlink below
-          ${buildFileScript { inherit username fileSet; }} # files declared specifically for this user
-          ${buildFileScript { inherit username; fileSet = allUserFileSet; }} # files declared for all users
+          ${buildFileScript { inherit username group fileSet; }} # files declared specifically for this user
+          ${buildFileScript { inherit username group; fileSet = allUserFileSet; }} # files declared for all users
 
           # Populate cleanup.sh with rm's for any existing declared files for this specific user
           ${buildCleanUp { inherit username fileSet; }}
