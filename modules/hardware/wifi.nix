@@ -3,7 +3,7 @@ with lib;
 with builtins;
 let
   cfg = config.sys.networking;
-  wifiSecrets = tryeval (config.sys.secruity.secrets.wifi);
+  wifiSecrets = tryeval (config.sys.security.secrets.wifi);
   wifiNetworks = if wifiSecrets.success then wifiSecrets.value else {};
 in {
   options.sys.networking = {
