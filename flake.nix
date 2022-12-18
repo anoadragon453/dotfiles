@@ -226,6 +226,8 @@
           };
           sys.security.sshd.enable = false;
 
+          sys.vpn.services = [ "mullvad" "tailscale" ];
+
           # Disable default disk layout magic and just use the declarations below.
           sys.diskLayout = "vm";
           sys.bootloaderMountPoint = "/boot/efi";
