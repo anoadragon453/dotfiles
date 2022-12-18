@@ -4,7 +4,8 @@
   inputs = {
     # TODO: Add https://github.com/NixOS/nixos-hardware?
     nixpkgs.url = "nixpkgs/nixos-unstable";
-    musnix  = { url = "github:musnix/musnix"; };
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    musnix.url = "github:musnix/musnix";
   };
 
   outputs = inputs @ {self, nixpkgs, ... }:
@@ -33,7 +34,10 @@
       moonbow = lib.mkNixOSConfig {
         name = "moonbow";
         system = "x86_64-linux";
-        modules = [ ./modules inputs.musnix.nixosModules.musnix ];
+        modules = [
+          ./modules
+          inputs.musnix.nixosModules.musnix
+        ];
         inherit nixpkgs allPkgs;
         cfg = let 
           pkgs = allPkgs.x86_64-linux;
@@ -140,7 +144,11 @@
       izzy = lib.mkNixOSConfig {
         name = "izzy";
         system = "x86_64-linux";
-        modules = [ ./modules inputs.musnix.nixosModules.musnix ];
+        modules = [
+          ./modules
+          inputs.musnix.nixosModules.musnix
+          inputs.nixos-hardware.nixosModules.framework
+        ];
         inherit nixpkgs allPkgs;
         cfg = let 
           pkgs = allPkgs.x86_64-linux;
