@@ -153,7 +153,6 @@
         cfg = let 
           pkgs = allPkgs.x86_64-linux;
         in {
-          # TODO
           boot.initrd.availableKernelModules = [ "xhci_pci" "thunderbolt" "nvme" "usb_storage" "sd_mod" ];
 
           # Not sure if this is needed

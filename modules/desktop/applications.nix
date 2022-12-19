@@ -60,7 +60,6 @@ in {
       # Tools
       gnome.gnome-boxes
       kid3
-      rustup
       vscode
       winetricks
       wineWowPackages.stableFull
