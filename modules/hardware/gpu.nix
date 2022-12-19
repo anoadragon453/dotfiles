@@ -41,6 +41,7 @@ in {
           description = "Command to get gpu temp";
         };
 
+        hidpiSupport = mkEnableOption "Enable HiDPI support on this system";
         v4l2loopback = mkEnableOption "Enable v4l2loopback on this system";
    };
 
@@ -102,6 +103,8 @@ in {
     hardware.opengl.driSupport = !headless;
     hardware.opengl.driSupport32Bit = !headless;
     hardware.steam-hardware.enable = !headless;
+
+    hardware.video.hidpi.enable = cfg.hardware.graphics.hidpiSupport;
 
     hardware.opengl.extraPackages = mkIf (!headless) (with pkgs;[
       (mkIf amd amdvlk)
