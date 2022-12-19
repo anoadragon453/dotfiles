@@ -5,6 +5,7 @@ pkgs.mkShell {
     git
     git-crypt
     nixFlakes
+    pciutils  # to figure out sound card PCI ID
   ];
 
   shellHook = ''

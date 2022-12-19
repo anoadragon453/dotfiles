@@ -4,7 +4,8 @@
   inputs = {
     # TODO: Add https://github.com/NixOS/nixos-hardware?
     nixpkgs.url = "nixpkgs/nixos-unstable";
-    musnix  = { url = "github:musnix/musnix"; };
+    nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+    musnix.url = "github:musnix/musnix";
   };
 
   outputs = inputs @ {self, nixpkgs, ... }:
@@ -33,7 +34,10 @@
       moonbow = lib.mkNixOSConfig {
         name = "moonbow";
         system = "x86_64-linux";
-        modules = [ ./modules inputs.musnix.nixosModules.musnix ];
+        modules = [
+          ./modules
+          inputs.musnix.nixosModules.musnix
+        ];
         inherit nixpkgs allPkgs;
         cfg = let 
           pkgs = allPkgs.x86_64-linux;
@@ -140,23 +144,27 @@
       izzy = lib.mkNixOSConfig {
         name = "izzy";
         system = "x86_64-linux";
-        modules = [ ./modules inputs.musnix.nixosModules.musnix ];
+        modules = [
+          ./modules
+          inputs.musnix.nixosModules.musnix
+          inputs.nixos-hardware.nixosModules.framework
+        ];
         inherit nixpkgs allPkgs;
         cfg = let 
           pkgs = allPkgs.x86_64-linux;
         in {
           # TODO
-          boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usbhid" "usb_storage" "sd_mod" ];
+          boot.initrd.availableKernelModules = [ "xhci_pci" "thunderbolt" "nvme" "usb_storage" "sd_mod" ];
 
           # Not sure if this is needed
           #sys.hotfix.kernelVectorWarning = true; 
 
-          # TODO
-          networking.interfaces."enp8s0" = { useDHCP = true; };
+          #networking.useDHCP = lib.mkDefault true;
+          #networking.interfaces.wlp170s0 = { useDHCP = true; };
           networking.networkmanager.enable = true;
 
-          # Use real-time kernel for audio production.
-          sys.kernelPackage = pkgs.linuxPackages-rt_latest;
+          # Framework laptop needs at least 5.16 for working wifi/bluetooth
+          sys.kernelPackage = pkgs.linuxPackages_latest;
 
           sys.virtualisation.docker.enable = true;
 
@@ -209,7 +217,6 @@
           sys.desktop.kdeconnect.implementation = "gsconnect";
 
           sys.hardware.audio.server = "pipewire";
-          # TODO
           sys.desktop.realTimeAudio.enable = true;
           sys.desktop.realTimeAudio.soundcardPciId = "00:1f.3";
 
@@ -227,11 +234,37 @@
           };
           sys.security.sshd.enable = false;
 
+          sys.vpn.services = [ "mullvad" "tailscale" ];
+
           # Disable default disk layout magic and just use the declarations below.
-          sys.diskLayout = "vm";
+          sys.diskLayout = "disable";
           sys.bootloaderMountPoint = "/boot/efi";
 
-          # TODO
+          # Setup keyfile
+          boot.initrd.secrets = {
+            "/crypto_keyfile.bin" = null;
+          };
+
+          # Swap
+          boot.initrd.luks.devices."luks-4c84c7eb-6ec2-428d-8f3e-82ce78c0f00b".device = "/dev/disk/by-uuid/4c84c7eb-6ec2-428d-8f3e-82ce78c0f00b";
+          boot.initrd.luks.devices."luks-4c84c7eb-6ec2-428d-8f3e-82ce78c0f00b".keyFile = "/crypto_keyfile.bin";
+          swapDevices =
+            [ { device = "/dev/disk/by-uuid/3e9a5346-b193-4bf1-b805-1cd65cb1de87"; }
+            ];
+
+          # Root filesystem
+          fileSystems."/" =
+            { device = "/dev/disk/by-uuid/bda31b70-0bfb-4153-881e-98b57478241c";
+              fsType = "ext4";
+            };
+
+          boot.initrd.luks.devices."luks-29870430-e228-4f4a-a39f-932382a517f6".device = "/dev/disk/by-uuid/29870430-e228-4f4a-a39f-932382a517f6";
+
+          # Boot device
+          fileSystems."/boot/efi" =
+            { device = "/dev/disk/by-uuid/725D-C6E7";
+              fsType = "vfat";
+            };
 
         };
       };

@@ -5,20 +5,21 @@ let
   cfg = config.sys.vpn;
 in {
   options.sys = {
-    vpn.service = mkOption {
-      type = types.enum [ "mullvad" "none" ];
-      default = "mullvad";
-      description = "Configure a given VPN service on this system";
+    vpn.services = mkOption {
+      type = types.listOf (types.enum [ "tailscale" "mullvad" ]);
+      default = [ "mullvad" ];
+      description = "Configure one or more given VPN services on this system";
     };
   };
 
   config = {
     # System daemon services.
-    services.mullvad-vpn.enable = (mkIf (cfg.service == "mullvad") true);
+    services.mullvad-vpn.enable = (elem "mullvad" cfg.services);
+    services.tailscale.enable = (elem "tailscale" cfg.services);
 
     # User-facing apps/cli.
-    sys.software = (mkIf (cfg.service == "mullvad") [
-      mullvad-vpn
-    ]);
+    sys.software = [
+      (mkIf (elem "mullvad" cfg.services) mullvad-vpn)
+    ];
   };
 }
