@@ -46,7 +46,8 @@ in {
         '';
 
         programs = {
-            ssh.startAgent = false;
+            # If legacy SSH support is enabled, use GPG as the SSH agent instead.
+            ssh.startAgent = !cfg.legacySSHSupport;
             gnupg.agent = {
                 enable = true;
                 enableSSHSupport = cfg.legacySSHSupport;
