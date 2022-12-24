@@ -58,8 +58,9 @@ in {
       ) then blender-hip else blender)
 
       # Tools
-      jetbrains.pycharm-community
+      appimage-run
       gnome.gnome-boxes
+      jetbrains.pycharm-community
       kid3
       vscode
       winetricks
