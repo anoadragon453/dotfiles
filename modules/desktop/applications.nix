@@ -58,6 +58,7 @@ in {
       ) then blender-hip else blender)
 
       # Tools
+      appimage-run
       gnome.gnome-boxes
       kid3
       rustup
