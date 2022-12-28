@@ -225,7 +225,6 @@
           sys.hardware.graphics.desktopProtocols = [ "xorg" "wayland" ];
           sys.hardware.graphics.v4l2loopback = true;
           sys.hardware.graphics.gpuSensorCommand = ''sensors | grep "junction:" | awk '{print $2}' '';
-          sys.hardware.graphics.hidpiSupport = true;
 
           sys.security.yubikey = {
             enable = true;
