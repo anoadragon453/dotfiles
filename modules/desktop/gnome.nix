@@ -46,7 +46,6 @@ in {
 
     # Install some helpful packages when using GNOME
     sys.software = (with pkgs; [
-      bibata-cursors      # Material design style cursors.
       gnome.gnome-tweaks  # Additional configuration options for GNOME.
     ]) ++ cfg.commonExtensions ++ cfg.extraExtensions;
 
