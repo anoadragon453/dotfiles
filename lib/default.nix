@@ -101,6 +101,9 @@ rec {
         nixpkgs.pkgs = pkgs;
         system.stateVersion = "22.05";
         networking.hostName = "${name}";
+
+        # Disable building HTML/plain text documentation
+        documentation.doc.enable = false;
       }
     ];
   };
