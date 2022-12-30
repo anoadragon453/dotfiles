@@ -19,6 +19,7 @@ in {
         gnomeExtensions.alttab-scroll-workaround
         gnomeExtensions.caffeine
         gnomeExtensions.fullscreen-notifications
+        gnomeExtensions.hibernate-status-button
         gnomeExtensions.sound-output-device-chooser
         gnomeExtensions.tray-icons-reloaded
       ];
