@@ -59,6 +59,7 @@ in {
       ) then blender-hip else blender)
 
       # Tools
+      android-studio
       appimage-run
       gnome.gnome-boxes
       jetbrains.pycharm-community
