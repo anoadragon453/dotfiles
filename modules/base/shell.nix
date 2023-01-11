@@ -13,18 +13,18 @@ with builtins;
       # Note: zsh is installed by the `programs.zsh.enable` option below
   ];
 
-  users.defaultUserShell = pkgs.nushell;
+  users.defaultUserShell = pkgs.zsh;
 
   environment.variables= {
     "EDITOR" = "nvim";
     "VISUAL" = "nvim";
   }; 
 
-  # This is so you can set zsh, bash or nushell as your interactive shell.
+  # This is so you can set zsh or bash as your interactive shell.
   # If you don't set this it will not show your user on the login screen.
   #
   # Note: this is configured for zsh by `programs.zsh.enable` below.
-  environment.shells = with pkgs; [ bash nushell ];
+  environment.shells = with pkgs; [ bash ];
 
   # Install and configure zsh
   programs.zsh.enable = true;
