@@ -38,6 +38,7 @@ in {
       # Media
       bitwig-studio
       drawpile
+      easyeffects
       kdenlive
       krita
       mpv
