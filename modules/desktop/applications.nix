@@ -35,8 +35,10 @@ in {
       thunderbird
       tor-browser-bundle-bin
 
-      # Media
+      # Audio production
       bitwig-studio
+
+      # Media
       drawpile
       easyeffects
       kdenlive
