@@ -42,9 +42,7 @@ in {
       krita
       mpv
       (wrapOBS {
-        plugins = with obs-studio-plugins; [
-          obs-backgroundremoval
-        ];
+        plugins = with obs-studio-plugins; [ ];
       })
       pavucontrol
       qpwgraph
