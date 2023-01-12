@@ -2,7 +2,7 @@
   description = "anoa's system configuration";
 
   inputs = {
-    # TODO: Add https://github.com/NixOS/nixos-hardware?
+    devenv.url = "github:cachix/devenv/v0.5";
     nixpkgs.url = "nixpkgs/nixos-unstable";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     musnix.url = "github:musnix/musnix";
@@ -233,6 +233,10 @@
           sys.security.sshd.enable = false;
 
           sys.vpn.services = [ "mullvad" "tailscale" ];
+
+          # TODO: Get devenv outta here c'monnn
+          sys.software = [ inputs.devenv.packages.x86_64-linux.devenv ];
+          services.postgresql.enable = true;
 
           # Disable default disk layout magic and just use the declarations below.
           sys.diskLayout = "disable";
