@@ -13,6 +13,7 @@
         fd
         ffmpeg
         gcc
+        gdb
         ghostscript
         htop
         hyperfine
