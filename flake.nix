@@ -2,7 +2,7 @@
   description = "anoa's system configuration";
 
   inputs = {
-    devenv.url = "github:cachix/devenv/v0.5";
+    devenv.url = "github:cachix/devenv/0960585a7221e6ede718cc9a2c2eade7ce75c229";
     nixpkgs.url = "nixpkgs/nixos-unstable";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     musnix.url = "github:musnix/musnix";
