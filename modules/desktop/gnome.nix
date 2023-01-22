@@ -15,13 +15,14 @@ in {
     commonExtensions = mkOption {
       description = "List of common GNOME extensions that most installations will need";
       type = types.listOf types.package;
-      default = [
-        gnomeExtensions.alttab-scroll-workaround
-        gnomeExtensions.caffeine
-        gnomeExtensions.fullscreen-notifications
-        gnomeExtensions.hibernate-status-button
-        gnomeExtensions.sound-output-device-chooser
-        gnomeExtensions.tray-icons-reloaded
+      default = with gnomeExtensions; [
+        advanced-alttab-window-switcher
+        alttab-scroll-workaround
+        caffeine
+        fullscreen-notifications
+        hibernate-status-button
+        sound-output-device-chooser
+        tray-icons-reloaded
       ];
     };
 
