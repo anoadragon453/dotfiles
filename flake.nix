@@ -238,6 +238,10 @@
           sys.software = [ inputs.devenv.packages.x86_64-linux.devenv ];
           services.postgresql.enable = true;
 
+          # Disable fingerprint reader enabled by nixos-hardware's framework service.
+          # Mostly because GDM doesn't interact well with the PAM rules set by it.
+          services.fprintd.enable = false;
+
           # Disable default disk layout magic and just use the declarations below.
           sys.diskLayout = "disable";
           sys.bootloaderMountPoint = "/boot/efi";
