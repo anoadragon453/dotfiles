@@ -38,6 +38,13 @@ in {
       # Audio production
       bitwig-studio
 
+      # Office
+      libreoffice
+
+      # Games
+      airshipper # launcher and updater for veloren
+      minecraft
+
       # Media
       drawpile
       easyeffects
