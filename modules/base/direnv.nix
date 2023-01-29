@@ -1,9 +1,7 @@
 {pkgs, config, lib, ...}:
 with lib;
 with pkgs;
-let
-  cfg = config.sys;
-in {
+{
   config = {
     sys.software = [ direnv nix-direnv ];
 
