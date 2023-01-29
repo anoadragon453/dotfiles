@@ -8,7 +8,6 @@ with lib;
 with builtins;
 {
   sys.software = [
-      nushell
       bash
       # Note: zsh is installed by the `programs.zsh.enable` option below
   ];

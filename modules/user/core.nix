@@ -269,13 +269,11 @@ in {
         name = v;
         value = let
             compiledUser = buildUser cfg.user.users."${v}";
-            shellpkg = if (compiledUser.shell == "nu") then 
-                pkgs.nushell
+            shellpkg = (if (compiledUser.shell == "zsh") then
+                pkgs.zsh
             else
-                (if (compiledUser.shell == "zsh") then
-                    pkgs.zsh
-                else
-                    pkgs.bash);
+                pkgs.bash
+            );
         in {
             name = v;
             isNormalUser = true;
@@ -288,13 +286,11 @@ in {
         };
     }) usersList) // {
         root = let
-            shellpkg = if (cfg.user.root.shell == "nu") then 
-                pkgs.nushell
+            shellpkg = (if (cfg.user.root.shell == "zsh") then
+                pkgs.zsh
             else
-                (if (cfg.user.root.shell == "zsh") then
-                    pkgs.zsh
-                else
-                    pkgs.bash);
+                pkgs.bash
+            );
 
         in {
             packages = cfg.user.root.software;
