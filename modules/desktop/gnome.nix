@@ -21,7 +21,6 @@ in {
         caffeine
         fullscreen-notifications
         hibernate-status-button
-        sound-output-device-chooser
         tray-icons-reloaded
       ];
     };
