@@ -60,7 +60,7 @@
 
           sys.user.users.user = {
               # TODO: Move adbusers into android.nix somehow
-              groups = [ "adbusers" "audio" "docker" "networkmanager" "wheel" ];
+              groups = [ "adbusers" "audio" "docker" "networkmanager" "pipewire" "wheel" ];
               roles = ["development"];
               shell = "zsh";
               
@@ -172,7 +172,7 @@
 
           sys.user.users.user = {
               # TODO: Move adbusers into android.nix somehow
-              groups = [ "adbusers" "audio" "docker" "networkmanager" "wheel" ];
+              groups = [ "adbusers" "audio" "docker" "networkmanager" "pipewire" "wheel" ];
               roles = ["development"];
               shell = "zsh";
               
@@ -189,7 +189,7 @@
 
           sys.user.users.work = {
               # TODO: Move adbusers into android.nix somehow
-              groups = [ "adbusers" "audio" "docker" "networkmanager" "wheel" ];
+              groups = [ "adbusers" "audio" "docker" "networkmanager" "pipewire" "wheel" ];
               roles = ["development"];
               shell = "zsh";
               

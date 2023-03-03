@@ -5,10 +5,12 @@ with builtins;
 let
     cfg = config.sys;
 in {
-    options.sys.hardware.audio.server = mkOption {
-        type = types.enum [ "pulse" "pipewire" "none" ];
-        default = "none";
-        description = "Audio server to use";
+    options.sys.hardware.audio = {
+        server = mkOption {
+            type = types.enum [ "pulse" "pipewire" "none" ];
+            default = "none";
+            description = "Audio server to use";
+        };
     };
 
     config = mkIf (cfg.hardware.audio.server != "none") {
@@ -26,6 +28,7 @@ in {
             alsa.support32Bit = true;
             pulse.enable = true;
             jack.enable = true;
+            systemWide = true;
         };
 
         hardware.pulseaudio.enable = (cfg.hardware.audio.server == "pulse");
