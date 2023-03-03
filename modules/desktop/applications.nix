@@ -39,9 +39,7 @@ in {
       bitwig-studio
 
       # Office
-      # TODO: Broken until the last check here is green
-      # https://nixpk.gs/pr-tracker.html?pr=212583
-      #libreoffice-fresh
+      onlyoffice-bin
 
       # Games
       airshipper # launcher and updater for veloren
