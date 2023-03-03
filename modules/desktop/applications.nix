@@ -74,6 +74,7 @@ in {
       vscode
       winetricks
       wineWowPackages.stableFull
+      wireshark
       xournalpp
     ] ++ (if (desktopGuiType == "tiling") then [
       # Only installed when using a tiling window manager.
