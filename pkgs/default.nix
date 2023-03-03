@@ -55,4 +55,39 @@ self: super: {
        cp sample_profiles/* $out/etc/g810-led/samples
       '';
     };
+
+    obs-studio-plugins.obs-streamfx = super.qt6Packages.callPackage super.stdenv.mkDerivation rec {
+      pname = "obs-streamfx";
+      version = "0.11.1";
+
+      # src = fetchFromGitHub {
+      #   owner = "Xaymar";
+      #   repo = "obs-StreamFX";
+      #   rev = version;
+      #   sha256 = "sha256-KDzSrvmR4kt+46zyfLtu8uqLk6YOwS8GOI70b5s4vR8=";
+      #   fetchSubmodules = true;
+      # };
+
+      # Temporarily just fetch the release build
+      src = super.fetchzip {
+        url = "https://github.com/Xaymar/obs-StreamFX/releases/download/0.11.1/streamfx-ubuntu-20.04-clang-0.11.1.0-g81a96998.zip";
+        hash = "sha256-PIilN9hziAX+mJO6HHKX8E7ipz/CascrmRwCfKDmpII=";
+      };
+
+      # nativeBuildInputs = [ cmake ];
+      # buildInputs = [ obs-studio qtbase ];
+      # dontWrapQtApps = true;
+      buildInputs = [ super.obs-studio ];
+
+      installPhase = ''
+        mkdir -p $out/lib $out/share
+        cp -r $src/StreamFX/bin/64bit $out/lib/obs-plugins
+        #rm -rf $out/obs-plugins
+        cp -r $src/StreamFX/data $out/share/obs
+      '';
+
+      postInstall = ''
+        #rm -rf $out/obs-plugins $out/data
+      '';
+    };
 }

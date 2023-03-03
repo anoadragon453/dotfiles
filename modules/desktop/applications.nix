@@ -52,7 +52,9 @@ in {
       krita
       mpv
       (wrapOBS {
-        plugins = with obs-studio-plugins; [ ];
+        plugins = with obs-studio-plugins; [
+          obs-streamfx
+        ];
       })
       pavucontrol
       qpwgraph
