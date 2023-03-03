@@ -3,9 +3,13 @@
 
   inputs = {
     devenv.url = "github:cachix/devenv";
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+    musnix.url = "github:musnix/musnix";
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     nixpkgs.url = "nixpkgs/nixos-unstable";
-    musnix.url = "github:musnix/musnix";
   };
 
   outputs = inputs @ {self, nixpkgs, ... }:
@@ -40,6 +44,11 @@
         modules = [
           ./modules
           inputs.musnix.nixosModules.musnix
+          inputs.home-manager.nixosModules.home-manager
+          {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+          }
         ];
         inherit nixpkgs allPkgs;
         cfg = let 
@@ -58,6 +67,7 @@
 
           sys.virtualisation.docker.enable = true;
 
+          # TODO: Replace the users system with home-manager?
           sys.user.users.user = {
               # TODO: Move adbusers into android.nix somehow
               groups = [ "adbusers" "audio" "docker" "networkmanager" "pipewire" "wheel" ];

@@ -1,4 +1,4 @@
-{pkgs, lib, config, ...}:
+{pkgs, lib, config, home-manager, ...}:
 with pkgs;
 with lib;
 with builtins;
@@ -63,6 +63,19 @@ in {
       totem     # gnome videos
     ]);
 
+    # TODO: Figure out some way to detect the user.
+    # Maybe via https://github.com/hlissner/dotfiles/blob/089f1a9da9018df9e5fc200c2d7bef70f4546026/modules/options.nix#L39-L43?
+    # Even though that seems like a hack...
+    #home-manager.users.${builtins.getEnv "USER"}.programs.xmobar.enable = true;
+    # TODO: New idea, rewrite the user module stuff to use home-manager instead. Would use
+    # home manager to create the files and things in the home directory.
+    # And then in different modules - like this one - we'd set options on a dummy set like
+    # hm.programs.xmobar.enable = true; and then the user module would run all of those for
+    # each configured user!
+    home-manager.users.user.programs.xmobar.enable = true;
+
+    # TODO: Put this in a home-manager nix module
+    home-manager.users.user.home.stateVersion = config.system.stateVersion;
   };
 
 }
