@@ -26,7 +26,6 @@ in {
       chromium
       cinny-desktop
       discord
-      element-desktop
       mpv
       firefox
       joplin-desktop
