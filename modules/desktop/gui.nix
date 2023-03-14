@@ -7,10 +7,15 @@ let
   desktopMode = xorg || wayland;
 in {
   options.sys.desktop.gui = {
-    type = mkOption {
-      type = types.enum [ "gnome" "tiling" ];
-      default = "gnome";
-      description = "The desktop environment/window manager/compositor to use. `gnome` will set up a GNOME desktop with support for both Xorg and Wayland sessions. `tiling` will configure i3 (on Xorg) and sway (on Wayland).";
+    types = mkOption {
+      type = types.listOf (types.enum [ "kde" "gnome" "tiling" ]);
+      default = [ "gnome" ];
+      description = ''
+      Which desktop environments/window managers/compositors to use.
+      `gnome` will set up a GNOME desktop with support for both Xorg and Wayland sessions.
+      `kde` will set up a KDE desktop with support for both Xorg and Wayland sessions.
+      `tiling` will configure i3 (on Xorg) and sway (on Wayland).
+      '';
     };
   };
 }

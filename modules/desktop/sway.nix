@@ -4,10 +4,10 @@ with builtins;
 let
   wayland = (elem "wayland" config.sys.hardware.graphics.desktopProtocols);
   desktopMode = wayland;
-  desktopGuiType = config.sys.desktop.gui.type;
+  desktopGuiTypes = config.sys.desktop.gui.types;
 in {
 
-  config = mkIf (desktopMode && desktopGuiType == "tiling") {
+  config = mkIf (desktopMode && elem "tiling" desktopGuiTypes) {
     programs.sway = {
       enable = true;
       wrapperFeatures.gtk = true;

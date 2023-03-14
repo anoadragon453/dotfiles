@@ -31,7 +31,7 @@ in {
         };
 
         displayManager = mkOption {
-          type = types.enum ["none" "lightdm" "greetd" "gdm"];
+          type = types.enum ["none" "lightdm" "greetd" "gdm" "sddm"];
           default = "none";
           description = "Select the display manager you want to boot the system with";
         };
@@ -91,6 +91,7 @@ in {
       displayManager.job.logToJournal = true;
       displayManager.gdm.enable = gfx.displayManager == "gdm";
       displayManager.gdm.wayland = gfx.displayManager == "gdm";
+      displayManager.sddm.enable = gfx.displayManager == "sddm";
       
       libinput.enable = true;
     };

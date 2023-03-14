@@ -5,9 +5,9 @@ let
   xorg = (elem "xorg" config.sys.hardware.graphics.desktopProtocols);
   wayland = (elem "wayland" config.sys.hardware.graphics.desktopProtocols);
   desktopMode = xorg || wayland;
-  desktopGuiType = config.sys.desktop.gui.type;
+  desktopGuiTypes = config.sys.desktop.gui.types;
 in {
-  config = mkIf (desktopMode && desktopGuiType != "gnome") {
+  config = mkIf (desktopMode && !elem "gnome" desktopGuiTypes) {
     sys.software = with pkgs; [ breeze-qt5 ];
   };
 }

@@ -3,9 +3,9 @@ with lib;
 with builtins;
 let
   xorg = (elem "xorg" config.sys.hardware.graphics.desktopProtocols);
-  desktopGuiType = config.sys.desktop.gui.type;
+  desktopGuiTypes = config.sys.desktop.gui.types;
 in {
-  config = mkIf (xorg && desktopGuiType == "tiling") {
+  config = mkIf (xorg && elem "tiling" desktopGuiTypes) {
     sys.software = with pkgs; [ picom ];
 
     services.picom = {

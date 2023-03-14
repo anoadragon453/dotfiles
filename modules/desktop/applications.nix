@@ -6,14 +6,14 @@ let
   xorg = (elem "xorg" config.sys.hardware.graphics.desktopProtocols);
   wayland = (elem "wayland" config.sys.hardware.graphics.desktopProtocols);
   desktopMode = xorg || wayland;
-  desktopGuiType = config.sys.desktop.gui.type;
+  desktopGuiTypes = config.sys.desktop.gui.types;
   cfg = config.sys;
 in {
   config = {
 
     environment.sessionVariables = mkIf desktopMode {
       # Fix issue with java applications and tiling window managers.
-      "_JAVA_AWT_WM_NONREPARENTING" = mkIf (desktopGuiType == "tiling") "1";
+      "_JAVA_AWT_WM_NONREPARENTING" = mkIf (elem "tiling" desktopGuiTypes) "1";
 
       # Enable smooth-scrolling in Mozilla apps
       MOZ_USE_XINPUT2 = "1";
@@ -75,7 +75,7 @@ in {
       wineWowPackages.stableFull
       wireshark
       xournalpp
-    ] ++ (if (desktopGuiType == "tiling") then [
+    ] ++ (if (elem "tiling" desktopGuiTypes) then [
       # Only installed when using a tiling window manager.
       feh
       libsixel

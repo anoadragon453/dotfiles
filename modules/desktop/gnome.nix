@@ -6,7 +6,7 @@ let
 
   wayland = (elem "wayland" config.sys.hardware.graphics.desktopProtocols);
   xorg = (elem "xorg" config.sys.hardware.graphics.desktopProtocols);
-  desktopGuiType = config.sys.desktop.gui.type;
+  desktopGuiTypes = config.sys.desktop.gui.types;
   desktopMode = wayland || xorg;
 
   cfg = config.sys.desktop.gui.gnome;
@@ -39,7 +39,7 @@ in {
   };
 
 
-  config = mkIf (desktopMode && desktopGuiType == "gnome") {
+  config = mkIf (desktopMode && elem "gnome" desktopGuiTypes) {
     # Install and configure GNOME
     services.xserver.desktopManager.gnome.enable = true;
 

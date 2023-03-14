@@ -1,7 +1,7 @@
 {pkgs, config, lib, ...}:
 with lib;
 let
-  desktopGuiType = config.sys.desktop.gui.type;
+  desktopGuiTypes = config.sys.desktop.gui.types;
   wofi-emoji = pkgs.writeScriptBin "wofi-emoji" ''
     #!${pkgs.bash}/bin/bash
     sed '1,/^### DATA ###$/d' $0 | wofi --show dmenu -i | cut -d ' ' -f 1 | tr -d '\n' | wl-copy
@@ -1815,7 +1815,7 @@ let
       '';
 in {
   # Install wofi and the wofi-emoji script defined above.
-  config = mkIf (desktopGuiType == "tiling") {
+  config = mkIf (elem "tiling" desktopGuiTypes) {
     sys.software = with pkgs; [ wofi-emoji wofi ];
   };
 }

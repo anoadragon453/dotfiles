@@ -12,6 +12,7 @@
     ./terminal.nix
     ./gui.nix
     ./gnome.nix
+    ./kde.nix
     ./applications.nix
     ./i3.nix
     ./plymouth.nix

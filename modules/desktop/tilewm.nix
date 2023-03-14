@@ -6,7 +6,7 @@ let
 
   wayland = (elem "wayland" config.sys.hardware.graphics.desktopProtocols);
   xorg = (elem "xorg" config.sys.hardware.graphics.desktopProtocols);
-  desktopGuiType = config.sys.desktop.gui.type;
+  desktopGuiTypes = config.sys.desktop.gui.types;
 
   desktopMode = wayland || xorg;
   startupProgramType = with types; submodule {
@@ -182,7 +182,7 @@ in {
   };
 
 
-  config = mkIf (desktopMode && desktopGuiType == "tiling") {
+  config = mkIf (desktopMode && elem "tiling" desktopGuiTypes) {
 
     sys.software = with pkgs; [
       bibata-cursors # Material design style cursors.
