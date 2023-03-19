@@ -17,6 +17,9 @@ in {
     # Install and configure KDE Plasma5
     services.xserver.desktopManager.plasma5.enable = true;
 
+    # Enable HiDPI scaling in Qt applications.
+    services.xserver.desktopManager.plasma5.useQtScaling = true;
+
     # Fix GTK themes not applying in Wayland applications.
     # From https://nixos.wiki/wiki/KDE
     programs.dconf.enable = true;
