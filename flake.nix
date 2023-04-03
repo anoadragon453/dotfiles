@@ -230,6 +230,12 @@
           sys.hardware.graphics.v4l2loopback = true;
           sys.hardware.graphics.gpuSensorCommand = ''sensors | grep "junction:" | awk '{print $2}' '';
 
+          sys.security.antivirus.clamav = {
+            enable = true;
+            pathsToExcludeRegex = "(/home/user|/proc|/nix)";
+            pathToIncludeOnAccess = "/home/work/Downloads";
+          };
+
           sys.security.yubikey = {
             enable = true;
             legacySSHSupport = true;
