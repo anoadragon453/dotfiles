@@ -11,7 +11,5 @@ in {
 
     config = {
       hardware.bluetooth.enable = cfg.hardware.bluetooth;
-      services.blueman.enable = cfg.hardware.bluetooth;
-
     };
 }
