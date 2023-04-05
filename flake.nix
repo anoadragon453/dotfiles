@@ -213,11 +213,10 @@
           sys.enableFlatpakSupport = true;
           sys.enablePrintingSupport = true;
 
-          sys.desktop.gui.types = [ "gnome" "kde" ];
+          sys.desktop.gui.types = [ "gnome" ];
 
           sys.desktop.kdeconnect.enable = true;
-          # TODO: Would it be fine to install both gsconnect and kdeconnect?
-          sys.desktop.kdeconnect.implementation = "kdeconnect";
+          sys.desktop.kdeconnect.implementation = "gsconnect";
 
           sys.hardware.audio.server = "pipewire";
           sys.desktop.realTimeAudio.enable = true;
@@ -225,7 +224,7 @@
 
           sys.hardware.bluetooth = true;
           sys.hardware.graphics.primaryGPU = "intel";
-          sys.hardware.graphics.displayManager = "sddm";
+          sys.hardware.graphics.displayManager = "gdm";
           sys.hardware.graphics.desktopProtocols = [ "xorg" "wayland" ];
           sys.hardware.graphics.v4l2loopback = true;
           sys.hardware.graphics.gpuSensorCommand = ''sensors | grep "junction:" | awk '{print $2}' '';
