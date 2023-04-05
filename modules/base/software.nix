@@ -51,6 +51,9 @@
         nil
         nix-index
 
+        # Scripting Languages
+        python311  # very useful to have python always available
+
         # TODO: Not sure which of these I need
         # Ported from core - need to move out to somewhere else
         fuse-overlayfs # prob not in base
