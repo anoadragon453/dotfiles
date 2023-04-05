@@ -3,38 +3,23 @@ with lib;
 let
   cfg = config.sys.security.antivirus;
   quarantineDirectory = "/var/lib/clamav/quarantine";
-  # A script that will run upon a virus being detected on access.
-  onVirusEvent = pkgs.writeTextFile {
-    name = "virus-event.sh";
-    text = ''
-      ALERT="Signature detected by clamav: '$CLAM_VIRUSEVENT_VIRUSNAME' in '$CLAM_VIRUSEVENT_FILENAME'"
-
-      # Send an alert to all graphical users.
-      for ADDRESS in /run/user/* ; do
-        # Extract the '1001' from '/run/user/1001'.
-        USERID=$(echo $ADDRESS | ${pkgs.coreutils}/bin/cut -c 11-)
-        USERNAME=$(${pkgs.getent}/bin/getent passwd "$USERID" | ${pkgs.coreutils}/bin/cut -d: -f1)
-        echo "USERID is $USERID"
-        echo "USERNAME is $USERNAME"
-        /run/wrappers/bin/sudo -u "$USERNAME" DBUS_SESSION_BUS_ADDRESS="unix:path=$ADDRESS/bus" \
-          ${pkgs.libnotify}/bin/notify-send -i dialog-warning -a clamav "Malware found!" "$ALERT"
-      done
-    '';
-    executable = true;
-    destination = "/bin/virus-event.sh";
-  };
 in {
   options.sys.security.antivirus = {
     clamav.enable = mkEnableOption "ClamAV antivirus";
     clamav.pathsToExcludeRegex = mkOption {
-      type = types.str;
-      description = "A regex defining the path(s) to exclude from anti-virus scanning";
-      default = ""; 
+      type = types.listOf types.str;
+      description = ''
+        A list of regular expressions defining the path(s) to exclude from anti-virus scanning
+      '';
+      default = []; 
     };
-    clamav.pathToIncludeOnAccess = mkOption {
-      type = types.str;
-      description = "A filepath that defines which files ClamAV will scan on an access attempt.";
-      default = ""; 
+    clamav.pathsToIncludeOnAccess = mkOption {
+      type = types.listOf types.str;
+      description = ''
+        Filepaths that define that directories containing files which ClamAV will scan
+        upon attempting to access said file, or moving a file in or out of.
+      '';
+      default = []; 
     };
     clamav.runCommandOnVirusFound = mkOption {
       type = types.str;
@@ -54,15 +39,8 @@ in {
     #   clamav-freshclam service needs to run first (to download virus definitions).
     services.clamav.daemon.enable = cfg.clamav.enable;
 
-    # Install notify-send in order to notify the user that file access was denied due to
-    # virus detection.
-    sys.software = (mkIf cfg.clamav.enable (with pkgs; [libnotify]));
-
-    # A script to execute upon virus detection.
-    environment.etc."clamav/virus-event.sh".source = (mkIf cfg.clamav.enable onVirusEvent);
-
     # A systemd service to run clamonacc - the OnAccess file scanning daemon.
-    systemd.services.clamav-clamonacc = mkIf cfg.clamav.enable {
+    systemd.services.clamav-clamonacc = mkIf ((length cfg.clamav.pathsToIncludeOnAccess) != 0) {
       description = "ClamAV virus file access scanner (clamonacc) ";
       after = [ "network-online.target" ];
       wantedBy = [ "multi-user.target" ];
@@ -70,6 +48,10 @@ in {
         mkdir -p ${quarantineDirectory}
         chown clamav:clamav ${quarantineDirectory}
       '';
+
+      # Don't start the on-access scanner until the ClamAV daemon itself has started. Similarly,
+      # stop the on-access scanner if the daemon service stops.
+      #requires = [ "clamav-daemon.service" ];
 
       serviceConfig = {
         ExecStart = "${pkgs.clamav}/bin/clamonacc -F --fdpass --move=${quarantineDirectory}";
@@ -87,23 +69,19 @@ in {
 
       ExcludePath = cfg.clamav.pathsToExcludeRegex;
 
-      # TODO: I attempted to send a notification to all users when a virus was found, but this proved
-      # difficult, as I cannot figure out how to let the 'clamav' user use 'sudo'.
-      # See https://github.com/NixOS/nixpkgs/issues/42117.
-      #VirusEvent = "${onVirusEvent}/bin/virus-event.sh";
+      VirusEvent = (mkIf (cfg.clamav.runCommandOnVirusFound != "") cfg.clamav.runCommandOnVirusFound);
 
       # On-Access Scanning
       # Settings pertaining to virus scanning on file access.
 
       # Prevent access to files which are considered to contain viruses.
-      OnAccessPrevention = true;
+      OnAccessPrevention = (length cfg.clamav.pathsToIncludeOnAccess) != 0;
 
       # Perform a scan when a directory within the configured scanning directory is created or moved.
-      OnAccessExtraScanning = true;
+      OnAccessExtraScanning = (length cfg.clamav.pathsToIncludeOnAccess) != 0;
 
       # The path to scan files for viruses on access.
-      # TODO: These can be a list of string apparently.
-      OnAccessIncludePath = (mkIf (cfg.clamav.pathToIncludeOnAccess != "") cfg.clamav.pathToIncludeOnAccess);
+      OnAccessIncludePath = cfg.clamav.pathsToIncludeOnAccess;
 
       # Maximum size of files to scan when attempting to access them.
       OnAccessMaxFileSize = "20M";

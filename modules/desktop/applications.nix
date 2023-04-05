@@ -31,8 +31,7 @@ in {
       joplin-desktop
       qbittorrent
       signal-desktop
-      thunderbird
-      tor-browser-bundle-bin
+      # thunderbird is installed via thunderbird.nix
 
       # Audio production
       bitwig-studio
@@ -70,6 +69,7 @@ in {
       gnome.gnome-boxes
       jetbrains.pycharm-community
       kid3
+      solaar
       vscode
       winetricks
       wineWowPackages.stableFull

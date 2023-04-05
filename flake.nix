@@ -230,10 +230,11 @@
           sys.hardware.graphics.v4l2loopback = true;
           sys.hardware.graphics.gpuSensorCommand = ''sensors | grep "junction:" | awk '{print $2}' '';
 
+          sys.thunderbird.customTempDirectory = "/tmp/thunderbird";
           sys.security.antivirus.clamav = {
             enable = true;
-            pathsToExcludeRegex = "(/home/user|/proc|/nix)";
-            pathToIncludeOnAccess = "/home/work/Downloads";
+            pathsToExcludeRegex = [ "(/home/user|/proc|/nix)" ];
+            pathsToIncludeOnAccess = [ "/home/work/Downloads" "/tmp/thunderbird" ];
           };
 
           sys.security.yubikey = {

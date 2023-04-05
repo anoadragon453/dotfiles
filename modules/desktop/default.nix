@@ -1,4 +1,3 @@
-{lib, config, pkgs, ...}:
 {
   imports = [
     ./fonts.nix
@@ -20,6 +19,7 @@
     ./steam.nix
     ./real-time-audio.nix
     ./kanshi.nix
+    ./thunderbird.nix
     ./tilewm.nix
     ./wofi-emoji.nix
     ./script.nix
