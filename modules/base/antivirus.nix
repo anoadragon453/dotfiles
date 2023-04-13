@@ -56,7 +56,6 @@ in {
       serviceConfig = {
         ExecStart = "${pkgs.clamav}/bin/clamonacc --config-file /etc/clamav/clamd.conf -F --fdpass --move=${quarantineDirectory}";
         SuccessExitStatus = "1";
-        PrivateTmp = "yes";
         PrivateDevices = "yes";
       };
     };
