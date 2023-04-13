@@ -242,6 +242,12 @@
           };
           sys.security.sshd.enable = false;
 
+          # Require that all accounts type in the root password when using 'sudo', rather than their own.
+          # This is a work-related security requirement.
+          security.sudo.extraConfig = ''
+            Defaults rootpw
+          '';
+
           sys.vpn.services = [ "mullvad" "tailscale" ];
 
           services.postgresql.enable = true;
