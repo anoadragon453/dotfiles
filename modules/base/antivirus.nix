@@ -51,10 +51,10 @@ in {
 
       # Don't start the on-access scanner until the ClamAV daemon itself has started. Similarly,
       # stop the on-access scanner if the daemon service stops.
-      #requires = [ "clamav-daemon.service" ];
+      requires = [ "clamav-daemon.service" ];
 
       serviceConfig = {
-        ExecStart = "${pkgs.clamav}/bin/clamonacc -F --fdpass --move=${quarantineDirectory}";
+        ExecStart = "${pkgs.clamav}/bin/clamonacc --config-file /etc/clamav/clamd.conf -F --fdpass --move=${quarantineDirectory}";
         SuccessExitStatus = "1";
         PrivateTmp = "yes";
         PrivateDevices = "yes";
