@@ -233,7 +233,7 @@
           sys.security.antivirus.clamav = {
             enable = true;
             pathsToExcludeRegex = [ "(/home/user|/proc|/nix)" ];
-            pathsToIncludeOnAccess = [ "/home/work/Downloads" "/tmp/thunderbird" ];
+            pathsToIncludeOnAccess = [ "/home/work/Documents" "/home/work/Downloads" "/tmp/thunderbird" ];
           };
 
           sys.security.yubikey = {
