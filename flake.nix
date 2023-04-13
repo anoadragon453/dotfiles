@@ -189,7 +189,7 @@
 
           sys.user.users.work = {
               # TODO: Move adbusers into android.nix somehow
-              groups = [ "adbusers" "audio" "docker" "networkmanager" "pipewire" "wheel" ];
+              groups = [ "adbusers" "audio" "networkmanager" "pipewire" "wheel" ];
               roles = ["development"];
               shell = "zsh";
               
