@@ -70,7 +70,6 @@ in {
       jetbrains.pycharm-community
       kid3
       solaar
-      vscode
       winetricks
       wineWowPackages.stableFull
       wireshark
