@@ -23,7 +23,16 @@ in {
           vadimcn.vscode-lldb
           vscodevim.vim
           waderyan.gitblame
-        ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [];
+        ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
+          # Take quick markdown notes in the sidebar.
+          # https://marketplace.visualstudio.com/items?itemName=assisrMatheus.sidebar-markdown-notes
+          {
+            name = "sidebar-markdown-notes";
+            publisher = "assisrmatheus";
+            version = "1.0.4";
+            sha256 = "sha256-shqLyJWmRNfi441yErSuDM4wei/XD/MCnz/08wqEHH8=";
+          }
+        ];
       })
     ];
   };
