@@ -62,7 +62,6 @@
               # TODO: Move adbusers into android.nix somehow
               groups = [ "adbusers" "audio" "docker" "networkmanager" "pipewire" "wheel" ];
               roles = ["development"];
-              shell = "zsh";
               
               sshPublicKeys = [
                 "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIGVdcgCRUwCd83w5L+k5yhDHrLDF88GgDWdhvMqYAUiAAAAABHNzaDo="
@@ -174,7 +173,6 @@
               # TODO: Move adbusers into android.nix somehow
               groups = [ "adbusers" "audio" "docker" "networkmanager" "pipewire" "wheel" ];
               roles = ["development"];
-              shell = "zsh";
               
               sshPublicKeys = [
                 "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIGVdcgCRUwCd83w5L+k5yhDHrLDF88GgDWdhvMqYAUiAAAAABHNzaDo="
@@ -191,7 +189,6 @@
               # TODO: Move adbusers into android.nix somehow
               groups = [ "adbusers" "audio" "networkmanager" "pipewire" "wheel" ];
               roles = ["development"];
-              shell = "zsh";
               
               sshPublicKeys = [
                 "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIGVdcgCRUwCd83w5L+k5yhDHrLDF88GgDWdhvMqYAUiAAAAABHNzaDo="

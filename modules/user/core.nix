@@ -29,7 +29,7 @@ in {
 
             shell = mkOption {
                 type = types.enum [ "bash" "zsh" "nu"];
-                default = "nu";
+                default = "zsh";
                 description = "Type of shell to use for this user";
             };
         };
@@ -75,7 +75,7 @@ in {
 
                     shell = mkOption {
                         type = types.enum [ "bash" "zsh" "nu"];
-                        default = "nu";
+                        default = "zsh";
                         description = "Type of shell to use for this user";
                     };
 
