@@ -24,5 +24,6 @@
     ./wofi-emoji.nix
     ./vscode.nix
     ./script.nix
+    ./xterm-no-display.nix
   ];
 }
