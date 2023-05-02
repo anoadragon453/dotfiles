@@ -167,7 +167,7 @@
           # Framework laptop needs at least 5.16 for working wifi/bluetooth
           sys.kernelPackage = pkgs.linuxPackages_latest;
 
-          sys.virtualisation.docker.enable = true;
+          sys.virtualisation.podman.enable = true;
 
           sys.user.users.user = {
               # TODO: Move adbusers into android.nix somehow

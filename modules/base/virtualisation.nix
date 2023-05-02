@@ -9,8 +9,15 @@ in {
         docker = {
             enable = mkOption {
                 type = types.bool;
-                default = true;
+                default = false;
                 description = "Enables docker";
+            };
+        };
+        podman = {
+            enable = mkOption {
+                type = types.bool;
+                default = false;
+                description = "Enables podman";
             };
         };
     };
@@ -18,6 +25,10 @@ in {
     config = {
         virtualisation = {
             docker.enable = cfg.docker.enable;
+            podman.enable = cfg.podman.enable;
+
+            # Set 'docker' as an alias for podman if podman is enabled and docker is disabled.
+            podman.dockerCompat = cfg.podman.enable && !cfg.docker.enable;
 
             # Specify configuration that is only used when building VM via build-vm
             vmVariant = {
