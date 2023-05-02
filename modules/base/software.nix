@@ -7,7 +7,6 @@
         bat
         bintools
         bottom
-        devenv
         distrobox
         docker-compose  # Named docker-compose_2 in nixos 22.05
         dnsutils
