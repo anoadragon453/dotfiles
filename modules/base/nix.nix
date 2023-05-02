@@ -1,6 +1,4 @@
-{pkgs, config, lib, ...}:
-with pkgs;
-with lib;
+{config, ...}:
 let
     cfg = config.sys;
 in {
@@ -10,6 +8,17 @@ in {
         settings = {
             max-jobs = cfg.cpu.cores * cfg.cpu.threadsPerCore * cfg.cpu.sockets;
             auto-optimise-store = true;
+
+            # Set up trusted Nix binary cache servers.
+            substituters = [
+                # The official NixOS binary cache.
+                "https://cache.nixos.org"
+                # A binary cache for builds of devenv.
+                "https://devenv.cachix.org"
+            ];
+            trusted-public-keys = [
+                "devenv.cachix.org-1:w1cLUi8dv3hnoSPGAuibQv+f9TZLr6cv/Hm9XgU50cw="
+            ];
         };
 
         extraOptions = ''
