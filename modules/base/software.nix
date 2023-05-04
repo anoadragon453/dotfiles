@@ -19,6 +19,7 @@
         htop
         hyperfine
         imagemagick
+        jq
         killall
         magic-wormhole
         ncdu
