@@ -46,6 +46,7 @@ in {
       # Media
       drawpile
       easyeffects
+      inkscape
       kdenlive
       krita
       mpv
