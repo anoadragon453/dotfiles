@@ -15,6 +15,7 @@ in {
           bungcip.better-toml
           golang.go
           jnoortheen.nix-ide
+          jock.svg
           mkhl.direnv
           rust-lang.rust-analyzer
           serayuzgur.crates
