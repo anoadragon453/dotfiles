@@ -112,7 +112,6 @@ in {
           live_config_reload: true
           working_directory: None
           enable_experimental_conpty_backend: false
-          alt_send_esc: true
           debug:
             render_timer: false
             persistent_logging: false
