@@ -23,6 +23,7 @@ in {
       # These packages are always installed when building a GUI config.
 
       # Internet
+      anydesk
       chromium
       cinny-desktop
       discord
