@@ -55,4 +55,26 @@ self: super: {
        cp sample_profiles/* $out/etc/g810-led/samples
       '';
     };
+
+    podman-compose-latest = super.python3.pkgs.buildPythonApplication rec {
+      version = "devel";
+      pname = "podman-compose";
+
+      src = super.fetchFromGitHub {
+        repo = "podman-compose";
+        owner = "containers";
+        rev = "${version}";
+        sha256 = "sha256-8oMzyFWKT8lyaCVtg5CQFWVD1oH5Wg2sT0ltbc87tqM=";
+      };
+
+      propagatedBuildInputs = with super.python310Packages; [ pyyaml python-dotenv ];
+
+      meta = {
+        description = "An implementation of docker-compose with podman backend";
+        homepage = "https://github.com/containers/podman-compose";
+        license = super.lib.licenses.gpl2Only;
+        platforms = super.lib.platforms.unix;
+        maintainers = [ super.lib.maintainers.sikmir ] ++ super.lib.teams.podman.members;
+      };
+    };
 }
