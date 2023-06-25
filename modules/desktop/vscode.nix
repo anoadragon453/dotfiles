@@ -20,6 +20,7 @@ in {
           mkhl.direnv
           rust-lang.rust-analyzer
           serayuzgur.crates
+          svelte.svelte-vscode
           timonwong.shellcheck
           vadimcn.vscode-lldb
           vscodevim.vim
