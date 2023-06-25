@@ -23,7 +23,8 @@
         killall
         magic-wormhole
         ncdu
-        podman-compose  # podman itself is installed via a NixOS module option
+        nmap
+        podman-compose
         ripgrep
         tmux
         wget
