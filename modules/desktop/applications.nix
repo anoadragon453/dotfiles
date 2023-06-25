@@ -37,6 +37,7 @@ in {
       bitwig-studio
 
       # Office
+      obsidian
       onlyoffice-bin
 
       # Games
