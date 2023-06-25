@@ -172,7 +172,8 @@
           # Framework laptop needs at least 5.16 for working wifi/bluetooth
           sys.kernelPackage = pkgs.linuxPackages_latest;
 
-          sys.virtualisation.podman.enable = true;
+          sys.virtualisation.docker.enable = true;
+          sys.virtualisation.podman.enable = false;
 
           sys.user.users.user = {
               # TODO: Move adbusers into android.nix somehow
@@ -192,7 +193,7 @@
 
           sys.user.users.work = {
               # TODO: Move adbusers into android.nix somehow
-              groups = [ "adbusers" "audio" "networkmanager" "pipewire" "wheel" ];
+              groups = [ "adbusers" "audio" "docker" "networkmanager" "pipewire" "wheel" ];
               roles = ["development"];
               
               sshPublicKeys = [
