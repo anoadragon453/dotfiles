@@ -33,7 +33,10 @@ in {
         ];
 
         # Daemon to allow communicating with smartcard devices.
-        services.pcscd.enable = true;
+        services.pcscd = {
+            enable = true;
+            plugins = [ libykneomgr ];
+        };
 
         # Allow communicating to yubikey USB devices.
         services.udev.packages = [ yubikey-personalization ];
