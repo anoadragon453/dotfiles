@@ -136,6 +136,11 @@
               fsType = "ext4";
             };
 
+          fileSystems."/run/media/user/Winblows" =
+            { device = "/dev/disk/by-uuid/8028-9296";
+              fsType = "exfat";
+            };
+
           swapDevices =
             [ { device = "/dev/disk/by-uuid/66aa4315-bbd2-4872-8284-983d5f5be994"; }
             ];
