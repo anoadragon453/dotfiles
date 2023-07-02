@@ -9,6 +9,7 @@ in {
     # Install VSCode with FHS support (such that binaries bundled in extensions
     # don't need to be patched to point to NixOS-compatible paths).
     sys.software = with pkgs; [
+      # Install VSCode and fetch various extensions from nixpkgs.
       (vscode-with-extensions.override {
         vscode = vscode;
         vscodeExtensions = with vscode-extensions; [
