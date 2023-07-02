@@ -25,7 +25,6 @@ in {
       # Internet
       anydesk
       chromium
-      cinny-desktop
       discord
       mpv
       firefox
