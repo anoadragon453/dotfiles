@@ -14,7 +14,7 @@
     localpkgs = import ./pkgs;
     extralib = self: super: import ./lib/extrafn.nix;
 
-    allPkgs = lib.mkPkgs { 
+    allPkgs = lib.mkPkgs {
       inherit nixpkgs; 
       cfg = { allowUnfree = true; };
       overlays = [
