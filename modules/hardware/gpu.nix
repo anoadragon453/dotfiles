@@ -85,7 +85,7 @@ in {
       displayManager.lightdm.enable = gfx.displayManager == "lightdm";
       displayManager.job.logToJournal = true;
       displayManager.gdm.enable = gfx.displayManager == "gdm";
-      displayManager.gdm.wayland = gfx.displayManager == "gdm";
+      displayManager.gdm.wayland = true;
       displayManager.sddm.enable = gfx.displayManager == "sddm";
       
       libinput.enable = true;
