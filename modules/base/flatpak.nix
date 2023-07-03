@@ -8,8 +8,8 @@ in {
       enableFlatpakSupport = mkEnableOption "Enable support for installing flatpaks on this system";
     };
 
-    config = {
-      services.flatpak.enable = cfg.enableFlatpakSupport;
+    config = mkIf cfg.enableFlatpakSupport {
+      services.flatpak.enable = true;
 
       # Required for Flatpak support.
       xdg.portal.enable = true;
