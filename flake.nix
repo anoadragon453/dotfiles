@@ -115,6 +115,8 @@
             "/crypto_keyfile.bin" = null;
           };
 
+          sys.vpn.services = [ "mullvad" ];
+
           boot.initrd.luks.devices."luks-306a410d-8a3b-4ddf-97ad-b39f176a01d4".device = "/dev/disk/by-uuid/306a410d-8a3b-4ddf-97ad-b39f176a01d4";
 
           # Enable swap on luks

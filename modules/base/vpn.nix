@@ -7,7 +7,7 @@ in {
   options.sys = {
     vpn.services = mkOption {
       type = types.listOf (types.enum [ "tailscale" "mullvad" ]);
-      default = [ "mullvad" ];
+      default = [];
       description = "Configure one or more given VPN services on this system";
     };
   };
