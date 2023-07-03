@@ -36,11 +36,6 @@ in {
           description = "Select the display manager you want to boot the system with";
         };
 
-        gpuSensorCommand = mkOption {
-          type = types.str;
-          description = "Command to get gpu temp";
-        };
-
         v4l2loopback = mkEnableOption "Enable v4l2loopback on this system";
    };
 

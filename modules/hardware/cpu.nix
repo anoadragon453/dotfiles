@@ -29,11 +29,6 @@ in {
         description = "Number of threads per core.";
       };
 
-      sensorCommand = mkOption {
-        type = types.str;
-        description = "Command to get cpu temp";
-      };
-
       kvm = mkOption {
           type = types.bool;
           default = true;
