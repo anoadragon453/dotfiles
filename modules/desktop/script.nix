@@ -103,22 +103,6 @@ in {
         shortHelp = "Prints the current volume.";
         longHelp = "Prints the current volume.";
     }
-    {
-        name = "cputemp";
-        action = ''
-            ${config.sys.cpu.sensorCommand}
-        '';
-        shortHelp = "Prints the cpu temp.";
-        longHelp = "Prints the cpu temp.";
-    }
-    {
-        name = "gputemp";
-        action = ''
-            ${config.sys.hardware.graphics.gpuSensorCommand}
-        '';
-        shortHelp = "Prints the gpu temp.";
-        longHelp = "Prints the gpu temp.";
-    }
   ];
   };
 }

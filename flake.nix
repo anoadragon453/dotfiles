@@ -77,7 +77,6 @@
           sys.cpu.type = "intel";
           sys.cpu.cores = 8;
           sys.cpu.threadsPerCore = 8;
-          sys.cpu.sensorCommand = ''sensors | grep "Tctl:" | awk '{print $2}' '';
           sys.biosType = "efi";
 
           sys.enableFlatpakSupport = true;
@@ -98,7 +97,6 @@
           sys.hardware.graphics.displayManager = "gdm";
           sys.hardware.graphics.desktopProtocols = [ "xorg" "wayland" ];
           sys.hardware.graphics.v4l2loopback = true;
-          sys.hardware.graphics.gpuSensorCommand = ''sensors | grep "junction:" | awk '{print $2}' '';
 
           sys.security.yubikey = {
             enable = true;
@@ -212,7 +210,6 @@
           sys.cpu.type = "intel";
           sys.cpu.cores = 8;
           sys.cpu.threadsPerCore = 8;
-          sys.cpu.sensorCommand = ''sensors | grep "Tctl:" | awk '{print $2}' '';
           sys.biosType = "efi";
 
           sys.enableFlatpakSupport = true;
@@ -232,7 +229,6 @@
           sys.hardware.graphics.displayManager = "gdm";
           sys.hardware.graphics.desktopProtocols = [ "xorg" "wayland" ];
           sys.hardware.graphics.v4l2loopback = true;
-          sys.hardware.graphics.gpuSensorCommand = ''sensors | grep "junction:" | awk '{print $2}' '';
 
           sys.thunderbird.customTempDirectory = "/tmp/thunderbird";
           sys.security.antivirus.clamav = {
