@@ -32,6 +32,12 @@ in {
                 default = "zsh";
                 description = "Type of shell to use for this user";
             };
+
+            sshPublicKeys = mkOption {
+                type = with types; listOf str;
+                default = [];
+                description = "Public ssh keys for this user";
+            };
         };
 
         userRoles = mkOption {
@@ -94,7 +100,7 @@ in {
                     sshPublicKeys = mkOption {
                         type = with types; listOf str;
                         default = [];
-                        description = "Public ssh key for this account";
+                        description = "Public ssh keys for this account";
                     };
                 };
             });
@@ -295,6 +301,7 @@ in {
         in {
             packages = cfg.user.root.software;
             shell = shellpkg;
+            openssh.authorizedKeys.keys = cfg.user.root.sshPublicKeys;
         };
     };
 

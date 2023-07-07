@@ -6,6 +6,7 @@
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
     nixpkgs.url = "nixpkgs/nixos-unstable";
     musnix.url = "github:musnix/musnix";
+    deploy-rs.url = "github:serokell/deploy-rs";
   };
 
   outputs = inputs @ {self, nixpkgs, ... }:
@@ -31,9 +32,12 @@
       pkgs = allPkgs."${sys}";
     in import ./shell.nix { inherit pkgs; });
 
-    packages = lib.mkSearchablePackages allPkgs;
+    # packages = lib.mkSearchablePackages allPkgs;
 
     nixosConfigurations = {
+
+      ## Personal devices
+
       moonbow = lib.mkNixOSConfig {
         name = "moonbow";
         system = "x86_64-linux";
@@ -289,6 +293,82 @@
 
         };
       };
+
+      ## Server infrastructure
+
+      plonkie = lib.mkNixOSConfig {
+        name = "plonkie";
+        system = "x86_64-linux";
+        modules = [
+          ./modules
+          ./modules/vm/qemu-guest.nix
+          # TODO: Remove the need for this to be here on a machine that doesn't need real-time audio
+          inputs.musnix.nixosModules.musnix
+        ];
+        inherit nixpkgs allPkgs;
+        cfg = {
+          # TODO: Enable across all machines?
+          zramSwap.enable = true;
+          boot.tmp.cleanOnBoot = true;
+
+          boot.initrd.availableKernelModules = [ "ata_piix" "uhci_hcd" "xen_blkfront" "vmw_pvscsi" ];
+          boot.initrd.kernelModules = [ "nvme" ];
+
+          # TODO: Switch this system to use systemd-boot or remove/fix grub
+          # support in dotfiles.
+          sys.bootloader = "grub";
+          # Currently this is not set in disk.nix.
+          boot.loader.grub.device = "/dev/sda";
+
+          sys.user.users.root.sshPublicKeys = [
+            "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIGVdcgCRUwCd83w5L+k5yhDHrLDF88GgDWdhvMqYAUiAAAAABHNzaDo="
+          ];
+
+          sys.cpu.type = "intel";
+          sys.cpu.cores = 1;
+          sys.cpu.threadsPerCore = 2;
+          sys.biosType = "efi";
+
+          sys.security.sshd.enable = true;
+
+          # Services this machine is hosting.
+          sys.server = {
+            caddy.enable = true;
+
+            vaultwarden = {
+              enable = true;
+              domain = "p.amorgan.xyz";
+              port = 8001;
+              websocketPort = 3012;
+            };
+          };
+
+          # Disable default disk layout magic and just use the declarations below.
+          sys.diskLayout = "disable";
+          sys.bootloaderMountPoint = "/boot/efi";
+
+          fileSystems."/" =
+            { device = "/dev/sda1";
+              fsType = "ext4";
+            };
+
+        };
+      };
     };
+
+    # Configuration on deploying server infrastructure using deploy-rs.
+    deploy.nodes.plonkie = {
+      sshOpts = [ ];
+      hostname = "78.47.36.247";
+      profiles = {
+        system = {
+          sshUser = "root";
+          path =
+            inputs.deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.plonkie;
+        };
+      };
+    };
+
+    checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) inputs.deploy-rs.lib;
   };
 }
