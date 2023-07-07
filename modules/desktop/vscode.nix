@@ -1,4 +1,4 @@
-{pkgs, config, lib, ...}:
+{pkgs, config, lib, wrapProgram, ...}:
 with lib;
 let
   xorg = (elem "xorg" config.sys.hardware.graphics.desktopProtocols);
@@ -11,7 +11,13 @@ in {
     sys.software = with pkgs; [
       # Install VSCode and fetch various extensions from nixpkgs.
       (vscode-with-extensions.override {
-        vscode = vscode;
+        vscode = vscode.override {
+          # TODO: Enable custom window title bar style in VSCode settings to rectify
+          # no server-side window decorations on GNOME.
+          commandLineArgs =
+            "--enable-features=UseOzonePlatform --ozone-platform=wayland";
+        };
+
         vscodeExtensions = with vscode-extensions; [
           bungcip.better-toml
           golang.go
