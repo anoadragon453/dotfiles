@@ -57,14 +57,14 @@ self: super: {
     };
 
     podman-compose-latest = super.python3.pkgs.buildPythonApplication rec {
-      version = "devel";
+      version = "3890eacf57c0643cad6911a0ab23e7e6220c7468";
       pname = "podman-compose";
 
       src = super.fetchFromGitHub {
         repo = "podman-compose";
         owner = "containers";
         rev = "${version}";
-        sha256 = "sha256-8oMzyFWKT8lyaCVtg5CQFWVD1oH5Wg2sT0ltbc87tqM=";
+        sha256 = "sha256-IWWI/kR3NCqpNVV6Ukg8CcAa+e/Cfxx2A0TXKTYKYAQ=";
       };
 
       propagatedBuildInputs = with super.python310Packages; [ pyyaml python-dotenv ];
