@@ -42,6 +42,10 @@ in {
   config = mkIf (desktopMode && elem "gnome" desktopGuiTypes) {
     # Install and configure GNOME
     services.xserver.desktopManager.gnome.enable = true;
+    
+    # Work around GDM not starting GNOME in Wayland mode by default.
+    # From https://discourse.nixos.org/t/fix-gdm-does-not-start-gnome-wayland-even-if-it-is-selected-by-default-starts-x11-instead/24498
+    services.xserver.displayManager.defaultSession = "gnome";
 
     # Install some helpful packages when using GNOME
     sys.software = (with pkgs; [
