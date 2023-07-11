@@ -104,6 +104,7 @@ in {
                     };
                 };
             });
+            default = {};
 
             description = "Define users of the system here.";
         };
