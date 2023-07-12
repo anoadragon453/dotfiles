@@ -11,12 +11,7 @@ in {
     sys.software = with pkgs; [
       # Install VSCode and fetch various extensions from nixpkgs.
       (vscode-with-extensions.override {
-        vscode = vscode.override {
-          # TODO: Enable custom window title bar style in VSCode settings to rectify
-          # no server-side window decorations on GNOME.
-          commandLineArgs =
-            "--enable-features=UseOzonePlatform --ozone-platform=wayland";
-        };
+        vscode = vscode;
 
         vscodeExtensions = with vscode-extensions; [
           bungcip.better-toml
