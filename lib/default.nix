@@ -96,8 +96,6 @@ rec {
       {
         imports = modules;
 
-        sys.security.secrets = secrets;
-
         nixpkgs.pkgs = pkgs;
         system.stateVersion = "22.05";
         networking.hostName = "${name}";

@@ -2,11 +2,26 @@
   description = "anoa's system configuration";
 
   inputs = {
+    # Reproducible developer environments with nix.
     devenv.url = "github:cachix/devenv/v0.6.2";
+
+    # Hardware-specific tweaks.
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
+
+    # Official Nix Packages repository.
     nixpkgs.url = "nixpkgs/nixos-unstable";
+
+    # Real-time audio prduction on NixOS.
     musnix.url = "github:musnix/musnix";
+
+    # Deploy NixOS derivations to remote machines.
     deploy-rs.url = "github:serokell/deploy-rs";
+
+    # Secrets management for NixOS deployments.
+    sops-nix = {
+      url = "github:Mic92/sops-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs @ {self, nixpkgs, ... }:
@@ -27,6 +42,15 @@
       ];
     };
 
+    # NixOS Modules common to all systems.
+    commonModules = [
+      ./modules
+      # TODO: Remove the need for this to be here on a machine that doesn't need real-time audio
+      # (i.e. my VMs)
+      inputs.musnix.nixosModules.musnix
+      inputs.sops-nix.nixosModules.sops
+    ];
+
   in {
     devShell = lib.withDefaultSystems (sys: let
       pkgs = allPkgs."${sys}";
@@ -41,9 +65,8 @@
       moonbow = lib.mkNixOSConfig {
         name = "moonbow";
         system = "x86_64-linux";
-        modules = [
+        modules = commonModules ++ [
           ./modules
-          inputs.musnix.nixosModules.musnix
         ];
         inherit nixpkgs allPkgs;
         cfg = let 
@@ -155,9 +178,7 @@
       izzy = lib.mkNixOSConfig {
         name = "izzy";
         system = "x86_64-linux";
-        modules = [
-          ./modules
-          inputs.musnix.nixosModules.musnix
+        modules = commonModules ++ [
           inputs.nixos-hardware.nixosModules.framework
         ];
         inherit nixpkgs allPkgs;
@@ -299,11 +320,8 @@
       plonkie = lib.mkNixOSConfig {
         name = "plonkie";
         system = "x86_64-linux";
-        modules = [
-          ./modules
+        modules = commonModules ++ [
           ./modules/vm/qemu-guest.nix
-          # TODO: Remove the need for this to be here on a machine that doesn't need real-time audio
-          inputs.musnix.nixosModules.musnix
         ];
         inherit nixpkgs allPkgs;
         cfg = {
@@ -320,7 +338,7 @@
           # Currently this is not set in disk.nix.
           boot.loader.grub.device = "/dev/sda";
 
-          sys.user.users.root.sshPublicKeys = [
+          sys.user.root.sshPublicKeys = [
             "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIGVdcgCRUwCd83w5L+k5yhDHrLDF88GgDWdhvMqYAUiAAAAABHNzaDo="
           ];
 
@@ -340,6 +358,15 @@
               domain = "p.amorgan.xyz";
               port = 8001;
               websocketPort = 3012;
+              environmentFilePath = "vaultwardenEnv";
+            };
+          };
+
+          sops.secrets = {
+            vaultwardenEnv = {
+              restartUnits = [ "vaultwarden.service" ];
+              sopsFile = ./secrets/plonkie/vaultwarden.env;
+              format = "dotenv";
             };
           };
 

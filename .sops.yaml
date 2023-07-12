@@ -1,0 +1,38 @@
+# To re-encrypt any sops-encrypted secrets files after changing keys in this file, use:
+#   sops updatekeys secrets/host/filename.yaml
+key_fingerprints:
+  # Key fingerprints of administrators of the system.
+  #
+  # To add a new entry:
+  #
+  # 1. Create a directory to store your age keys: `mkdir -p ~/.config/sops/age`
+  # 2. Generate an age key on your computer: `age-keygen -o ~/.config/sops/age/keys.txt`
+  # 3. Place the public key that you're given here. If you need to find it again, use:
+  #    `age-keygen -y ~/.config/sops/age/keys.txt`
+  - &user_anoa age1chfyzzwr3mcghx3s0kmh36rtjg4a5ypkvr2yquqy9f46cvdwfvsq2q7p39
+
+  # Key fingerprints for hosts in my infrastructure.
+  #
+  # To add a new entry:
+  #
+  # 1. Build a VM variant of the host: `nixos-rebuild --flake .#hostname build-vm
+  # 2. Boot the VM: `QEMU_NET_OPTS="hostfwd=tcp::2222-:22" ...`
+  # 3. SSH in: `ssh -p2222 root@localhost`
+  # 4. Extract the public key: `cat /var/lib/sops-nix/key.txt` and add it below.
+  # 5. This file should be copied to the same location on the host before deploying it:
+  #    ssh root@REMOTE_HOST 'mkdir -p /var/lib/sops-nix' \
+  #        && ssh -p2222 root@localhost 'cat /var/lib/sops-nix/key.txt' \
+  #        | ssh root@REMOTE_HOST 'cat > /var/lib/sops-nix/key.txt'
+  - &host_plonkie age1a3ex8puz5n39npcaf9avudcp57j20pmrxn3e46mwsyz3qegdzqqq8hldw6
+
+
+# This section determines the keys that secrets under certain folder paths are encrypted for.
+# (AKA which keys (key_groups) can decrypt which secrets (path_regex))
+creation_rules:
+  - path_regex: secrets/plonkie/[^/]+\.(yaml|env)$
+    key_groups:
+      # note: you MUST specify both `pgp` and `age` fields, even if one is empty.
+      - pgp: []
+        age:
+        - *user_anoa
+        - *host_plonkie

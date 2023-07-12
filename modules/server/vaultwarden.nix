@@ -22,6 +22,11 @@ in {
       description = "The port to listen on for incoming WebSocket connections";
       default = 3012;
     };
+
+    environmentFilePath = lib.mkOption {
+      type = lib.types.str;
+      description = "A .env file containing extra configuration for Vaultwarden";
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -43,6 +48,8 @@ in {
           # The port to listen for incoming Websocket connections on.
           WEBSOCKET_PORT = cfg.websocketPort;
         };
+
+        environmentFile = config.sops.secrets."${cfg.environmentFilePath}".path;
       };
     };
   };

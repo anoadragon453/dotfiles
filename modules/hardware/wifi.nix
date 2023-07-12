@@ -3,8 +3,6 @@ with lib;
 with builtins;
 let
   cfg = config.sys.networking;
-  wifiSecrets = tryeval (config.sys.security.secrets.wifi);
-  wifiNetworks = if wifiSecrets.success then wifiSecrets.value else {};
 in {
   options.sys.networking = {
     wifi = mkEnableOption "Enable wifi";
