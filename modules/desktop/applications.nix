@@ -69,7 +69,6 @@ in {
       # Tools
       android-studio
       appimage-run
-      deploy-rs
       gnome.gnome-boxes
       jetbrains.pycharm-community
       kid3
