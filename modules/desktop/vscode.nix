@@ -14,7 +14,7 @@ in {
         vscode = vscode;
 
         vscodeExtensions = with vscode-extensions; [
-          bungcip.better-toml
+          tamasfe.even-better-toml
           golang.go
           jnoortheen.nix-ide
           jock.svg
@@ -26,16 +26,7 @@ in {
           vadimcn.vscode-lldb
           vscodevim.vim
           waderyan.gitblame
-        ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
-          # Take quick markdown notes in the sidebar.
-          # https://marketplace.visualstudio.com/items?itemName=assisrMatheus.sidebar-markdown-notes
-          {
-            name = "sidebar-markdown-notes";
-            publisher = "assisrmatheus";
-            version = "1.0.4";
-            sha256 = "sha256-shqLyJWmRNfi441yErSuDM4wei/XD/MCnz/08wqEHH8=";
-          }
-        ];
+        ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [ ];
       })
     ];
   };
