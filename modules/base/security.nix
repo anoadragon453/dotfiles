@@ -19,9 +19,8 @@ in {
         security.sudo.execWheelOnly = true;
 
         services.openssh.enable = cfg.sshd.enable;
+
         networking.firewall.allowedTCPPorts = [ (mkIf cfg.sshd.enable 22) ];
         networking.firewall.allowPing = true;
     };
-
-
 }
