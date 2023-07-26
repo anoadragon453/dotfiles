@@ -31,6 +31,7 @@ in {
       joplin-desktop
       qbittorrent
       signal-desktop
+      tor-browser-bundle-bin
       # thunderbird is installed via thunderbird.nix
 
       # Audio production
