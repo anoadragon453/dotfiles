@@ -14,7 +14,6 @@ in {
         vscode = vscode;
 
         vscodeExtensions = with vscode-extensions; [
-          tamasfe.even-better-toml
           golang.go
           jnoortheen.nix-ide
           jock.svg
@@ -22,11 +21,19 @@ in {
           rust-lang.rust-analyzer
           serayuzgur.crates
           svelte.svelte-vscode
+          tamasfe.even-better-toml
           timonwong.shellcheck
           vadimcn.vscode-lldb
           vscodevim.vim
           waderyan.gitblame
-        ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [ ];
+        ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
+          {
+            name = "dragon-jinja";
+            publisher = "hongquan";
+            version = "0.21.3";
+            sha256 = "sha256-uPhkazR1qhOeN+sWBEQbh6nDN4pUwUaxwAVI7vqkf9c=";
+          }
+        ];
       })
     ];
   };
