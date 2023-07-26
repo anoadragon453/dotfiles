@@ -20,12 +20,20 @@ in {
                 description = "Enables podman";
             };
         };
+        virtualbox = {
+            enable = mkOption {
+                type = types.bool;
+                default = false;
+                description = "Enables virtualbox";
+            };
+        };
     };
 
     config = {
         virtualisation = {
             docker.enable = cfg.docker.enable;
             podman.enable = cfg.podman.enable;
+            virtualbox.host.enable = cfg.virtualbox.enable;
 
             # Set 'docker' as an alias for podman if podman is enabled and docker is disabled.
             podman.dockerCompat = cfg.podman.enable && !cfg.docker.enable;
