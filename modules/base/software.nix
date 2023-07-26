@@ -16,6 +16,7 @@
         gcc
         gdb
         ghostscript
+        gnumake
         htop
         hyperfine
         imagemagick
