@@ -29,6 +29,12 @@ key_fingerprints:
 # This section determines the keys that secrets under certain folder paths are encrypted for.
 # (AKA which keys (key_groups) can decrypt which secrets (path_regex))
 creation_rules:
+  - path_regex: secrets/personal_common/[^/]+\.(yaml|env)$
+    key_groups:
+      # note: you MUST specify both `pgp` and `age` fields, even if one is empty.
+      - pgp: []
+        age:
+        - *user_anoa
   - path_regex: secrets/plonkie/[^/]+\.(yaml|env)$
     key_groups:
       # note: you MUST specify both `pgp` and `age` fields, even if one is empty.
