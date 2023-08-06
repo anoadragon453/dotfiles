@@ -316,6 +316,109 @@
         };
       };
 
+      halfy_music = lib.mkNixOSConfig {
+        name = "halfy_music";
+        system = "x86_64-linux";
+        modules = commonModules ++ [
+          inputs.nixos-hardware.nixosModules.framework
+        ];
+        inherit nixpkgs allPkgs;
+        cfg = let 
+          pkgs = allPkgs.x86_64-linux;
+        in {
+          # Some useful tips:
+          #
+          # - Available software packages can be found at https://search.nixos.org/packages?channel=unstable
+          #   Note that we are using the unstable channel in the `inputs` of this flake.
+          #
+          # - Available NixOS options can be found under https://search.nixos.org/options?channel=unstable
+          #   Options are typically how you configure system services/system-wide configuration.
+          #
+          # - The NixOS manual is: https://nixos.org/manual/nixos/unstable/
+          #   The Nixpkgs (main package repository) manual is: https://nixos.org/manual/nixpkgs/unstable/
+          #   NixHub can be used to find older versions of packages, though I find that this is typically
+          #     not something I need: https://www.nixhub.io/
+          #   https://zero-to-nix.com/ has really good, clear explanations of all of these concepts.
+          #
+          # - Desktop applications to be installed are specified under `modules/desktop/applications.nix`.
+          #
+          # - Base software (what would be needed by all systems, desktop or server) are specified
+          #   in `modules/base/software.nix`.
+          #
+          # - All of the `sys.*` options in this file are defined in this repo in the various modules/* folders.
+          #   Depending of their values, the nix code in this repo will set various NixOS module options (which
+          #   again, you can find the possible options using the link above). You can also just set the NixOS
+          #   module options in this file directly. For instance, to install and enable postgres on this system,
+          #   just put `services.postgresql.enable = true` below.
+
+          # TODO: Find the appropriate kernel modules for your hardware from the `hardware-configuration.nix` file
+          # from your initial NixOS installation.
+          boot.initrd.availableKernelModules = [ "xhci_pci" "thunderbolt" "nvme" "usb_storage" "sd_mod" ];
+
+          networking.networkmanager.enable = true;
+
+          # Use real-time kernel for audio production.
+          sys.kernelPackage = pkgs.linuxPackages-rt_latest;
+
+          sys.user.users.user = {
+              groups = [ "audio" "networkmanager" "pipewire" "wheel" ];
+              roles = [];
+              
+              sshPublicKeys = [];
+          };
+
+          # TODO: Enter system details.
+          sys.cpu.type = "intel";
+          sys.cpu.cores = 8;
+          sys.cpu.threadsPerCore = 8;
+          sys.biosType = "efi";
+
+          sys.enableFlatpakSupport = true;
+          sys.enablePrintingSupport = false;
+
+          sys.desktop.gui.types = [ "gnome" ];
+
+          sys.desktop.kdeconnect.enable = true;
+          sys.desktop.kdeconnect.implementation = "gsconnect";
+
+          # TODO: Enter soundcard PCI device ID (use `lspci`)
+          sys.hardware.audio.server = "pipewire";
+          sys.desktop.realTimeAudio.enable = true;
+          sys.desktop.realTimeAudio.soundcardPciId = "00:1f.3";
+
+          # TODO: More hardware details. Note: don't remove "xorg" below, it's currently required.
+          sys.hardware.bluetooth = true;
+          sys.hardware.graphics.primaryGPU = "intel";
+          sys.hardware.graphics.displayManager = "gdm";
+          sys.hardware.graphics.desktopProtocols = [ "xorg" "wayland" ];
+          sys.hardware.graphics.v4l2loopback = true;
+
+          # TODO: Do you need a yubikey setup on this system?
+          sys.security.yubikey = {
+            enable = true;
+            # If you are using SK-type SSH keys, then set this to `false`. If you don't know what that this, keep this as `true` :)
+            legacySSHSupport = true;
+          };
+          sys.security.sshd.enable = false;
+
+          sys.vpn.services = [];
+
+          # TODO: Whether to enable fingerprint login support.
+          services.fprintd.enable = false;
+
+          # Disable default disk layout magic and just use the declarations below.
+          sys.diskLayout = "disable";
+          sys.bootloaderMountPoint = "/boot/efi";
+          
+          # TODO: You'll need to manually specify your hardware devices. You should be able to find this info from the `hardware-configuration.nix`
+          # file from your initial NixOS installation.
+          fileSystems."/" =
+            { device = "/dev/sda1";
+              fsType = "ext4";
+            };
+        };
+      };
+
       ## Server infrastructure
 
       plonkie = lib.mkNixOSConfig {
