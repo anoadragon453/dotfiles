@@ -91,6 +91,34 @@ Omitting `.#NAME_OF_SYSTEM` will instead deploy an updated configuration to all
 configured hosts! Checks can be skipped with `--skip-checks` to speed up rapid
 iteration.
 
+# Testing a system configuration locally in a virtual machine
+
+To check that a system configuration is configured as expected, it is possible
+to build a virtual machine from a given system configuration. To do so, enter
+the nix shell and use the `build-vm` command of `nixos-rebuild`:
+
+```shell
+nix-shell  # enter this repo's nix shell
+sudo nixos-rebuild --flake .#NAME_OF_SYSTEM build-vm
+```
+
+The VM will be built and a command will be printed that you can use to start it.
+When a VM is started, all persistent data will be stored in a file called
+`NAME_OF_SYSTEM.qcow2`. To clear all "state" of the VM (any files you created
+while using it), just delete this file. It will be recreated again when the VM
+is restarted.
+
+The default password for all users is `P@ssw0rd01`.
+
+To forward a port from the VM to your host machine, set the `QEMU_NET_OPTS`
+environment variable:
+
+```shell
+QEMU_NET_OPTS="hostfwd=tcp::2222-:22" /nix/store/m4c2ig2b96zjv53d7gb7q5n9a4ajb1zs-nixos-vm/bin/run-plonkie-vm
+```
+
+This will forward the port 22 inside the VM to port 2222 on the host.
+
 # Secrets Management
 
 Secrets are managed through [sops-nix](https://github.com/Mic92/sops-nix), which
