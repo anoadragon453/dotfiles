@@ -14,13 +14,11 @@ in {
     port = lib.mkOption {
       type = lib.types.int;
       description = "The port to listen on for the VaultWarden API";
-      default = 8000;
     };
 
     websocketPort = lib.mkOption {
       type = lib.types.int;
       description = "The port to listen on for incoming WebSocket connections";
-      default = 3012;
     };
 
     environmentFilePath = lib.mkOption {
