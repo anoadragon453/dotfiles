@@ -74,6 +74,7 @@ in {
       jetbrains.pycharm-community
       kid3
       solaar
+      speechd  # for firefox's SpeechSynthesis API
       winetricks
       wineWowPackages.stableFull
       wireshark
