@@ -199,7 +199,7 @@
 
           sys.virtualisation.docker.enable = true;
           sys.virtualisation.podman.enable = false;
-          sys.virtualisation.virtualbox.enable = true;
+          sys.virtualisation.virtualbox.enable = false;
 
           sys.user.users.user = {
               # TODO: Move adbusers into android.nix somehow
