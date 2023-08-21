@@ -21,6 +21,7 @@ in {
         caffeine
         fullscreen-notifications
         hibernate-status-button
+        home-assistant-extension
         tray-icons-reloaded
       ];
     };
