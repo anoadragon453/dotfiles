@@ -350,9 +350,16 @@
 
           sys.security.sshd.enable = true;
 
-          # Services this machine is hosting.
+          # Services on this machine.
           sys.server = {
             caddy.enable = true;
+
+            onlyoffice-document-server = {
+              enable = true;
+              domain = "onlyoffice.amorgan.xyz";
+              port = 8002;
+              jwtSecretFilePath = "onlyoffice-document-server-jwt-secret";
+            };
 
             vaultwarden = {
               enable = true;
@@ -364,6 +371,18 @@
           };
 
           sops.secrets = {
+            onlyoffice-document-server-jwt-secret = {
+              restartUnits = [ "onlyoffice-docservice.service" ];
+              sopsFile = ./secrets/plonkie/onlyoffice-document-server-jwt-secret;
+
+              # It's actually just a plaintext file containing the secret.
+              format = "binary";
+
+              # Allow the OnlyOffice DocumentService to read the file.
+              owner = "onlyoffice";
+              group = "onlyoffice";
+            };
+
             vaultwardenEnv = {
               restartUnits = [ "vaultwarden.service" ];
               sopsFile = ./secrets/plonkie/vaultwarden.env;
