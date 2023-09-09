@@ -3,7 +3,10 @@
 
   inputs = {
     # Reproducible developer environments with nix.
-    devenv.url = "github:cachix/devenv/v0.6.2";
+    devenv = {
+      url = "github:cachix/devenv/v0.6.2";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     # Hardware-specific tweaks.
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
@@ -12,7 +15,10 @@
     nixpkgs.url = "nixpkgs/nixos-unstable";
 
     # Real-time audio prduction on NixOS.
-    musnix.url = "github:musnix/musnix";
+    musnix = {
+      url = "github:musnix/musnix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     # Deploy NixOS derivations to remote machines.
     deploy-rs.url = "github:serokell/deploy-rs";
