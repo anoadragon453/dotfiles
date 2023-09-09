@@ -383,6 +383,14 @@
           sys.server = {
             caddy.enable = true;
 
+            navidrome = {
+              enable = true;
+              domain = "navidrome.amorgan.xyz";
+              port = 8003;
+              musicLibraryFilePath = "/mnt/music";
+              logLevel = "info";
+            };
+
             onlyoffice-document-server = {
               enable = true;
               domain = "onlyoffice.amorgan.xyz";

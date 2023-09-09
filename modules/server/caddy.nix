@@ -22,6 +22,16 @@ in {
         '';
 
         virtualHosts = {
+          # Navidrome
+          ${cfg.navidrome.domain} = lib.mkIf cfg.navidrome.enable {
+
+            extraConfig = ''
+              encode gzip
+
+              reverse_proxy :${toString cfg.navidrome.port}
+            '';
+          };
+
           # OnlyOffice Document Server
           ${cfg.onlyoffice-document-server.domain} = lib.mkIf cfg.onlyoffice-document-server.enable {
 

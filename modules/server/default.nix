@@ -2,6 +2,7 @@
 {
   imports = [
     ./caddy.nix
+    ./navidrome.nix
     ./onlyoffice-document-server.nix
     ./vaultwarden.nix
   ];
