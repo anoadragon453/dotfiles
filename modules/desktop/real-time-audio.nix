@@ -2,9 +2,6 @@
 with lib;
 with builtins;
 let
-  xorg = (elem "xorg" config.sys.hardware.graphics.desktopProtocols);
-  wayland = (elem "wayland" config.sys.hardware.graphics.desktopProtocols);
-  desktopMode = xorg || wayland;
   cfg = config.sys.desktop.realTimeAudio;
 in {
 
