@@ -25,6 +25,12 @@ in {
       type = lib.types.str;
       description = "A sops secret pointing to an .env file containing extra configuration for Vaultwarden";
     };
+
+    logLevel = lib.mkOption {
+      type = lib.types.enum [ "error" "warn" "info" "debug" "trace" "off" ];
+      default = "info";
+      description = "The log level to run Vaultwarden at";
+    };
   };
 
   config = lib.mkIf cfg.enable {
@@ -45,6 +51,8 @@ in {
 
           # The port to listen for incoming Websocket connections on.
           WEBSOCKET_PORT = cfg.websocketPort;
+
+          LOG_LEVEL = cfg.logLevel;
         };
 
         environmentFile = config.sops.secrets."${cfg.environmentFileSecret}".path;

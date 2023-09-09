@@ -404,6 +404,7 @@
               port = 8001;
               websocketPort = 3012;
               environmentFileSecret = "vaultwardenEnv";
+              logLevel = "info";
             };
           };
 
