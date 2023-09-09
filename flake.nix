@@ -55,8 +55,8 @@
     # NixOS Modules common to all systems.
     commonModules = [
       ./modules
-      # TODO: Remove the need for this to be here on a machine that doesn't need real-time audio
-      # (i.e. my VMs)
+      # Needed due to `musnix` being evaluated in `real-time-audio.nix` on every system,
+      # even though it's not needed.
       inputs.musnix.nixosModules.musnix
       inputs.sops-nix.nixosModules.sops
     ];
@@ -65,8 +65,6 @@
     devShell = lib.withDefaultSystems (sys: let
       pkgs = allPkgs."${sys}";
     in import ./shell.nix { inherit pkgs; });
-
-    # packages = lib.mkSearchablePackages allPkgs;
 
     nixosConfigurations = {
 

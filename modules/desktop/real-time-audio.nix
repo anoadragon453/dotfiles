@@ -1,4 +1,4 @@
-{pkgs, config, lib, ...}:
+{config, lib, ...}:
 with lib;
 with builtins;
 let
@@ -22,7 +22,7 @@ in {
 
   };
 
-  config = mkIf desktopMode {
+  config = mkIf cfg.enable {
     musnix.enable = cfg.enable;
     musnix.soundcardPciId = cfg.soundcardPciId;
   };
