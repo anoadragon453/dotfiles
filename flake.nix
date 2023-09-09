@@ -34,11 +34,15 @@
       inherit nixpkgs; 
       cfg = { allowUnfree = true; };
       overlays = [
+        inputs.deploy-rs.overlay
         localpkgs
         extralib
         # Create an overlay that contains the 64-bit Linux version of devenv.
         # TODO: There's likely a more portable way of doing this...
         (self: super: { devenv = inputs.devenv.packages.x86_64-linux.devenv; } )
+        # Use deploy-rs from the deploy-rs input, but take use the nixpkgs input for all
+        # dependencies. Significantly speeds up build times of the deploy-rs package.
+        (self: super: { deploy-rs = { inherit (nixpkgs) deploy-rs; lib = super.deploy-rs.lib; }; })
       ];
     };
 
