@@ -376,7 +376,7 @@
               domain = "p.amorgan.xyz";
               port = 8001;
               websocketPort = 3012;
-              environmentFilePath = "vaultwardenEnv";
+              environmentFileSecret = "vaultwardenEnv";
             };
           };
 

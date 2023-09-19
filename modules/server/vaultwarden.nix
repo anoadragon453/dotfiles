@@ -1,4 +1,4 @@
-{pkgs, config, lib, ...}:
+{config, lib, ...}:
 
 let
   cfg = config.sys.server.vaultwarden;
@@ -23,9 +23,9 @@ in {
       default = 3012;
     };
 
-    environmentFilePath = lib.mkOption {
+    environmentFileSecret = lib.mkOption {
       type = lib.types.str;
-      description = "A .env file containing extra configuration for Vaultwarden";
+      description = "A sops secret pointing to an .env file containing extra configuration for Vaultwarden";
     };
   };
 
@@ -49,7 +49,7 @@ in {
           WEBSOCKET_PORT = cfg.websocketPort;
         };
 
-        environmentFile = config.sops.secrets."${cfg.environmentFilePath}".path;
+        environmentFile = config.sops.secrets."${cfg.environmentFileSecret}".path;
       };
     };
   };
