@@ -1,0 +1,99 @@
+{config, lib, ...}:
+let
+  cfg = config.sys.backup;
+
+  # A common set of paths to exclude from backups.
+  excludedPaths = [
+    # Temporary files that end in ~.
+    "*~"
+
+    # Cache directory.
+    "/home/*/.cache/**"
+
+    # Mounted files.
+    "/run/media"
+    "/mnt"
+
+    # Rust build directories.
+    "target/release"
+    "target/debug"
+
+    # Any node module directories.
+    "node_modules"
+
+    # Compiled language files.
+    "*.pyc"
+    "*.o"
+    "*.lo"
+  ];
+in {
+  options.sys.backup = {
+    restic = {
+      enable = lib.mkEnableOption "Enable the restic backup service";
+
+      backupPasswordFileSecret = lib.mkOption {
+        type = lib.types.str;
+        description = "The sops secret pointing to a file containing the restic backup password";
+      };
+
+      repository = lib.mkOption {
+        type = lib.types.str;
+        description = "The location of the restic repository";
+      };
+
+      includedPaths = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [ "/home" ];
+        description = "A list of paths to include from the backup";
+      };
+
+      extraOptions = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [];
+        description = "A list of extra cli flags to pass to 'restic'";
+      };
+
+      extraExcludedPaths = lib.mkOption {
+        type = lib.types.listOf lib.types.str;
+        default = [];
+        description = "A list of paths to exclude from the backup in addition to the default set";
+      };
+    };
+  };
+
+  config = {
+    services.restic.backups."remote-backup" = {
+      # The remote host containing the restic repository.
+      repository = cfg.restic.repository;
+
+      # The paths to backup.
+      paths = cfg.restic.includedPaths;
+
+      # The paths to exclude from the backup.
+      exclude = excludedPaths ++ cfg.restic.extraExcludedPaths;
+
+      # The path to a file containing the repository encryption password.
+      passwordFile = config.sops.secrets."${cfg.restic.backupPasswordFileSecret}".path;
+
+      # Any extra options.
+      extraOptions = cfg.restic.extraOptions;
+
+      # When the backup will run.
+      timerConfig = {
+        # Back up daily.
+        OnCalendar = "daily";
+
+        # If the computer was asleep/off when a backup should have been performed
+        # (and thus the backup was issed), run the backup once it comes on.
+        Persistent = true;
+
+        # Randomly delay backing up in order to prevent all machines in the same timezone
+        # from backing up at the same time (putting high load on the server).
+        RandomizedDelaySec = "3h";
+      };
+
+      # Log a minimal amount to aid debugging.
+      extraBackupArgs = [ "--verbose" ];
+    };
+  };
+}

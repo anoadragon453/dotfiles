@@ -233,6 +233,17 @@
               };
           };
 
+          # Back up home directories using restic.
+          sys.backup.restic = {
+            enable = true;
+            backupPasswordFileSecret = "restic";
+            includedPaths = [ "/home" ];
+            repository = "sftp://u220692-sub7@u220692-sub7.your-storagebox.de:23/restic/";
+            extraOptions = [
+              "sftp.command='ssh -p23 u220692-sub7@u220692-sub7.your-storagebox.de -i /home/user/.ssh/sops-ssh -s sftp'"
+            ];
+          };
+
           sys.cpu.type = "intel";
           sys.cpu.cores = 8;
           sys.cpu.threadsPerCore = 8;
@@ -276,6 +287,12 @@
           '';
 
           sys.vpn.services = [ "mullvad" "tailscale" ];
+          sops.secrets = {
+            restic = {
+              sopsFile = ./secrets/personal_common/restic_backup;
+              format = "binary";
+            };
+          };
 
           services.postgresql.enable = true;
 

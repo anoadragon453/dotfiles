@@ -3,6 +3,7 @@
     imports = [
         ./android.nix
         ./antivirus.nix
+        ./backup.nix
         ./software.nix
         ./direnv.nix
         ./disk.nix
