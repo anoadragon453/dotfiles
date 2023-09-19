@@ -1,4 +1,4 @@
-{pkgs, config, lib, ...}:
+{pkgs, ...}:
 {
     # This is a list of cli tools that should be present on all of my systems,
     # regardless of whether they have a GUI configured or not.

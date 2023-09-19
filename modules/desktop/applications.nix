@@ -54,9 +54,7 @@ in {
       kdenlive
       krita
       mpv
-      (wrapOBS {
-        plugins = with obs-studio-plugins; [ ];
-      })
+      obs-studio
       pavucontrol
       qpwgraph
       yabridge
