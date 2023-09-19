@@ -8,11 +8,13 @@ pkgs.mkShell {
 
   # Native dependencies to install.
   nativeBuildInputs = with pkgs; [
+    age
     deploy-rs
     git
     nixFlakes
     pciutils  # to figure out sound card PCI ID
     sops
+    ssh-to-age
     starship
   ];
 

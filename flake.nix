@@ -287,6 +287,10 @@
           '';
 
           sys.vpn.services = [ "mullvad" "tailscale" ];
+
+          # Use this SSH key as the age key to decrypt secrets with.
+          sops.age.sshKeyPaths = [ "/home/user/.ssh/sops-ssh" ];
+
           sops.secrets = {
             restic = {
               sopsFile = ./secrets/personal_common/restic_backup;

@@ -10,6 +10,11 @@ key_fingerprints:
   # 3. Place the public key that you're given here. If you need to find it again, use:
   #    `age-keygen -y ~/.config/sops/age/keys.txt`
   - &user_anoa age1chfyzzwr3mcghx3s0kmh36rtjg4a5ypkvr2yquqy9f46cvdwfvsq2q7p39
+  # This key was created via ssh-keygen and then ssh-to-age on the created key.
+  # I created the ssh key at ~/.ssh/sops-ssh, and put the private key at
+  # ~/.config/sops/age/keys.txt.
+  # TODO: Replace my usual key with this SSH key, and switch plonkie over to using it
+  - &user_anoa_temp_izzy age1rg0s0acla64mdd8kxts0cpfygn55yuqgw9f6hhu5ucljdla34e4svytm6v
 
   # Key fingerprints for hosts in my infrastructure.
   #
@@ -35,10 +40,12 @@ creation_rules:
       - pgp: []
         age:
         - *user_anoa
+        - *user_anoa_temp_izzy
   - path_regex: secrets/plonkie/[^/]+\.?(yaml|env|)$
     key_groups:
       # note: you MUST specify both `pgp` and `age` fields, even if one is empty.
       - pgp: []
         age:
         - *user_anoa
+        - *user_anoa_temp_izzy
         - *host_plonkie
