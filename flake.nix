@@ -3,7 +3,10 @@
 
   inputs = {
     # Reproducible developer environments with nix.
-    devenv.url = "github:cachix/devenv/v0.6.2";
+    devenv = {
+      url = "github:cachix/devenv/v0.6.2";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     # Hardware-specific tweaks.
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
@@ -12,7 +15,10 @@
     nixpkgs.url = "nixpkgs/nixos-unstable";
 
     # Real-time audio prduction on NixOS.
-    musnix.url = "github:musnix/musnix";
+    musnix = {
+      url = "github:musnix/musnix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
 
     # Deploy NixOS derivations to remote machines.
     deploy-rs.url = "github:serokell/deploy-rs";
@@ -34,19 +40,23 @@
       inherit nixpkgs; 
       cfg = { allowUnfree = true; };
       overlays = [
+        inputs.deploy-rs.overlay
         localpkgs
         extralib
         # Create an overlay that contains the 64-bit Linux version of devenv.
         # TODO: There's likely a more portable way of doing this...
         (self: super: { devenv = inputs.devenv.packages.x86_64-linux.devenv; } )
+        # Use deploy-rs from the deploy-rs input, but take use the nixpkgs input for all
+        # dependencies. Significantly speeds up build times of the deploy-rs package.
+        (self: super: { deploy-rs = { inherit (nixpkgs) deploy-rs; lib = super.deploy-rs.lib; }; })
       ];
     };
 
     # NixOS Modules common to all systems.
     commonModules = [
       ./modules
-      # TODO: Remove the need for this to be here on a machine that doesn't need real-time audio
-      # (i.e. my VMs)
+      # Needed due to `musnix` being evaluated in `real-time-audio.nix` on every system,
+      # even though it's not needed.
       inputs.musnix.nixosModules.musnix
       inputs.sops-nix.nixosModules.sops
     ];
@@ -55,8 +65,6 @@
     devShell = lib.withDefaultSystems (sys: let
       pkgs = allPkgs."${sys}";
     in import ./shell.nix { inherit pkgs; });
-
-    # packages = lib.mkSearchablePackages allPkgs;
 
     nixosConfigurations = {
 
@@ -371,9 +379,16 @@
 
           sys.security.sshd.enable = true;
 
-          # Services this machine is hosting.
+          # Services on this machine.
           sys.server = {
             caddy.enable = true;
+
+            onlyoffice-document-server = {
+              enable = true;
+              domain = "onlyoffice.amorgan.xyz";
+              port = 8002;
+              jwtSecretFilePath = "onlyoffice-document-server-jwt-secret";
+            };
 
             vaultwarden = {
               enable = true;
@@ -385,6 +400,18 @@
           };
 
           sops.secrets = {
+            onlyoffice-document-server-jwt-secret = {
+              restartUnits = [ "onlyoffice-docservice.service" ];
+              sopsFile = ./secrets/plonkie/onlyoffice-document-server-jwt-secret;
+
+              # It's actually just a plaintext file containing the secret.
+              format = "binary";
+
+              # Allow the OnlyOffice DocumentService to read the file.
+              owner = "onlyoffice";
+              group = "onlyoffice";
+            };
+
             vaultwardenEnv = {
               restartUnits = [ "vaultwarden.service" ];
               sopsFile = ./secrets/plonkie/vaultwarden.env;
