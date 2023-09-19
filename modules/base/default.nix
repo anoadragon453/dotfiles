@@ -10,6 +10,7 @@
         ./flatpak.nix
         ./kernel.nix
         ./neovim.nix
+        ./network.nix
         ./nix.nix
         ./printing.nix
         ./syst.nix
