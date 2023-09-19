@@ -73,6 +73,7 @@ in {
       gnome.gnome-boxes
       jetbrains.pycharm-community
       kid3
+      poppler_utils  # includes pdfunite
       solaar
       speechd  # for firefox's SpeechSynthesis API
       winetricks
