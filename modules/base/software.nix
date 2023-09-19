@@ -13,7 +13,6 @@
         file
         fd
         ffmpeg
-        gcc
         gdb
         ghostscript
         gnumake
