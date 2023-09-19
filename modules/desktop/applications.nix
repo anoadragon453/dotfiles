@@ -45,6 +45,7 @@ in {
       # Games
       airshipper # launcher and updater for veloren
       minecraft
+      unityhub
 
       # Media
       drawpile
