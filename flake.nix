@@ -57,6 +57,20 @@
       inputs.sops-nix.nixosModules.sops
     ];
 
+    sshPublicKeys = [
+      # Personal Yubikey
+      "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIGVdcgCRUwCd83w5L+k5yhDHrLDF88GgDWdhvMqYAUiAAAAABHNzaDo="
+      # Work Yubikey
+      (builtins.concatStringsSep "" [
+        "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC2IeWa2q5ZtiZSdZw6ZCwTmaUyEfwaYl9Bef49Gj2E+p2OVu2Zqc9YDOtZldvturwWcFxqNy8shCed5vaGlQgUe2Q+"
+        "y0vxPtMTbw/6qVYd1FDXAqPk+CDwBbtP3iD3ovki8zvOZapoeUNLtLX4U1xn4eikgL4+NdRhElZqfL7VCfD7nkKp4XUVXEcKqatYphcGRBKSqiMkRhTieaOpSHxMhTloN"
+        "ZYViVFa6ugQgZVDQ7xYO02yAYczI2Uv7JH4vRS75Es+aLQG8a0W29V2ZW2OBuHRjDg0kBvR0M2KNORWC1d9Tt4P1BF/r6FDfhqWd7Zd+QNlH9/XdwuJDaha+g6bLQdC60"
+        "b+vo2lGE4Cn6i3srvXWwhv/yiP+SDekzSoEUwB+kcBgc05IARQPA8Am3r3NtTqtb/GJbj8U+8Q10mA7NJ8W/IZS8gCmbxVrkygAZgAHM+fDiT2Lh8KPrVih5Xt+n9kwZG"
+        "TklxBlfgrllzDszvrZRmLzZj8Zw1MdYwJFqes8lV3WILXpw2E3/iJSiT08/igdgQDLHywQbXd6iw18XciZa7JSxwwvxJ6h16b9JiXXyXSxMAJmDJn92MAYxGQ1hzGuT7g"
+        "MQ/M65l8qCs5Ra6fhXiwfax9CtcexmhxYriziIz0MySFTIw5wk6Ppvaz6GdKT4Y+FFTKA19GH1l5Fw=="
+      ])
+    ];
+
   in {
     devShell = lib.withDefaultSystems (sys: let
       pkgs = allPkgs."${sys}";
@@ -94,9 +108,7 @@
               groups = [ "adbusers" "audio" "docker" "networkmanager" "pipewire" "wheel" ];
               roles = ["development"];
               
-              sshPublicKeys = [
-                "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIGVdcgCRUwCd83w5L+k5yhDHrLDF88GgDWdhvMqYAUiAAAAABHNzaDo="
-              ];
+              sshPublicKeys = sshPublicKeys;
 
               config = {
                 email = "andrew@amorgan.xyz";
@@ -210,9 +222,7 @@
               groups = [ "adbusers" "audio" "docker" "networkmanager" "pipewire" "wheel" ];
               roles = ["development"];
               
-              sshPublicKeys = [
-                "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIGVdcgCRUwCd83w5L+k5yhDHrLDF88GgDWdhvMqYAUiAAAAABHNzaDo="
-              ];
+              sshPublicKeys = sshPublicKeys;
 
               config = {
                 email = "andrew@amorgan.xyz";
@@ -364,9 +374,7 @@
           # Currently this is not set in disk.nix.
           boot.loader.grub.device = "/dev/sda";
 
-          sys.user.root.sshPublicKeys = [
-            "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIGVdcgCRUwCd83w5L+k5yhDHrLDF88GgDWdhvMqYAUiAAAAABHNzaDo="
-          ];
+          sys.user.root.sshPublicKeys = sshPublicKeys;
 
           sys.cpu.type = "intel";
           sys.cpu.cores = 1;
