@@ -242,7 +242,7 @@
             enable = true;
             backupPasswordFileSecret = "restic";
             includedPaths = [ "/home" ];
-            repository = "sftp://u220692-sub7@u220692-sub7.your-storagebox.de:23/restic/";
+            repository = "sftp://u220692-sub7@u220692-sub7.your-storagebox.de:23/";
             extraOptions = [
               "sftp.command='ssh -p23 u220692-sub7@u220692-sub7.your-storagebox.de -i /home/user/.ssh/sops-ssh -s sftp'"
             ];

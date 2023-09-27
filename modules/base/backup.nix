@@ -18,6 +18,9 @@ let
     "target/release"
     "target/debug"
 
+    # Git folders contain millions of files, and they can be rebuilt.
+    ".git"
+
     # Any node module directories.
     "node_modules"
 
