@@ -65,7 +65,7 @@ in {
   };
 
   config = {
-    services.restic.backups."remote-backup" = {
+    services.restic.backups."remote-backup" = lib.mkIf cfg.restic.enable {
       # The remote host containing the restic repository.
       repository = cfg.restic.repository;
 
@@ -88,6 +88,9 @@ in {
 
         # If the computer was asleep/off when a backup should have been performed
         # (and thus the backup was issed), run the backup once it comes on.
+        #
+        # TODO: This seems to attempt to run right as the computer switches on, which
+        # doesn't work as network isn't initialised yet. Can we retry, with some delay?
         Persistent = true;
 
         # Randomly delay backing up in order to prevent all machines in the same timezone
