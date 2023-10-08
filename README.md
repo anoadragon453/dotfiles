@@ -138,7 +138,7 @@ file was encrypted to inside the file itself, under a `sops` top-level key. As
 such, `sops` only supports encrypting secrets in certain filetypes (currently
 YAML, JSON, ENV, INI and BINARY). If you add a new key to the setup, any files
 it will need to decrypt must be re-encrypted by `sops` using `sops updatekeys
-path/to/file`.
+path/to/secret`.
 
 The limitation of this system is that you can only encrypt a whole file, and the
 software you are configuring needs to be able to read secrets from a file
@@ -171,6 +171,16 @@ example](https://github.com/anoadragon453/dotfiles/blob/41595bdef037d1a17c016d42
 mentioned earlier, the service needs to be able to accept a file containing
 configuration values.
 
+## Allowing a new user or host to decrypt secrets
+
+Instructions for adding a new keypair for a user or a host are located in
+`.sops.yaml`.
+
+Once you've added the new public key to `.sops.yaml` and configured which
+secrets it should be able to decrypt, you'll need to re-encrypt each of
+those keys such that they are now encrypted to the new public key. Run
+`sops updatekeys path/to/secret` on each of them. This will need to be
+done from a device that can decrypt those secrets (obviously).
 
 # License
 All content in this repo is released under a [CC0 Public Domain License](LICENSE).

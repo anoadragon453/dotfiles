@@ -6,28 +6,31 @@ key_fingerprints:
   # To add a new entry:
   #
   # 1. Create a directory to store your age keys: `mkdir -p ~/.config/sops/age`
-  # 2. Generate an age key on your computer: `age-keygen -o ~/.config/sops/age/keys.txt`
-  # 3. Place the public key that you're given here. If you need to find it again, use:
-  #    `age-keygen -y ~/.config/sops/age/keys.txt`
-  - &user_anoa age1chfyzzwr3mcghx3s0kmh36rtjg4a5ypkvr2yquqy9f46cvdwfvsq2q7p39
-  # This key was created via ssh-keygen and then ssh-to-age on the created key.
-  # I created the ssh key at ~/.ssh/sops-ssh, and put the private key at
-  # ~/.config/sops/age/keys.txt.
-  # TODO: Replace my usual key with this SSH key, and switch plonkie over to using it
-  - &user_anoa_temp_izzy age1rg0s0acla64mdd8kxts0cpfygn55yuqgw9f6hhu5ucljdla34e4svytm6v
+  # 2. Generate an SSH key on your computer: `ssh-keygen -t ed25519 -f ~/.ssh/sops-ssh -N ""`
+  # 3. From the private SSH key, generate an age private key:
+  #    ssh-to-age -private-key -i ~/.ssh/sops-ssh -o ~/.config/sops/age/keys.txt
+  # 4. From the public SSH key, generate an age public key and place it in this config file
+  #    as a new entry below:
+  #    ssh-to-age -i ~/.ssh/sops-ssh.pub
+  - &user_anoa age1rg0s0acla64mdd8kxts0cpfygn55yuqgw9f6hhu5ucljdla34e4svytm6v
 
   # Key fingerprints for hosts in my infrastructure.
   #
   # To add a new entry:
   #
-  # 1. Build a VM variant of the host: `nixos-rebuild --flake .#hostname build-vm
-  # 2. Boot the VM: `QEMU_NET_OPTS="hostfwd=tcp::2222-:22" ...`
-  # 3. SSH in: `ssh -p2222 root@localhost`
-  # 4. Extract the public key: `cat /var/lib/sops-nix/key.txt` and add it below.
-  # 5. This file should be copied to the same location on the host before deploying it:
-  #    ssh root@REMOTE_HOST 'mkdir -p /var/lib/sops-nix' \
-  #        && ssh -p2222 root@localhost 'cat /var/lib/sops-nix/key.txt' \
-  #        | ssh root@REMOTE_HOST 'cat > /var/lib/sops-nix/key.txt'
+  # 1. Generate a private age key: `age-keygen -o key.txt`
+  # 2. Copy the private key to the host:
+  #    * For live systems:
+  #        USER=root \
+  #        REMOTE_HOST=1.2.3.4 \
+  #        PORT=22 \
+  #        ssh -p$PORT $USER@$REMOTE_HOST 'mkdir -p /var/lib/sops-nix' \
+  #            && scp -P$PORT key.txt $USER@$REMOTE_HOST:/var/lib/sops-nix/key.txt
+  #    * For test VMs:
+  #        USER=root \
+  #        QEMU_NET_OPTS="hostfwd=tcp::2222-:22" \
+  #        ssh $USER@localhost 'mkdir -p /var/lib/sops-nix' \
+  #            && scp key.txt $USER@localhost:/var/lib/sops-nix/key.txt
   - &host_plonkie age1a3ex8puz5n39npcaf9avudcp57j20pmrxn3e46mwsyz3qegdzqqq8hldw6
 
 
@@ -40,12 +43,10 @@ creation_rules:
       - pgp: []
         age:
         - *user_anoa
-        - *user_anoa_temp_izzy
   - path_regex: secrets/plonkie/[^/]+\.?(yaml|env|)$
     key_groups:
       # note: you MUST specify both `pgp` and `age` fields, even if one is empty.
       - pgp: []
         age:
         - *user_anoa
-        - *user_anoa_temp_izzy
         - *host_plonkie
