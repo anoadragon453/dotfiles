@@ -17,7 +17,6 @@
     ./plymouth.nix
     ./sway.nix
     ./steam.nix
-    ./real-time-audio.nix
     ./kanshi.nix
     ./thunderbird.nix
     ./tilewm.nix

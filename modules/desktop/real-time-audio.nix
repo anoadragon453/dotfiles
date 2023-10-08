@@ -1,26 +1,22 @@
 {config, lib, pkgs, ...}:
-with lib;
-with builtins;
 let
   cfg = config.sys.desktop.realTimeAudio;
 in {
 
+  # This module is enabled simply by importing it in your system's config.
+  # It is not imported by default (it's not in ./default.nix).
   options.sys.desktop.realTimeAudio = {
-
-    enable = mkEnableOption "Enable real-time audio support via musnix";
-
     # Find by running `lspci | grep -i audio` on the system.
     # Example: "00:1b.0"
-    soundcardPciId = mkOption {
-      type = types.str;
+    soundcardPciId = lib.mkOption {
+      type = lib.types.str;
       default = "";
       description = "The PCI ID of the primary soundcard. Used to set the PCI latency timer.";
     };
-
   };
 
-  config = mkIf cfg.enable {
-    musnix.enable = cfg.enable;
+  config = {
+    musnix.enable = true;
     musnix.soundcardPciId = cfg.soundcardPciId;
 
     # Use real-time kernel for audio production.

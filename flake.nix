@@ -51,9 +51,6 @@
     # NixOS Modules common to all systems.
     commonModules = [
       ./modules
-      # Needed due to `musnix` being evaluated in `real-time-audio.nix` on every system,
-      # even though it's not needed.
-      inputs.musnix.nixosModules.musnix
       inputs.sops-nix.nixosModules.sops
     ];
 
@@ -84,7 +81,9 @@
         name = "moonbow";
         system = "x86_64-linux";
         modules = commonModules ++ [
-          ./modules
+          # Enable real time audio on this system for music production.
+          inputs.musnix.nixosModules.musnix
+          ./modules/desktop/real-time-audio.nix
         ];
         inherit nixpkgs allPkgs;
         cfg = let 
@@ -101,7 +100,6 @@
               # TODO: Move adbusers into android.nix somehow
               groups = [ "adbusers" "audio" "docker" "networkmanager" "pipewire" "wheel" ];
               roles = ["development"];
-              
               sshPublicKeys = sshPublicKeys;
 
               config = {
@@ -125,7 +123,6 @@
           sys.desktop.kdeconnect.implementation = "gsconnect";
 
           sys.hardware.audio.server = "pipewire";
-          sys.desktop.realTimeAudio.enable = true;
           sys.desktop.realTimeAudio.soundcardPciId = "00:1f.3";
 
           sys.hardware.bluetooth = true;
@@ -190,6 +187,10 @@
         system = "x86_64-linux";
         modules = commonModules ++ [
           inputs.nixos-hardware.nixosModules.framework
+
+          # Enable real time audio on this system for music production.
+          inputs.musnix.nixosModules.musnix
+          ./modules/desktop/real-time-audio.nix
         ];
         inherit nixpkgs allPkgs;
         cfg = let 
@@ -197,8 +198,6 @@
         in {
           boot.initrd.availableKernelModules = [ "xhci_pci" "thunderbolt" "nvme" "usb_storage" "sd_mod" ];
 
-          #networking.useDHCP = lib.mkDefault true;
-          #networking.interfaces.wlp170s0 = { useDHCP = true; };
           networking.networkmanager.enable = true;
 
           sys.virtualisation.docker.enable = true;
@@ -209,7 +208,6 @@
               # TODO: Move adbusers into android.nix somehow
               groups = [ "adbusers" "audio" "docker" "networkmanager" "pipewire" "wheel" ];
               roles = ["development"];
-              
               sshPublicKeys = sshPublicKeys;
 
               config = {
@@ -260,7 +258,6 @@
           sys.desktop.kdeconnect.implementation = "gsconnect";
 
           sys.hardware.audio.server = "pipewire";
-          sys.desktop.realTimeAudio.enable = true;
           sys.desktop.realTimeAudio.soundcardPciId = "00:1f.3";
 
           sys.hardware.bluetooth = true;
