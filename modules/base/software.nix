@@ -67,4 +67,7 @@
         squashfuse # prob not in base
         pstree # prob not in base
     ];
+
+    # Allow mounting sshfs filesystems.
+    system.fsPackages = with pkgs; [ sshfs ];
 }

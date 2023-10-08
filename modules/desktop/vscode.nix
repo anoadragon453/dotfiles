@@ -20,6 +20,7 @@ in {
           mkhl.direnv
           rust-lang.rust-analyzer
           serayuzgur.crates
+          streetsidesoftware.code-spell-checker
           svelte.svelte-vscode
           tamasfe.even-better-toml
           timonwong.shellcheck
