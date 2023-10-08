@@ -27,6 +27,7 @@ in {
       chromium
       discord
       mpv
+      filezilla
       firefox
       joplin-desktop
       qbittorrent
