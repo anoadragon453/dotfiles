@@ -92,9 +92,6 @@
         in {
           boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usbhid" "usb_storage" "sd_mod" ];
 
-          # Not sure if this is needed
-          #sys.hotfix.kernelVectorWarning = true; 
-
           networking.interfaces."enp8s0" = { useDHCP = true; };
           networking.networkmanager.enable = true;
 
@@ -202,9 +199,6 @@
           pkgs = allPkgs.x86_64-linux;
         in {
           boot.initrd.availableKernelModules = [ "xhci_pci" "thunderbolt" "nvme" "usb_storage" "sd_mod" ];
-
-          # Not sure if this is needed
-          #sys.hotfix.kernelVectorWarning = true; 
 
           #networking.useDHCP = lib.mkDefault true;
           #networking.interfaces.wlp170s0 = { useDHCP = true; };
