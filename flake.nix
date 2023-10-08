@@ -95,9 +95,6 @@
           networking.interfaces."enp8s0" = { useDHCP = true; };
           networking.networkmanager.enable = true;
 
-          # Use real-time kernel for audio production.
-          sys.kernelPackage = pkgs.linuxPackages-rt_latest;
-
           sys.virtualisation.docker.enable = true;
 
           sys.user.users.user = {
@@ -203,9 +200,6 @@
           #networking.useDHCP = lib.mkDefault true;
           #networking.interfaces.wlp170s0 = { useDHCP = true; };
           networking.networkmanager.enable = true;
-
-          # Framework laptop needs at least 5.16 for working wifi/bluetooth
-          sys.kernelPackage = pkgs.linuxPackages_latest;
 
           sys.virtualisation.docker.enable = true;
           sys.virtualisation.podman.enable = false;
