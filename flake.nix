@@ -430,17 +430,52 @@
               sopsFile = ./secrets/plonkie/vaultwarden.env;
               format = "dotenv";
             };
+
+            # A private component of a SSH Key to give access to the media
+            # folder on my hetzner storagebox. The decrypted version ends up at
+            # /run/secrets/storagebox-media. SSHFS should use that path.
+            storagebox-media = {
+              sopsFile = ./secrets/plonkie/storagebox-media;
+              format = "binary";
+            };
           };
+          # Set these to an empty list to tell sops not to try and look for
+          # any ssh or gpg keys to turn into age keys.
+          sops.age.sshKeyPaths = [];
+          sops.gnupg.sshKeyPaths = [];
+          # The private key to decrypt sops secrets with.
+          # This file must be placed here manually.
+          sops.age.keyFile = "/var/lib/sops-nix/key.txt";
 
           # Disable default disk layout magic and just use the declarations below.
           sys.diskLayout = "disable";
           sys.bootloaderMountPoint = "/boot/efi";
 
-          fileSystems."/" =
-            { device = "/dev/sda1";
+          fileSystems."/" = {
+            device = "/dev/sda1";
               fsType = "ext4";
             };
 
+          # Mount my hetzner storagebox.
+          # Note: This will only mount on live systems, not VMs.
+          fileSystems."/mnt/storagebox/media" = {
+            device = "u220692-sub4@u220692-sub4.your-storagebox.de:/home";
+            fsType = "sshfs";
+            options =
+              [ # Filesystem options
+                "allow_other"          # for non-root access
+                "_netdev"              # this is a network fs
+                "x-systemd.automount"  # mount on demand, rather than boot
+                #"debug"               # print debug logging
+                                       # warning: this causes the one-shot service to never exit
+
+                # SSH options
+                "reconnect"              # handle connection drops
+                "ServerAliveInterval=15" # keep connections alive
+                "Port=23"
+                "IdentityFile=/run/secrets/storagebox-media"
+              ];
+          };
         };
       };
     };
