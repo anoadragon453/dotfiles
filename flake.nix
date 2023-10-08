@@ -54,7 +54,8 @@
       inputs.sops-nix.nixosModules.sops
     ];
 
-    sshPublicKeys = [
+    # The SSH keys allowed to SSH into my personal devices.
+    personalDeviceSshPublicKeys = [
       # Personal Yubikey
       "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIGVdcgCRUwCd83w5L+k5yhDHrLDF88GgDWdhvMqYAUiAAAAABHNzaDo="
       # Work Yubikey
@@ -66,6 +67,11 @@
         "TklxBlfgrllzDszvrZRmLzZj8Zw1MdYwJFqes8lV3WILXpw2E3/iJSiT08/igdgQDLHywQbXd6iw18XciZa7JSxwwvxJ6h16b9JiXXyXSxMAJmDJn92MAYxGQ1hzGuT7g"
         "MQ/M65l8qCs5Ra6fhXiwfax9CtcexmhxYriziIz0MySFTIw5wk6Ppvaz6GdKT4Y+FFTKA19GH1l5Fw=="
       ])
+    ];
+    # The SSH keys allowed to SSH into my server infrastructure.
+    infrastructureSshPublicKeys = personalDeviceSshPublicKeys ++ [
+      # Sops SSH key (used for secrets en/decryption and auth'ing to server infrastructure).
+      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMqiV558AS8OkEZAnxTMsRbH4sPMtK/Lou5PIJnmvkvd user@izzy"
     ];
 
   in {
@@ -100,7 +106,7 @@
               # TODO: Move adbusers into android.nix somehow
               groups = [ "adbusers" "audio" "docker" "networkmanager" "pipewire" "wheel" ];
               roles = ["development"];
-              sshPublicKeys = sshPublicKeys;
+              sshPublicKeys = personalDeviceSshPublicKeys;
 
               config = {
                 email = "andrew@amorgan.xyz";
@@ -208,7 +214,7 @@
               # TODO: Move adbusers into android.nix somehow
               groups = [ "adbusers" "audio" "docker" "networkmanager" "pipewire" "wheel" ];
               roles = ["development"];
-              sshPublicKeys = sshPublicKeys;
+              sshPublicKeys = personalDeviceSshPublicKeys;
 
               config = {
                 email = "andrew@amorgan.xyz";
@@ -222,9 +228,7 @@
               groups = [ "adbusers" "audio" "docker" "networkmanager" "pipewire" "wheel" ];
               roles = ["development"];
 
-              sshPublicKeys = [
-                "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIGVdcgCRUwCd83w5L+k5yhDHrLDF88GgDWdhvMqYAUiAAAAABHNzaDo="
-              ];
+              sshPublicKeys = personalDeviceSshPublicKeys;
 
               config = {
                 email = "andrew@amorgan.xyz";
@@ -355,7 +359,7 @@
           # Currently this is not set in disk.nix.
           boot.loader.grub.device = "/dev/sda";
 
-          sys.user.root.sshPublicKeys = sshPublicKeys;
+          sys.user.root.sshPublicKeys = infrastructureSshPublicKeys;
 
           sys.cpu.type = "intel";
           sys.cpu.cores = 1;

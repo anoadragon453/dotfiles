@@ -7,6 +7,7 @@ key_fingerprints:
   #
   # 1. Create a directory to store your age keys: `mkdir -p ~/.config/sops/age`
   # 2. Generate an SSH key on your computer: `ssh-keygen -t ed25519 -f ~/.ssh/sops-ssh -N ""`
+  #        Note: if you copy this key to another computer, ensure it has 0600 permissions.
   # 3. From the private SSH key, generate an age private key:
   #    ssh-to-age -private-key -i ~/.ssh/sops-ssh -o ~/.config/sops/age/keys.txt
   # 4. From the public SSH key, generate an age public key and place it in this config file
