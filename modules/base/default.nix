@@ -16,6 +16,8 @@
         ./regional.nix
         ./security.nix
         ./shell.nix
+        ./swap.nix
+        ./tmp.nix
         ./virtualisation.nix
         ./vpn.nix
     ];

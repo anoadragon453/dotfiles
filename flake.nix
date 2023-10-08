@@ -221,7 +221,7 @@
               # TODO: Move adbusers into android.nix somehow
               groups = [ "adbusers" "audio" "docker" "networkmanager" "pipewire" "wheel" ];
               roles = ["development"];
-              
+
               sshPublicKeys = [
                 "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIGVdcgCRUwCd83w5L+k5yhDHrLDF88GgDWdhvMqYAUiAAAAABHNzaDo="
               ];
@@ -346,10 +346,6 @@
         ];
         inherit nixpkgs allPkgs;
         cfg = {
-          # TODO: Enable across all machines?
-          zramSwap.enable = true;
-          boot.tmp.cleanOnBoot = true;
-
           boot.initrd.availableKernelModules = [ "ata_piix" "uhci_hcd" "xen_blkfront" "vmw_pvscsi" ];
           boot.initrd.kernelModules = [ "nvme" ];
 
