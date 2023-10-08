@@ -115,6 +115,17 @@
               };
           };
 
+          # Back up home directories using restic.
+          sys.backup.restic = {
+            enable = true;
+            backupPasswordFileSecret = "restic";
+            includedPaths = [ "/home" ];
+            repository = "sftp://u220692-sub7@u220692-sub7.your-storagebox.de:23/";
+            extraOptions = [
+              "sftp.command='ssh -p23 u220692-sub7@u220692-sub7.your-storagebox.de -i /home/user/.ssh/sops-ssh -s sftp'"
+            ];
+          };
+
           sys.cpu.type = "intel";
           sys.cpu.cores = 8;
           sys.cpu.threadsPerCore = 8;
@@ -137,6 +148,16 @@
           sys.hardware.graphics.displayManager = "gdm";
           sys.hardware.graphics.desktopProtocols = [ "xorg" "wayland" ];
           sys.hardware.graphics.v4l2loopback = true;
+
+          # Use this SSH key as the age key to decrypt secrets with.
+          sops.age.sshKeyPaths = [ "/home/user/.ssh/sops-ssh" ];
+
+          sops.secrets = {
+            restic = {
+              sopsFile = ./secrets/personal_common/restic_backup;
+              format = "binary";
+            };
+          };
 
           sys.security.yubikey = {
             enable = true;

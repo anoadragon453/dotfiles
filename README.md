@@ -182,6 +182,46 @@ those keys such that they are now encrypted to the new public key. Run
 `sops updatekeys path/to/secret` on each of them. This will need to be
 done from a device that can decrypt those secrets (obviously).
 
+# Backup
+
+Backing up systems configured by this flake is done via
+[restic](https://restic.net). Backups are stored on a
+[Hetzner Storagebox](https://www.hetzner.com/storage/storage-box) connected
+via SSHFS. Personal devices all back up to the same restic repo, which servers
+all back up to their own repo (to reduce collatoral damage in case one gets
+compromised).
+
+Backups are typically configured to run at least once a day.
+
+Restic repository settings are configured in each system's settings in
+[`flake.nix`](flake.nix). Restic backup passwords are encrypted via sops (see
+above section for secrets management).
+
+## Usage
+
+A handy script will be installed in your system that carries all the options of
+your restic backup, such that you can manipulate it easily. For instance:
+
+```
+sudo restic-remote-backup snapshots
+```
+
+will list available backup snapshots.
+
+To run a backup manually, start the relevant one-shot systemd service:
+
+```
+sudo systemctl start restic-backups-remote-backup.service
+```
+
+## Set up backup for a new system
+
+To configure backup for a new system, you'll need to add a `sys.backup.restic`
+block to your system's config in `flake.nix`, as well as a `restic` secret under
+`sops.secrets`. These definitions should be identical for all personal machines,
+since they share the same restic repo. Whereas for infrastructure they'll be
+slightly different.
+
 # License
 All content in this repo is released under a [CC0 Public Domain License](LICENSE).
 
