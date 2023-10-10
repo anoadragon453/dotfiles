@@ -397,7 +397,7 @@
               enable = true;
               domain = "navidrome.amorgan.xyz";
               port = 8003;
-              musicLibraryFilePath = "/mnt/music";
+              musicLibraryFilePath = "/mnt/storagebox/media/music";
               logLevel = "info";
             };
 
