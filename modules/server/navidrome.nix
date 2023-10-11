@@ -44,6 +44,9 @@ in {
 
           # The level to log at.
           LogLevel = cfg.logLevel;
+
+          # Allow sharing music by public link.
+          EnableSharing = true;
         };
       };
     };
