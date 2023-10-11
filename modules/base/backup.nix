@@ -7,8 +7,9 @@ let
     # Temporary files that end in ~.
     "*~"
 
-    # Cache directory.
+    # Cache directories
     "/home/*/.cache/**"
+    "/home/*/.config/**/Cache"
 
     # Mounted files.
     "/run/media"
