@@ -396,7 +396,7 @@
             navidrome = {
               enable = true;
               domain = "navidrome.amorgan.xyz";
-              port = 8003;
+              port = 8001;
               musicLibraryFilePath = "/mnt/storagebox/media/music";
               logLevel = "info";
             };
@@ -408,10 +408,18 @@
               jwtSecretFilePath = "onlyoffice-document-server-jwt-secret";
             };
 
+            tandoor-recipes = {
+              enable = true;
+              domain = "r.amorgan.xyz";
+              port = 8003;
+              secretKeySecret = "onlyoffice-document-server-jwt-secret";
+              logLevel = "info";
+            };
+
             vaultwarden = {
               enable = true;
               domain = "p.amorgan.xyz";
-              port = 8001;
+              port = 8004;
               websocketPort = 3012;
               environmentFileSecret = "vaultwardenEnv";
               logLevel = "info";
@@ -429,6 +437,12 @@
               # Allow the OnlyOffice DocumentService to read the file.
               owner = "onlyoffice";
               group = "onlyoffice";
+            };
+
+            tandoor-recipes-secret-key = {
+              restartUnits = [ "tandoor-recipes.service" ];
+              sopsFile = ./secrets/plonkie/tandoor-recipes;
+              format = "binary";
             };
 
             vaultwardenEnv = {

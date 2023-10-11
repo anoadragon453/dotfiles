@@ -52,6 +52,7 @@ in {
           # The port to listen for incoming Websocket connections on.
           WEBSOCKET_PORT = cfg.websocketPort;
 
+          # The log level to log at.
           LOG_LEVEL = cfg.logLevel;
         };
 

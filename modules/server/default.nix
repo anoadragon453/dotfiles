@@ -4,6 +4,7 @@
     ./caddy.nix
     ./navidrome.nix
     ./onlyoffice-document-server.nix
+    ./tandoor-recipes.nix
     ./vaultwarden.nix
   ];
 

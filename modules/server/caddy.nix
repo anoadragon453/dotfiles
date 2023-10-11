@@ -24,7 +24,6 @@ in {
         virtualHosts = {
           # Navidrome
           ${cfg.navidrome.domain} = lib.mkIf cfg.navidrome.enable {
-
             extraConfig = ''
               encode gzip
 
@@ -87,6 +86,15 @@ in {
                   Connection {http.request.header.Connection}
                 }
               }
+            '';
+          };
+
+          # Tandoor
+          ${cfg.tandoor-recipes.domain} = lib.mkIf cfg.tandoor-recipes.enable {
+            extraConfig = ''
+              encode gzip
+
+              reverse_proxy :${toString cfg.tandoor-recipes.port}
             '';
           };
 
