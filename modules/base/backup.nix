@@ -11,6 +11,9 @@ let
     "/home/*/.cache/**"
     "/home/*/.config/**/Cache"
 
+    # NixOS VM images
+    "dotfiles/*.qcow2"
+
     # Mounted files.
     "/run/media"
     "/mnt"
@@ -99,8 +102,10 @@ in {
         RandomizedDelaySec = "3h";
       };
 
-      # Log a minimal amount to aid debugging.
-      extraBackupArgs = [ "--verbose" ];
+      # Options
+      #   * --verbose: Log a minimal amount to aid debugging.
+      #   * --no-scan: Do not scan entire filesystem before backing up (saves ~1min)
+      extraBackupArgs = [ "--verbose" "--no-scan" ];
     };
   };
 }
