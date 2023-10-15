@@ -6,8 +6,6 @@
         ./firmware.nix
         ./wifi.nix
         ./yubikey.nix
-        ./logitech.nix
-        ./kindle.nix
         ./disk.nix
         ./bluetooth.nix
         ./audio.nix
