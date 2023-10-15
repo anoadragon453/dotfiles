@@ -8,6 +8,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Management of user-level configuration.
+    home-manager = {
+      url = "github:nix-community/home-manager";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
+
     # Hardware-specific tweaks.
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
@@ -90,6 +96,17 @@
           # Enable real time audio on this system for music production.
           inputs.musnix.nixosModules.musnix
           ./modules/desktop/real-time-audio.nix
+
+          inputs.home-manager.nixosModules.home-manager {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+            home-manager.users = {
+              user = {
+                home.stateVersion = "23.11";
+                imports = [ modules/home-manager ];
+              };
+            };
+          }
         ];
         inherit nixpkgs allPkgs;
         cfg = let 
@@ -103,16 +120,16 @@
           sys.virtualisation.docker.enable = true;
 
           sys.user.users.user = {
-              # TODO: Move adbusers into android.nix somehow
-              groups = [ "adbusers" "audio" "docker" "networkmanager" "pipewire" "wheel" ];
-              roles = ["development"];
-              sshPublicKeys = personalDeviceSshPublicKeys;
+            # TODO: Move adbusers into android.nix somehow
+            groups = [ "adbusers" "audio" "docker" "networkmanager" "pipewire" "wheel" ];
+            roles = ["development"];
+            sshPublicKeys = personalDeviceSshPublicKeys;
 
-              config = {
-                email = "andrew@amorgan.xyz";
-                name = "Andrew Morgan";
-                signingKey = "0xA7E4A57880C3A4A9";
-              };
+            config = {
+              email = "andrew@amorgan.xyz";
+              name = "Andrew Morgan";
+              signingKey = "0xA7E4A57880C3A4A9";
+            };
           };
 
           # Back up home directories using restic.
@@ -218,6 +235,24 @@
           # Enable real time audio on this system for music production.
           inputs.musnix.nixosModules.musnix
           ./modules/desktop/real-time-audio.nix
+
+          inputs.home-manager.nixosModules.home-manager {
+            home-manager.useGlobalPkgs = true;
+            home-manager.useUserPackages = true;
+
+            # TODO: Home Manager modules will get an `osConfig` argument that contains the
+            #   NixOS system configuration. We can use this to check for system-level options!
+            home-manager.users = {
+              user = {
+                home.stateVersion = "23.11";
+                imports = [ modules/home-manager ];
+              };
+              work = {
+                home.stateVersion = "23.11";
+                imports = [ modules/home-manager ];
+              };
+            };
+          }
         ];
         inherit nixpkgs allPkgs;
         cfg = let 
@@ -232,30 +267,30 @@
           sys.virtualisation.virtualbox.enable = false;
 
           sys.user.users.user = {
-              # TODO: Move adbusers into android.nix somehow
-              groups = [ "adbusers" "audio" "docker" "networkmanager" "pipewire" "wheel" ];
-              roles = ["development"];
-              sshPublicKeys = personalDeviceSshPublicKeys;
+            # TODO: Move adbusers into android.nix somehow
+            groups = [ "adbusers" "audio" "docker" "networkmanager" "pipewire" "wheel" ];
+            roles = ["development"];
+            sshPublicKeys = personalDeviceSshPublicKeys;
 
-              config = {
-                email = "andrew@amorgan.xyz";
-                name = "Andrew Morgan";
-                signingKey = "0xA7E4A57880C3A4A9";
-              };
+            config = {
+              email = "andrew@amorgan.xyz";
+              name = "Andrew Morgan";
+              signingKey = "0xA7E4A57880C3A4A9";
+            };
           };
 
           sys.user.users.work = {
-              # TODO: Move adbusers into android.nix somehow
-              groups = [ "adbusers" "audio" "docker" "networkmanager" "pipewire" "wheel" ];
-              roles = ["development"];
+            # TODO: Move adbusers into android.nix somehow
+            groups = [ "adbusers" "audio" "docker" "networkmanager" "pipewire" "wheel" ];
+            roles = ["development"];
 
-              sshPublicKeys = personalDeviceSshPublicKeys;
+            sshPublicKeys = personalDeviceSshPublicKeys;
 
-              config = {
-                email = "andrew@amorgan.xyz";
-                name = "Andrew Morgan";
-                signingKey = "0xA7E4A57880C3A4A9";
-              };
+            config = {
+              email = "andrew@amorgan.xyz";
+              name = "Andrew Morgan";
+              signingKey = "0xA7E4A57880C3A4A9";
+            };
           };
 
           # Back up home directories using restic.
