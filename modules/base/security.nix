@@ -18,7 +18,7 @@ in {
         security.sudo.extraConfig = "Defaults env_reset,timestamp_timeout=-1";
         security.sudo.execWheelOnly = true;
 
-        services.openssh.enable = cfg.sshd.enable;
+        services.openssh.enable = lib.mkForce cfg.sshd.enable;
 
         networking.firewall.allowedTCPPorts = [ (mkIf cfg.sshd.enable 22) ];
         networking.firewall.allowPing = true;

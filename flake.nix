@@ -28,6 +28,12 @@
       url = "github:Mic92/sops-nix";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # For creating .iso's and other images of this NixOS configuration.
+    nixos-generators = {
+      url = "github:nix-community/nixos-generators";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs = inputs @ {self, nixpkgs, ... }:
@@ -52,6 +58,8 @@
     commonModules = [
       ./modules
       inputs.sops-nix.nixosModules.sops
+      # Generate .iso's and other image formats from each NixOS configuration.
+      inputs.nixos-generators.nixosModules.all-formats
     ];
 
     # The SSH keys allowed to SSH into my personal devices.
