@@ -66,4 +66,6 @@ self: super: {
         maintainers = [ super.lib.maintainers.sikmir ] ++ super.lib.teams.podman.members;
       };
     };
+
+    tandoor-recipes = super.callPackage ./tandoor-recipes {};
 }
