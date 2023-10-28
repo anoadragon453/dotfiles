@@ -235,9 +235,6 @@
           inputs.home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-
-            # TODO: Home Manager modules will get an `osConfig` argument that contains the
-            #   NixOS system configuration. We can use this to check for system-level options!
             home-manager.users = {
               user = {
                 home.stateVersion = "23.11";
