@@ -31,6 +31,7 @@ in {
       firefox
       joplin-desktop
       qbittorrent
+      rustdesk
       signal-desktop
       tor-browser-bundle-bin
       # thunderbird is installed via thunderbird.nix
@@ -40,7 +41,6 @@ in {
 
       # Office
       libreoffice-fresh
-      logseq
       obsidian
       onlyoffice-bin
 

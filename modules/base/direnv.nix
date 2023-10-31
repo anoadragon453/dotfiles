@@ -1,4 +1,4 @@
-{pkgs, config, lib, ...}:
+{pkgs, lib, ...}:
 with lib;
 with pkgs;
 {
@@ -25,11 +25,5 @@ with pkgs;
         '';
       };
     };
-
-    # support for flakes
-    nixpkgs.overlays = [
-      (self: super: { nix-direnv = super.nix-direnv.override { enableFlakes = true; }; } )
-    ];
-
   };
 }

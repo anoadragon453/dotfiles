@@ -184,31 +184,31 @@
 
           # Disable default disk layout magic and just use the declarations below.
           sys.diskLayout = "disable";
-          sys.bootloaderMountPoint = "/boot/efi";
-
-          # Setup luks full-disk encryption
-          boot.initrd.secrets = {
-            "/crypto_keyfile.bin" = null;
-          };
 
           sys.vpn.services = [ "mullvad" ];
 
-          boot.initrd.luks.devices."luks-306a410d-8a3b-4ddf-97ad-b39f176a01d4".device = "/dev/disk/by-uuid/306a410d-8a3b-4ddf-97ad-b39f176a01d4";
+          # Open LUKS encrypted partitions and make available as /dev/mapper devices.
+	        # Root and /boot.
+          boot.initrd.luks.devices."luks-2dbafbac-35bd-43d4-a8ff-5af82cd4b26c".device = "/dev/disk/by-uuid/2dbafbac-35bd-43d4-a8ff-5af82cd4b26c";
+          # Swap.
+          boot.initrd.luks.devices."luks-cbfbc367-a93a-4d21-984f-c09f302528e1".device = "/dev/disk/by-uuid/cbfbc367-a93a-4d21-984f-c09f302528e1";
 
-          # Enable swap on luks
-          boot.initrd.luks.devices."luks-50328598-1b0f-4ba9-9b1b-ea896dcab44b".device = "/dev/disk/by-uuid/50328598-1b0f-4ba9-9b1b-ea896dcab44b";
-          boot.initrd.luks.devices."luks-50328598-1b0f-4ba9-9b1b-ea896dcab44b".keyFile = "/crypto_keyfile.bin";
+          # Mount /dev/mapper devices to the filesystem.
+          fileSystems."/boot" =
+          { device = "/dev/disk/by-uuid/9447-C14A";
+            fsType = "vfat";
+          };
 
           fileSystems."/" =
-            { device = "/dev/disk/by-uuid/cd59f0ed-b749-4c14-8cee-2de37b6b166a";
-              fsType = "ext4";
-            };
+          { device = "/dev/disk/by-uuid/7dcef2f7-4d44-4fff-8a60-19505454300e";
+            fsType = "ext4";
+          };
 
-          fileSystems."/boot/efi" =
-            { device = "/dev/disk/by-uuid/601A-8328";
-              fsType = "vfat";
-            };
+          swapDevices =
+          [ { device = "/dev/disk/by-uuid/95916c33-ccd9-449f-ae3d-cccbcb88936f"; }
+          ];
 
+          # Mount other devices.
           fileSystems."/run/media/user/Steam" =
             { device = "/dev/disk/by-uuid/76240c8a-cf38-4663-9d0a-bf16b416f601";
               fsType = "ext4";
@@ -218,10 +218,6 @@
             { device = "/dev/disk/by-uuid/8028-9296";
               fsType = "exfat";
             };
-
-          swapDevices =
-            [ { device = "/dev/disk/by-uuid/66aa4315-bbd2-4872-8284-983d5f5be994"; }
-            ];
 
         };
       };
@@ -239,9 +235,6 @@
           inputs.home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
             home-manager.useUserPackages = true;
-
-            # TODO: Home Manager modules will get an `osConfig` argument that contains the
-            #   NixOS system configuration. We can use this to check for system-level options!
             home-manager.users = {
               user = {
                 home.stateVersion = "23.11";
