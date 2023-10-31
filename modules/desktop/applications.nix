@@ -39,6 +39,7 @@ in {
       bitwig-studio
 
       # Office
+      libreoffice-fresh
       logseq
       obsidian
       onlyoffice-bin
