@@ -7,6 +7,7 @@
         dmidecode
         exfat
         hwdata
+        iftop
         iotop
         lm_sensors
         ntfsprogs
