@@ -14,6 +14,17 @@
     # Enable user extensions.
     "org/gnome/shell" = {
       disable-user-extensions = false;
+      enabled-extensions = [
+        "advanced-alt-tab@G-dH.github.com"
+        "alt-tab-scroll-workaround@lucasresck.github.io"
+        "caffeine@patapon.info"
+        "gsconnect@andyholmes.github.io"
+        "hass-gshell@geoph9-on-github"
+        "hibernate-status@dromi"
+        "trayIconsReloaded@selfmade.pl"
+        "user-theme@gnome-shell-extensions.gcampax.github.com"
+      ];
+      disabled-extensions = [];
     };
 
     # Snap windows to edges of display.
@@ -21,9 +32,12 @@
       edge-tiling = true;
     };
 
-    # Use the dark theme.
     "org/gnome/desktop/interface" = {
+      # Use the dark theme.
       color-scheme = "prefer-dark";
+
+      # Show seconds in the clock.
+      clock-show-seconds = true;
     };
 
     # Turn off lock-screen notifications.
