@@ -46,17 +46,17 @@ self: super: {
     };
 
     podman-compose-latest = super.python3.pkgs.buildPythonApplication rec {
-      version = "3890eacf57c0643cad6911a0ab23e7e6220c7468";
+      version = "bce40c2db30fb0ffb9264b5f51535c26f48fe983";
       pname = "podman-compose";
 
       src = super.fetchFromGitHub {
         repo = "podman-compose";
         owner = "containers";
         rev = "${version}";
-        sha256 = "sha256-IWWI/kR3NCqpNVV6Ukg8CcAa+e/Cfxx2A0TXKTYKYAQ=";
+        sha256 = "sha256-mqQkjjhgnAXpBngbe9Mkf7xXPo3uS0FkqqPetMA6/cg=";
       };
 
-      propagatedBuildInputs = with super.python310Packages; [ pyyaml python-dotenv ];
+      propagatedBuildInputs = with super.python311Packages; [ pyyaml python-dotenv ];
 
       meta = {
         description = "An implementation of docker-compose with podman backend";
