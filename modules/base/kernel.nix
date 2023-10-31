@@ -1,10 +1,8 @@
 {pkgs, config, lib, ...}:
-with pkgs;
-with lib;
 let
     cfg = config.sys;
 in {
-    options.sys.kernelPackage = mkOption {
+    options.sys.kernelPackage = lib.mkOption {
       default = pkgs.linuxPackages_latest;
       description = "Kernel package used to build this system";
     };
