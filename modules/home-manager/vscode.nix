@@ -17,6 +17,13 @@
         key = "ctrl+e";
         command = "-workbench.action.quickOpen";
       }
+      # Disable the vim extension's control over the Ctrl+B shortcut, such that it
+      # falls through to the default action of opening and closing the file browser.
+      {
+        key = "ctrl+b";
+        command = "-extension.vim_ctrl+b";
+        when = "editorTextFocus && vim.active && vim.use<C-b> && !inDebugRepl && vim.mode != 'Insert'";
+      }
     ];
 
     # The VSCode extensions to install.
@@ -53,6 +60,19 @@
 
       # Show the welcome page on startup.
       "workbench.startupEditor" = "welcomePage";
+
+      # Allow breakpoints to be set in any file.
+      "debug.allowBreakpointsEverywhere" = true;
+
+      # Turn off extension recommendation pop-ups.
+      "extensions.ignoreRecommendations" = true;
+      "lldb.suppressUpdateNotifications" = true;
+
+      # Show inline suggestions in the editor.
+      "editor.inlineSuggest.enabled" = true;
+
+      # Format files upon saving them.
+      "editor.formatOnSave" = true;
       
       # Disable telemetry other than crash reports.
       "telemetry.telemetryLevel" = "crash";
@@ -60,20 +80,29 @@
       # Don't show release notes after every update.
       "update.showReleaseNotes" = false;
 
+      # Don't check for updates, as we'll update through our package manager anyhow.
+      "update.mode" = "none";
+
       # Ignore leading and trailing whitespace changes in the diff editor.
       "diffEditor.ignoreTrimWhitespace" = false;
 
       # Nicer title bar with more options.
       "window.titleBarStyle" = "custom";
+      "window.menuBarVisibility" = "toggle";
+      "window.zoomLevel" = -1;
 
+      # Don't ask for confirmation when moving files via drag-and-drop.
+      "explorer.confirmDragAndDrop" = false;
+
+      # Settings for the nix language server.
       "nix.enableLanguageServer" = true;
       "nix.serverPath" = "nil";
-      # Auto-download nix flake archives. Without this, the Nix-IDE
-      # extension will ask to do so every time a flake input changes.
       "nix.serverSettings" = {
         "nil" = {
           "nix" = {
             "flake" = {
+              # Auto-download nix flake archives. Without this, the Nix-IDE
+              # extension will ask to do so every time a flake input changes.
               "autoArchive" = true;
             };
           };
@@ -83,7 +112,20 @@
       # Additional words to ignore for spell-checking.
       "cSpell.userWords" = [
         "actix"
+        "homeserver"
+        "shortcode"
       ];
+
+      # Allow British English words as well as American.
+      "cSpell.language" = "en,en-GB";
+
+      # Additional filetypes to be spell-checked.
+      "cSpell.enableFileTypes" = [
+        "nix"
+      ];
+
+      # Show some lifetime elision hints in the editor, but not the trivial ones.
+      "rust-analyzer.inlayHints.lifetimeElisionHints.enable" = "skip_trivial";
     };
   };
 }
