@@ -55,6 +55,7 @@
     # Don't automatically suspend the computer.
     "org/gnome/settings-daemon/plugins/power" = {
       sleep-inactive-ac-type = "nothing";
+      sleep-inactive-battery-type = "nothing";
     };
 
     # Keybindings
