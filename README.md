@@ -214,6 +214,18 @@ To run a backup manually, start the relevant one-shot systemd service:
 sudo systemctl start restic-backups-remote-backup.service
 ```
 
+## Restore
+
+To a restore a backup, first make sure you have the restic backup passphrase
+available to your system. It should be decrypted at boot from the sops SSH key
+located at `~/.ssh/ssh-sops`.
+
+To restore:
+
+```
+sudo restic-remote-backup restore -v BACKUP_ID --target /home
+```
+
 ## Set up backup for a new system
 
 To configure backup for a new system, you'll need to add a `sys.backup.restic`
