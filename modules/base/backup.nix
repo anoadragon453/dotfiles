@@ -1,4 +1,4 @@
-{config, lib, ...}:
+{config, lib, pkgs, ...}:
 let
   cfg = config.sys.backup;
 
@@ -107,5 +107,9 @@ in {
       #   * --no-scan: Do not scan entire filesystem before backing up (saves ~1min)
       extraBackupArgs = [ "--verbose" "--no-scan" ];
     };
+
+    # Wait for 30s before backing up, as internet may not have connected yet.
+    # Typically this bit would be handled by waiting for nm-online.target, but we disable that service...
+    systemd.services.restic-backups-remote-backup.serviceConfig.ExecStartPre = [ "${pkgs.coreutils}/bin/sleep 30" ];
   };
 }
