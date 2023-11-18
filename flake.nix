@@ -226,11 +226,7 @@
         name = "izzy";
         system = "x86_64-linux";
         modules = commonModules ++ [
-          inputs.nixos-hardware.nixosModules.framework
-
-          # Enable real time audio on this system for music production.
-          inputs.musnix.nixosModules.musnix
-          ./modules/desktop/real-time-audio.nix
+          inputs.nixos-hardware.nixosModules.framework-11th-gen-intel
 
           inputs.home-manager.nixosModules.home-manager {
             home-manager.useGlobalPkgs = true;
@@ -252,6 +248,8 @@
           pkgs = allPkgs.x86_64-linux;
         in {
           boot.initrd.availableKernelModules = [ "xhci_pci" "thunderbolt" "nvme" "usb_storage" "sd_mod" ];
+
+          sys.kernelPackage = pkgs.linuxPackages;
 
           networking.networkmanager.enable = true;
 
@@ -311,7 +309,7 @@
           sys.desktop.kdeconnect.implementation = "gsconnect";
 
           sys.hardware.audio.server = "pipewire";
-          sys.desktop.realTimeAudio.soundcardPciId = "00:1f.3";
+          #sys.desktop.realTimeAudio.soundcardPciId = "00:1f.3";
 
           sys.hardware.bluetooth = true;
           sys.hardware.graphics.primaryGPU = "intel";
