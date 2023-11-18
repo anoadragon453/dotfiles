@@ -47,6 +47,10 @@ in {
       preStart = ''
         mkdir -p ${quarantineDirectory}
         chown clamav:clamav ${quarantineDirectory}
+
+        # The `requires` property below doesn't appear to actually work. So let's try
+        # waiting a few seconds instead.
+        ${pkgs.coreutils}/bin/sleep 5
       '';
 
       # Don't start the on-access scanner until the ClamAV daemon itself has started. Similarly,
