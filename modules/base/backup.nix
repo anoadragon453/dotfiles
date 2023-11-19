@@ -4,8 +4,9 @@ let
 
   # A common set of paths to exclude from backups.
   excludedPaths = [
-    # Temporary files that end in ~.
+    # Temporary files.
     "*~"
+    "/home/*/.config/Nextcloud/logs/*"
 
     # Cache directories
     "/home/*/.cache/**"
@@ -22,7 +23,7 @@ let
     "target/release"
     "target/debug"
 
-    # Git folders contain millions of files, and they can be rebuilt.
+    # Git folders contain millions of files, and can be rebuilt.
     ".git"
 
     # Any node module directories.
