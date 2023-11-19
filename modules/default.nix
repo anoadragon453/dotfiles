@@ -1,4 +1,4 @@
-{pkgs, ... }:
+{ ... }:
 {
   imports = [
     ./core
@@ -7,6 +7,5 @@
     ./desktop
     ./base
     ./user
-    ./server
   ];
 }

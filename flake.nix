@@ -398,6 +398,9 @@
         system = "x86_64-linux";
         modules = commonModules ++ [
           ./modules/vm/qemu-guest.nix
+          
+          # Server-specific configuration.
+          ./modules/server
         ];
         inherit nixpkgs allPkgs;
         cfg = let
