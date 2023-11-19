@@ -524,7 +524,6 @@
                                        # warning: this causes the one-shot service to never exit
 
                 # SSH options
-                "reconnect"              # handle connection drops
                 "ServerAliveInterval=15" # keep connections alive
                 "Port=23"
                 "IdentityFile=/run/secrets/storagebox-media"
