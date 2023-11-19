@@ -58,6 +58,30 @@ in {
 
         environmentFile = config.sops.secrets."${cfg.environmentFileSecret}".path;
       };
+
+      nginx = {
+        enable = true;
+
+        virtualHosts.${cfg.domain} = {
+          http2 = true;
+
+          # Fetch and configure a TLS cert using the ACME protocol.
+          enableACME = true;
+
+          # Redirect all unencrypted traffic to HTTPS.
+          forceSSL = true;
+
+          locations."/notifications/hub" = {
+            # Proxy traffic on this path to the websocket port.
+            proxyPass = "http://127.0.0.1:${toString cfg.websocketPort}";
+          };
+
+          locations."/" = {
+            # Proxy all other traffic straight through.
+            proxyPass = "http://127.0.0.1:${toString cfg.port}";
+          };
+        };
+      };
     };
   };
 }

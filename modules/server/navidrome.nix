@@ -33,6 +33,7 @@ in {
       navidrome = {
         enable = true;
 
+        # TODO: This doesn't start before the storage share has finished mounting.
         # View all configuration options: https://www.navidrome.org/docs/usage/configuration-options/
         settings = {
           # The internal address and port to bind to.
@@ -47,6 +48,25 @@ in {
 
           # Allow sharing music by public link.
           EnableSharing = true;
+        };
+      };
+
+      nginx = {
+        enable = true;
+
+        virtualHosts.${cfg.domain} = {
+          http2 = true;
+
+          # Fetch and configure a TLS cert using the ACME protocol.
+          enableACME = true;
+
+          # Redirect all unencrypted traffic to HTTPS.
+          forceSSL = true;
+
+          locations."/" = {
+            # Proxy all traffic straight through.
+            proxyPass = "http://127.0.0.1:${toString cfg.port}";
+          };
         };
       };
     };
