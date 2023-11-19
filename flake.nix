@@ -443,6 +443,13 @@
               jwtSecretFilePath = "onlyoffice-document-server-jwt-secret";
             };
 
+            peertube = {
+              enable = true;
+              domain = "v.amorgan.xyz";
+              httpPort = 8005;
+              peertubeSecretFilePath = "peertube-secret";
+            };
+
             tandoor-recipes = {
               enable = true;
               domain = "r.amorgan.xyz";
@@ -472,6 +479,18 @@
               # Allow the OnlyOffice DocumentService to read the file.
               owner = "onlyoffice";
               group = "onlyoffice";
+            };
+
+            peertube-secret = {
+              restartUnits = [ "peertube.service" ];
+              sopsFile = ./secrets/plonkie/peertube-secret;
+
+              # It's actually just a plaintext file containing the secret.
+              format = "binary";
+
+              # Allow the PeerTube service to read the file.
+              owner = "peertube";
+              group = "peertube";
             };
 
             tandoor-recipes-secret-key = {
