@@ -400,7 +400,9 @@
           ./modules/vm/qemu-guest.nix
         ];
         inherit nixpkgs allPkgs;
-        cfg = {
+        cfg = let
+          pkgs = allPkgs.x86_64-linux;
+        in {
           boot.initrd.availableKernelModules = [ "ata_piix" "uhci_hcd" "xen_blkfront" "vmw_pvscsi" ];
           boot.initrd.kernelModules = [ "nvme" ];
 
