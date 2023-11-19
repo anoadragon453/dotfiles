@@ -26,11 +26,6 @@ in {
       description = "A file containing the secret for peertube";
     };
 
-    musicLibraryFilePath = lib.mkOption {
-      type = lib.types.str;
-      description = "The filepath of where music will be stored";
-    };
-
     logLevel = lib.mkOption {
       type = lib.types.enum [ "error" "warn" "info" "debug" "trace" ];
       default = "info";
