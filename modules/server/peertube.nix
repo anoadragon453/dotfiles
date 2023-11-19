@@ -27,7 +27,7 @@ in {
     };
 
     logLevel = lib.mkOption {
-      type = lib.types.enum [ "error" "warn" "info" "debug" "trace" ];
+      type = lib.types.enum [ "error" "warn" "info" "debug" ];
       default = "info";
       description = "The log level to run peertube at";
     };
