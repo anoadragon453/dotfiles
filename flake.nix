@@ -116,7 +116,7 @@
 
           # TODO: I had to override the realtime kernel defined in musnix as the
           # realtime patch currently fails to apply.
-          sys.kernelPackage = lib.mkDefault pkgs.linuxPackages-latest;
+          sys.kernelPackage = pkgs.lib.mkDefault pkgs.linuxPackages_latest;
 
           networking.interfaces."enp8s0" = { useDHCP = true; };
           networking.networkmanager.enable = true;
