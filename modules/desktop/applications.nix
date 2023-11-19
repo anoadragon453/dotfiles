@@ -31,6 +31,7 @@ in {
       firefox
       joplin-desktop
       qbittorrent
+      nextcloud-client
       rustdesk
       signal-desktop
       tor-browser-bundle-bin
