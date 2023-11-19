@@ -114,6 +114,10 @@
         in {
           boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usbhid" "usb_storage" "sd_mod" ];
 
+          # TODO: I had to override the realtime kernel defined in musnix as the
+          # realtime patch currently fails to apply.
+          sys.kernelPackage = lib.mkDefault pkgs.linuxPackages-latest;
+
           networking.interfaces."enp8s0" = { useDHCP = true; };
           networking.networkmanager.enable = true;
 
