@@ -515,7 +515,11 @@
               [ # Filesystem options
                 "allow_other"          # for non-root access
                 "_netdev"              # this is a network fs
-                "x-systemd.automount"  # mount on demand, rather than boot
+
+                # We don't mount on demand, as that will cause services like navidrome to fail
+                # as the share doesn't yet exist.
+                #"x-systemd.automount" # mount on demand, rather than boot
+
                 #"debug"               # print debug logging
                                        # warning: this causes the one-shot service to never exit
 
