@@ -1,6 +1,7 @@
 {...}:
 {
   imports = [
+    ./acme.nix
     ./caddy.nix
     ./navidrome.nix
     ./onlyoffice-document-server.nix

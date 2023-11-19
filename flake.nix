@@ -426,7 +426,7 @@
 
           # Services on this machine.
           sys.server = {
-            caddy.enable = true;
+            acme.email = "andrew@amorgan.xyz";
 
             navidrome = {
               enable = true;
