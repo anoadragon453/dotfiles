@@ -48,6 +48,18 @@ in {
     # From https://discourse.nixos.org/t/fix-gdm-does-not-start-gnome-wayland-even-if-it-is-selected-by-default-starts-x11-instead/24498
     services.xserver.displayManager.defaultSession = "gnome";
 
+    # Enable auto-login the user "user".
+    services.xserver.displayManager.autoLogin = {
+      enable = true;
+      user = "user";
+    };
+
+    # Some work-arounds for auto-login breaking GNOME Wayland.
+    # From https://github.com/NixOS/nixpkgs/issues/103746#issuecomment-945091229
+    systemd.services."getty@tty1".enable = false;
+    systemd.services."autovt@tty1".enable = false;
+    services.xserver.displayManager.job.preStart = "sleep 2";
+
     # Install some helpful packages when using GNOME
     sys.software = (with pkgs; [
       gnome.gnome-tweaks  # Additional configuration options for GNOME.
