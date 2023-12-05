@@ -28,7 +28,6 @@ in {
       discord
       mpv
       filezilla
-      firefox
       joplin-desktop
       qbittorrent
       rustdesk
@@ -47,7 +46,6 @@ in {
       # Games
       airshipper # launcher and updater for veloren
       minecraft
-      unityhub
 
       # Media
       drawpile
