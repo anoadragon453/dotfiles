@@ -69,6 +69,8 @@ in {
       # Tools
       android-studio
       appimage-run
+      ascii
+      contrast
       gnome.gnome-boxes
       jetbrains.pycharm-community
       kid3
