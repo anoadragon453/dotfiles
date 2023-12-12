@@ -72,5 +72,23 @@
       # Take a screenshot with Alt-Shift-S.
       show-screenshot-ui = [ "<Shift><Alt>s" ];
     };
+
+    # Keybindings for custom commands.
+
+    # Open the terminal with Alt-Enter.
+    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0" = {
+      name = "Open Terminal";
+      binding = "<Alt>Return";
+      command = "alacritty";
+    };
+    "org/gnome/settings-daemon/plugins/media-keys" = {
+      custom-keybindings = ["/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"];
+    };
+
+    # I was seeing errors about this key being missing, and this appeared to be
+    # linked to gdm crashing... so I've added it with a random shortcut sequence.
+    "org/gnome/shell/keybindings" = {
+      open-application-menu = ["<Alt>g"];
+    };
   };
 }
