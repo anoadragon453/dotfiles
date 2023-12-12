@@ -28,6 +28,7 @@ in {
     };
   };
 
+  # TODO: Switch to grocy?
   config = lib.mkIf cfg.enable {
     services = {
       tandoor-recipes = {
@@ -59,6 +60,25 @@ in {
           POSTGRES_HOST = "/run/postgresql";
           POSTGRES_USER = "tandoor_recipes";
           POSTGRES_DB = "tandoor_recipes";
+        };
+      };
+
+      nginx = {
+        enable = true;
+
+        virtualHosts.${cfg.domain} = {
+          http2 = true;
+
+          # Fetch and configure a TLS cert using the ACME protocol.
+          enableACME = true;
+
+          # Redirect all unencrypted traffic to HTTPS.
+          forceSSL = true;
+
+          locations."/" = {
+            # Proxy all traffic straight through.
+            proxyPass = "http://127.0.0.1:${toString cfg.port}";
+          };
         };
       };
 

@@ -114,6 +114,10 @@
         in {
           boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usbhid" "usb_storage" "sd_mod" ];
 
+          # TODO: I had to override the realtime kernel defined in musnix as the
+          # realtime patch currently fails to apply.
+          sys.kernelPackage = pkgs.lib.mkDefault pkgs.linuxPackages_latest;
+
           networking.interfaces."enp8s0" = { useDHCP = true; };
           networking.networkmanager.enable = true;
 
@@ -394,9 +398,14 @@
         system = "x86_64-linux";
         modules = commonModules ++ [
           ./modules/vm/qemu-guest.nix
+          
+          # Server-specific configuration.
+          ./modules/server
         ];
         inherit nixpkgs allPkgs;
-        cfg = {
+        cfg = let
+          pkgs = allPkgs.x86_64-linux;
+        in {
           boot.initrd.availableKernelModules = [ "ata_piix" "uhci_hcd" "xen_blkfront" "vmw_pvscsi" ];
           boot.initrd.kernelModules = [ "nvme" ];
 
@@ -417,7 +426,7 @@
 
           # Services on this machine.
           sys.server = {
-            caddy.enable = true;
+            acme.email = "andrew@amorgan.xyz";
 
             navidrome = {
               enable = true;
@@ -432,6 +441,13 @@
               domain = "onlyoffice.amorgan.xyz";
               port = 8002;
               jwtSecretFilePath = "onlyoffice-document-server-jwt-secret";
+            };
+
+            peertube = {
+              enable = true;
+              domain = "v.amorgan.xyz";
+              httpPort = 8005;
+              peertubeSecretFilePath = "peertube-secret";
             };
 
             tandoor-recipes = {
@@ -463,6 +479,18 @@
               # Allow the OnlyOffice DocumentService to read the file.
               owner = "onlyoffice";
               group = "onlyoffice";
+            };
+
+            peertube-secret = {
+              restartUnits = [ "peertube.service" ];
+              sopsFile = ./secrets/plonkie/peertube-secret;
+
+              # It's actually just a plaintext file containing the secret.
+              format = "binary";
+
+              # Allow the PeerTube service to read the file.
+              owner = "peertube";
+              group = "peertube";
             };
 
             tandoor-recipes-secret-key = {
@@ -511,12 +539,15 @@
               [ # Filesystem options
                 "allow_other"          # for non-root access
                 "_netdev"              # this is a network fs
-                "x-systemd.automount"  # mount on demand, rather than boot
+
+                # We don't mount on demand, as that will cause services like navidrome to fail
+                # as the share doesn't yet exist.
+                #"x-systemd.automount" # mount on demand, rather than boot
+
                 #"debug"               # print debug logging
                                        # warning: this causes the one-shot service to never exit
 
                 # SSH options
-                "reconnect"              # handle connection drops
                 "ServerAliveInterval=15" # keep connections alive
                 "Port=23"
                 "IdentityFile=/run/secrets/storagebox-media"

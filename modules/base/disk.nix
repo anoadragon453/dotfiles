@@ -42,7 +42,8 @@ in {
     boot.loader.efi.efiSysMountPoint = cfg.bootloaderMountPoint;
 
     # Ensure we don't have too many old NixOS generations lying around
-    boot.loader.systemd-boot.configurationLimit = 20;
+    boot.loader.systemd-boot.configurationLimit = 10;
+    boot.loader.grub.configurationLimit = 10;
 
     # TODO: Why does uncommenting this line generate an error?
     # This is the main layout I have on my systems. 

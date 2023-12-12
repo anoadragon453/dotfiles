@@ -11,7 +11,14 @@ in {
   config = mkIf desktopMode {
     boot.plymouth = {
       enable = true;
-      theme = "breeze";
+      theme = "colorful_sliced";
+      themePackages = [
+        # Install plymouth themes from adi1090x.
+        (pkgs.adi1090x-plymouth-themes.overrideAttrs (final: prev: {
+          # Ensure this package only installs the theme(s) we plan to use.
+          selected_themes = [ "colorful_sliced" ];
+        }))
+      ];
     };
 
   };

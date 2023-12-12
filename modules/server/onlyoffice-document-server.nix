@@ -29,21 +29,6 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
-    # HACK: onlyoffice-documentserver contains a full, running nginx instance with
-    # everything configured to route requests to the onlyoffice-documentserver.
-    # However, a problem arises if you want to expose this service over TLS to the
-    # internet, and you already have another webserver running (in my case, caddy),
-    # which is set up to handle TLS and solve ACME challenges on port 80. Thus, nginx
-    # can't be set up to automatically solve ACME challenges, as there's a port conflict.
-    #
-    # The solution I've chosen to solve this is to disable nginx (the lines below), and
-    # instead convert the nginx config to caddy config in caddy.nix.
-    #
-    # TODO: Upstream allowing users to choose nginx or caddy in nixpkgs.
-    services.nginx.enable = false;
-    users.users.nginx.isNormalUser = true;
-    users.users.nginx.group = "nogroup";
-
     services = {
       onlyoffice = {
         # This will also enable and set up PostgreSQL and RabbitMQ for us.
@@ -60,6 +45,12 @@ in {
         # The path to a file containing a secret that clients must provide in an
         # Authorization HTTP header in order to connect to the DocumentServer.
         jwtSecretFile = config.sops.secrets."${cfg.jwtSecretFilePath}".path;
+      };
+
+      # Enable ACME on the nginx virtual host.
+      nginx.virtualHosts.${cfg.domain} = {
+        enableACME = true;
+        forceSSL = true;
       };
     };
   };

@@ -30,6 +30,7 @@ in {
       filezilla
       joplin-desktop
       qbittorrent
+      nextcloud-client
       rustdesk
       signal-desktop
       tor-browser-bundle-bin
@@ -76,7 +77,6 @@ in {
       kid3
       poppler_utils  # includes pdfunite
       solaar
-      speechd  # for firefox's SpeechSynthesis API
       winetricks
       wineWowPackages.stableFull
       wireshark
