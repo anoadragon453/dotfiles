@@ -58,7 +58,13 @@
       sleep-inactive-battery-type = "nothing";
     };
 
-    # Keybindings
+    # Remove unused services from GNOME's global search.
+    "org/gnome/desktop/search-providers" = {
+      enabled = [];
+      disabled = ["org.gnome.Nautilus.desktop" "org.gnome.Characters.desktop" "org.gnome.clocks.desktop" "org.gnome.Software.desktop"];
+    };
+
+    # Keybindings for built-in actions.
     "org/gnome/desktop/wm/keybindings" = {
       # Close windows via Alt-Shift-Q.
       close = [ "<Shift><Alt>q" ];
