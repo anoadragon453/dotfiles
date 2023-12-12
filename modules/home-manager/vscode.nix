@@ -94,6 +94,11 @@
       # Don't ask for confirmation when moving files via drag-and-drop.
       "explorer.confirmDragAndDrop" = false;
 
+      # Automatically restart the extension host when direnv detects a change in
+      # the environment. This prevents annoying manual extension restart messages
+      # from constantly popping up while changing flake files.
+      "direnv.restart.automatic" = true;
+
       # Settings for the nix language server.
       "nix.enableLanguageServer" = true;
       "nix.serverPath" = "nil";
