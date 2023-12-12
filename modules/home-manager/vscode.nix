@@ -118,6 +118,8 @@
       "cSpell.userWords" = [
         "actix"
         "homeserver"
+        "protobuf"
+        "protobufs"
         "shortcode"
       ];
 
