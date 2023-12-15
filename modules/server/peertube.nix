@@ -35,6 +35,10 @@ in {
 
   config = lib.mkIf cfg.enable {
     services = {
+      # Redis pops up a warning if this isn't enabled, as otherwise errors can
+      # be caused when the system is low on memory.
+      redis.vmOverCommit = true;
+
       peertube = {
         enable = true;
 
