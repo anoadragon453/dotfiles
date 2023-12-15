@@ -561,6 +561,7 @@
                                        # warning: this causes the one-shot service to never exit
 
                 # SSH options
+                "StrictHostKeyChecking=no"  # prevent the connection from failing if the host's key hasn't been trusted yet
                 "ServerAliveInterval=15" # keep connections alive
                 "Port=23"
                 "IdentityFile=/run/secrets/storagebox-media"
@@ -585,6 +586,7 @@
                                        # warning: this causes the one-shot service to never exit
 
                 # SSH options
+                "StrictHostKeyChecking=no"  # prevent the connection from failing if the host's key hasn't been trusted yet
                 "ServerAliveInterval=15" # keep connections alive
                 "Port=23"
                 "IdentityFile=/run/secrets/storagebox-mealie"
