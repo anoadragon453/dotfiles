@@ -59,6 +59,7 @@ in {
         environmentFile = config.sops.secrets."${cfg.environmentFileSecret}".path;
       };
 
+      # Configure the reverse proxy to route to this service.
       nginx = {
         enable = true;
 
