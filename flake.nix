@@ -428,6 +428,13 @@
           sys.server = {
             acme.email = "andrew@amorgan.xyz";
 
+            mealie = {
+              enable = true;
+              domain = "r.amorgan.xyz";
+              storagePath = "/mnt/storagebox/mealie";
+              logLevel = "INFO";
+            };
+
             navidrome = {
               enable = true;
               domain = "navidrome.amorgan.xyz";
@@ -451,7 +458,7 @@
             };
 
             tandoor-recipes = {
-              enable = true;
+              enable = false;
               domain = "r.amorgan.xyz";
               port = 8003;
               secretKeySecret = "onlyoffice-document-server-jwt-secret";
@@ -512,6 +519,14 @@
               sopsFile = ./secrets/plonkie/storagebox-media;
               format = "binary";
             };
+
+            # A private component of a SSH Key to give access to the mealie
+            # folder on my hetzner storagebox. The decrypted version ends up at
+            # /run/secrets/storagebox-mealie. SSHFS should use that path.
+            storagebox-mealie = {
+              sopsFile = ./secrets/plonkie/storagebox-mealie;
+              format = "binary";
+            };
           };
           # Set these to an empty list to tell sops not to try and look for
           # any ssh or gpg keys to turn into age keys.
@@ -530,7 +545,7 @@
               fsType = "ext4";
             };
 
-          # Mount my hetzner storagebox.
+          # Mount my hetzner storagebox for media.
           # Note: This will only mount on live systems, not VMs.
           fileSystems."/mnt/storagebox/media" = {
             device = "u220692-sub4@u220692-sub4.your-storagebox.de:/home";
@@ -551,6 +566,30 @@
                 "ServerAliveInterval=15" # keep connections alive
                 "Port=23"
                 "IdentityFile=/run/secrets/storagebox-media"
+              ];
+          };
+
+          # Mount my hetzner storagebox for mealie.
+          # Note: This will only mount on live systems, not VMs.
+          fileSystems."/mnt/storagebox/mealie" = {
+            device = "u220692-sub5@u220692-sub5.your-storagebox.de:/home";
+            fsType = "sshfs";
+            options =
+              [ # Filesystem options
+                "allow_other"          # for non-root access
+                "_netdev"              # this is a network fs
+
+                # We don't mount on demand, as that will cause services like navidrome to fail
+                # as the share doesn't yet exist.
+                #"x-systemd.automount" # mount on demand, rather than boot
+
+                #"debug"               # print debug logging
+                                       # warning: this causes the one-shot service to never exit
+
+                # SSH options
+                "ServerAliveInterval=15" # keep connections alive
+                "Port=23"
+                "IdentityFile=/run/secrets/storagebox-mealie"
               ];
           };
         };

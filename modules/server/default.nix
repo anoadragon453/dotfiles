@@ -2,6 +2,7 @@
 {
   imports = [
     ./acme.nix
+    ./mealie.nix
     ./navidrome.nix
     ./nginx.nix
     ./onlyoffice-document-server.nix
