@@ -455,14 +455,6 @@
               peertubeSecretFilePath = "peertube-secret";
             };
 
-            tandoor-recipes = {
-              enable = false;
-              domain = "r.amorgan.xyz";
-              port = 8003;
-              secretKeySecret = "onlyoffice-document-server-jwt-secret";
-              logLevel = "info";
-            };
-
             vaultwarden = {
               enable = true;
               domain = "p.amorgan.xyz";
@@ -496,12 +488,6 @@
               # Allow the PeerTube service to read the file.
               owner = "peertube";
               group = "peertube";
-            };
-
-            tandoor-recipes-secret-key = {
-              restartUnits = [ "tandoor-recipes.service" ];
-              sopsFile = ./secrets/plonkie/tandoor-recipes;
-              format = "binary";
             };
 
             vaultwardenEnv = {

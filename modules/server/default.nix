@@ -7,7 +7,6 @@
     ./nginx.nix
     ./onlyoffice-document-server.nix
     ./peertube.nix
-    ./tandoor-recipes.nix
     ./vaultwarden.nix
   ];
 
