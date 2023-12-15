@@ -1,28 +1,17 @@
-{pkgs, lib, config, ...}:
-with pkgs;
-with lib;
-with builtins;
+{lib, config, ...}:
 let
     cfg = config.sys.virtualisation;
 in {
     options.sys.virtualisation = {
-        docker = {
-            enable = mkOption {
-                type = types.bool;
-                default = false;
-                description = "Enables docker";
-            };
+        backend = lib.mkOption {
+            type = lib.types.enum [ "docker" "podman" ];
+            default = "podman";
+            description = "Sets the OCI container runtime backend";
         };
-        podman = {
-            enable = mkOption {
-                type = types.bool;
-                default = false;
-                description = "Enables podman";
-            };
-        };
+
         virtualbox = {
-            enable = mkOption {
-                type = types.bool;
+            enable = lib.mkOption {
+                type = lib.types.bool;
                 default = false;
                 description = "Enables virtualbox";
             };
@@ -31,12 +20,20 @@ in {
 
     config = {
         virtualisation = {
-            docker.enable = cfg.docker.enable;
-            podman.enable = cfg.podman.enable;
+            # Set the backend used for running any OCI containers.
+            oci-containers.backend = cfg.backend;
+
+            # Enable the appropriate runtime.
+            docker.enable = cfg.backend == "docker";
+            podman.enable = cfg.backend == "podman";
+
+            # Set 'docker' as an alias for podman if podman is configured.
+            podman.dockerCompat = cfg.backend == "podman";
+
             virtualbox.host.enable = cfg.virtualbox.enable;
 
-            # Set 'docker' as an alias for podman if podman is enabled and docker is disabled.
-            podman.dockerCompat = cfg.podman.enable && !cfg.docker.enable;
+            # Allow podman containers to find each other by DNS name.
+            podman.defaultNetwork.settings.dns_enabled = true;
 
             # Specify configuration that is only used when building VM via build-vm
             vmVariant = {
@@ -50,7 +47,7 @@ in {
                 # Disable any custom networking interfaces when running this config in a VM.
                 # (otherwise boot will hang for 1m30s waiting fo them to come up.)
                 # mkForce ensures any other configured options are overridden.
-                networking.interfaces = mkForce {};
+                networking.interfaces = lib.mkForce {};
             };
         };
     };
