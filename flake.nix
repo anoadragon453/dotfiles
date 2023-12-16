@@ -44,7 +44,16 @@
 
     allPkgs = lib.mkPkgs {
       inherit nixpkgs; 
-      cfg = { allowUnfree = true; };
+      cfg = {
+        allowUnfree = true;
+
+        # Allow certain insecure packages.
+        permittedInsecurePackages = [
+          # The current version of obsidian uses EoL electron >:(
+          # While obsidian is this version, allow electron 25 to be installed.
+          (if (nixpkgs.legacyPackages."x86_64-linux".obsidian.version == "1.4.16") then "electron-25.9.0" else "")
+        ];
+      };
       overlays = [
         localpkgs
         extralib
