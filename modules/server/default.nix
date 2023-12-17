@@ -2,6 +2,7 @@
 {
   imports = [
     ./acme.nix
+    ./immich.nix
     ./mealie.nix
     ./navidrome.nix
     ./nginx.nix

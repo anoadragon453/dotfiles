@@ -90,6 +90,7 @@
     ];
 
   in {
+    # TODO: Refactor this to devShell.${sys}.default somehow.
     devShell = lib.withDefaultSystems (sys: let
       pkgs = allPkgs."${sys}";
     in import ./shell.nix { inherit pkgs; });
@@ -434,6 +435,14 @@
           # Services on this machine.
           sys.server = {
             acme.email = "andrew@amorgan.xyz";
+
+            immich = {
+              enable = true;
+              domain = "i.amorgan.xyz";
+              port = 8006;
+              storagePath = "/mnt/storagebox/media/immich";
+              logLevel = "log";
+            };
 
             mealie = {
               enable = true;
