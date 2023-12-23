@@ -45,28 +45,6 @@ self: super: {
       '';
     };
 
-    podman-compose-latest = super.python3.pkgs.buildPythonApplication rec {
-      version = "bce40c2db30fb0ffb9264b5f51535c26f48fe983";
-      pname = "podman-compose";
-
-      src = super.fetchFromGitHub {
-        repo = "podman-compose";
-        owner = "containers";
-        rev = "${version}";
-        sha256 = "sha256-mqQkjjhgnAXpBngbe9Mkf7xXPo3uS0FkqqPetMA6/cg=";
-      };
-
-      propagatedBuildInputs = with super.python311Packages; [ pyyaml python-dotenv ];
-
-      meta = {
-        description = "An implementation of docker-compose with podman backend";
-        homepage = "https://github.com/containers/podman-compose";
-        license = super.lib.licenses.gpl2Only;
-        platforms = super.lib.platforms.unix;
-        maintainers = [ super.lib.maintainers.sikmir ] ++ super.lib.teams.podman.members;
-      };
-    };
-
     # packages/pgvecto-rs.nix
     #
     # Author: Diogo Correia <me@diogotc.com>
