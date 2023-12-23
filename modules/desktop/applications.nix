@@ -1,25 +1,22 @@
 {pkgs, config, lib, ...}:
-with lib;
-with pkgs;
-with builtins;
 let
-  xorg = (elem "xorg" config.sys.hardware.graphics.desktopProtocols);
-  wayland = (elem "wayland" config.sys.hardware.graphics.desktopProtocols);
+  xorg = (builtins.elem "xorg" config.sys.hardware.graphics.desktopProtocols);
+  wayland = (builtins.elem "wayland" config.sys.hardware.graphics.desktopProtocols);
   desktopMode = xorg || wayland;
   desktopGuiTypes = config.sys.desktop.gui.types;
   cfg = config.sys;
 in {
-  config = {
+  config = lib.mkIf desktopMode {
 
-    environment.sessionVariables = mkIf desktopMode {
+    environment.sessionVariables = {
       # Fix issue with java applications and tiling window managers.
-      "_JAVA_AWT_WM_NONREPARENTING" = mkIf (elem "tiling" desktopGuiTypes) "1";
+      "_JAVA_AWT_WM_NONREPARENTING" = lib.mkIf (builtins.elem "tiling" desktopGuiTypes) "1";
 
       # Enable smooth-scrolling in Mozilla apps
       MOZ_USE_XINPUT2 = "1";
     };
 
-    sys.software = mkIf desktopMode ([
+    sys.software = with pkgs; ([
       # These packages are always installed when building a GUI config.
 
       # Internet
@@ -82,7 +79,7 @@ in {
       wineWowPackages.stableFull
       wireshark
       xournalpp
-    ] ++ (if (elem "tiling" desktopGuiTypes) then [
+    ] ++ (if (builtins.elem "tiling" desktopGuiTypes) then [
       # Only installed when using a tiling window manager.
       feh
       libsixel
