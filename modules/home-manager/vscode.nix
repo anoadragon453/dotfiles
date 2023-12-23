@@ -114,6 +114,9 @@
         };
       };
 
+      # Give the integrated terminal much more scrollback.
+      "terminal.integrated.scrollback" = "100000";
+
       # Additional words to ignore for spell-checking.
       "cSpell.userWords" = [
         "actix"
