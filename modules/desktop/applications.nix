@@ -57,6 +57,7 @@ in {
       mpv
       obs-studio
       pavucontrol
+      picard
       qpwgraph
       yabridge
       yabridgectl
