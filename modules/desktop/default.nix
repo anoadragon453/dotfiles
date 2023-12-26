@@ -1,5 +1,6 @@
 {
   imports = [
+    ./aliases.nix
     ./fonts.nix
     ./gtk.nix
     ./qt.nix
