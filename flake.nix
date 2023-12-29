@@ -445,6 +445,8 @@
 
           sys.security.sshd.enable = true;
 
+          sys.virtualisation.backend = "docker";
+
           # Services on this machine.
           sys.server = {
             acme.email = "andrew@amorgan.xyz";
