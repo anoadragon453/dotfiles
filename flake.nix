@@ -27,6 +27,8 @@
     };
 
     # Deploy NixOS derivations to remote machines.
+    # We need to import the deploy-rs flake as it includes the deploy-rs
+    # activation script.
     deploy-rs.url = "github:serokell/deploy-rs";
 
     # Secrets management for NixOS deployments.
@@ -41,6 +43,17 @@
     lib = import ./lib;
     localpkgs = import ./pkgs;
     extralib = self: super: import ./lib/extrafn.nix;
+
+    # Create a custom instance of nixpkgs with the deploy-rs overlay in use, but
+    # the deploy-rs *package* from nixpkgs - thus allowing use of nixpkgs'
+    # binary cache for the deploy-rs package.
+    deployPkgs = import nixpkgs {
+      system = "x86_64-linux";
+      overlays = [
+        inputs.deploy-rs.overlay
+        (self: super: { deploy-rs = { inherit (allPkgs."x86_64-linux") deploy-rs; lib = super.deploy-rs.lib; }; })
+      ];
+    };
 
     allPkgs = lib.mkPkgs {
       inherit nixpkgs; 
@@ -608,7 +621,7 @@
         system = {
           sshUser = "root";
           path =
-            inputs.deploy-rs.lib.x86_64-linux.activate.nixos self.nixosConfigurations.plonkie;
+            deployPkgs.deploy-rs.lib.activate.nixos self.nixosConfigurations.plonkie;
         };
       };
     };
