@@ -8,6 +8,7 @@
     ./nginx.nix
     ./onlyoffice-document-server.nix
     ./peertube.nix
+    ./postgresql.nix
     ./vaultwarden.nix
   ];
 

@@ -488,6 +488,10 @@
               peertubeSecretFilePath = "peertube-secret";
             };
 
+            postgresql.backups = {
+              backupLocationFilePath = "/mnt/storagebox/postgresql-backups";
+            };
+
             vaultwarden = {
               enable = true;
               domain = "p.amorgan.xyz";
@@ -542,6 +546,15 @@
             # /run/secrets/storagebox-mealie. SSHFS should use that path.
             storagebox-mealie = {
               sopsFile = ./secrets/plonkie/storagebox-mealie;
+              format = "binary";
+            };
+
+            # A private component of a SSH Key to give access to the directory
+            # containing postgresql backups on my hetzner storagebox. The
+            # decrypted version ends up at /run/secrets/storagebox-postgresql-plonkie.
+            # SSHFS should use that path.
+            storagebox-postgresql-plonkie = {
+              sopsFile = ./secrets/plonkie/storagebox-postgresql-plonkie;
               format = "binary";
             };
           };
@@ -609,6 +622,31 @@
                 "ServerAliveInterval=15" # keep connections alive
                 "Port=23"
                 "IdentityFile=/run/secrets/storagebox-mealie"
+              ];
+          };
+
+          # Mount my hetzner storagebox for postgresql backups.
+          # Note: This will only mount on live systems, not VMs.
+          fileSystems."/mnt/storagebox/postgresql-backups" = {
+            device = "u220692-sub6@u220692-sub6.your-storagebox.de:/home";
+            fsType = "sshfs";
+            options =
+              [ # Filesystem options
+                "allow_other"          # for non-root access
+                "_netdev"              # this is a network fs
+
+                # We don't mount on demand, as that will cause services like navidrome to fail
+                # as the share doesn't yet exist.
+                #"x-systemd.automount" # mount on demand, rather than boot
+
+                #"debug"               # print debug logging
+                                       # warning: this causes the one-shot service to never exit
+
+                # SSH options
+                "StrictHostKeyChecking=no"  # prevent the connection from failing if the host's key hasn't been trusted yet
+                "ServerAliveInterval=15" # keep connections alive
+                "Port=23"
+                "IdentityFile=/run/secrets/storagebox-postgresql-plonkie"
               ];
           };
         };
