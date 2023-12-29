@@ -2,7 +2,6 @@
   imports = [
     ./aliases.nix
     ./fonts.nix
-    ./gtk.nix
     ./qt.nix
     ./kdeconnect.nix
     ./launchers.nix

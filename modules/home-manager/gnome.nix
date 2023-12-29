@@ -90,5 +90,11 @@
     "org/gnome/shell/keybindings" = {
       open-application-menu = ["<Alt>g"];
     };
+
+    # Set the GTK theme.
+    # We use the theme installed via gtk.nix.
+    "org/gnome/shell/extensions/user-theme" = {
+      name = "WhiteSur-Dark";
+    };
   };
 }
