@@ -107,6 +107,9 @@ in {
       #   * --verbose: Log a minimal amount to aid debugging.
       #   * --no-scan: Do not scan entire filesystem before backing up (saves ~1min)
       extraBackupArgs = [ "--verbose" "--no-scan" ];
+
+      # Keep the last 2 months of backups (from the date of the last successful snapshot).
+      pruneOpts = [ "--keep-within 2m" ];
     };
 
     # Wait for 30s before backing up, as internet may not have connected yet.
