@@ -33,6 +33,7 @@
       jnoortheen.nix-ide
       jock.svg
       mkhl.direnv
+      ms-vscode-remote.remote-ssh
       rust-lang.rust-analyzer
       serayuzgur.crates
       streetsidesoftware.code-spell-checker
