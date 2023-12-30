@@ -18,6 +18,7 @@ in {
       default = with gnomeExtensions; [
         advanced-alttab-window-switcher
         alttab-scroll-workaround
+        blur-my-shell
         caffeine
         fullscreen-notifications
         hibernate-status-button

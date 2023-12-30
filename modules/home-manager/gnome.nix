@@ -17,6 +17,7 @@
       enabled-extensions = [
         "advanced-alt-tab@G-dH.github.com"
         "alt-tab-scroll-workaround@lucasresck.github.io"
+        "blur-my-shell@aunetx"
         "caffeine@patapon.info"
         "gsconnect@andyholmes.github.io"
         "hass-gshell@geoph9-on-github"
