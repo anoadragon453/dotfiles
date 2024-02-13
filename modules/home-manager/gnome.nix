@@ -19,6 +19,7 @@
         "alt-tab-scroll-workaround@lucasresck.github.io"
         "blur-my-shell@aunetx"
         "caffeine@patapon.info"
+        "fullscreen-notifications@sorrow.about.alice.pm.me"
         "gsconnect@andyholmes.github.io"
         "hass-gshell@geoph9-on-github"
         "hibernate-status@dromi"
