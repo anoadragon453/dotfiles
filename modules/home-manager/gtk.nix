@@ -8,8 +8,7 @@
     # them with new files. These will need to be cleared again manually,
     # otherwise home-manager will complain about them when reloading.
     cursorTheme = {
-      name = "WhiteSur-cursors";
-      package = pkgs.whitesur-cursors;
+      name = "Breeze_Snow";
       size = 24;
     };
 
