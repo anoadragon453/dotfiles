@@ -23,6 +23,7 @@ in {
         fullscreen-notifications
         hibernate-status-button
         home-assistant-extension
+        steal-my-focus-window
         tray-icons-reloaded
       ];
     };

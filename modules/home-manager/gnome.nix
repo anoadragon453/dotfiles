@@ -22,6 +22,7 @@
         "gsconnect@andyholmes.github.io"
         "hass-gshell@geoph9-on-github"
         "hibernate-status@dromi"
+        "steal-my-focus-window@steal-my-focus-window"
         "trayIconsReloaded@selfmade.pl"
         "user-theme@gnome-shell-extensions.gcampax.github.com"
       ];
