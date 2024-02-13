@@ -20,7 +20,14 @@
 
     theme = {
       name = "WhiteSur-Dark";
-      package = pkgs.whitesur-gtk-theme;
+      package = pkgs.whitesur-gtk-theme.override {
+        altVariants = [ "all" ];
+        colorVariants = [ "Dark" ];
+        themeVariants = [ "default" ];
+        iconVariant = "tux";
+        nautilusStyle = "glassy";
+        roundedMaxWindow = true;
+      };
     };
   };
 }
