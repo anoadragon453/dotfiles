@@ -26,7 +26,6 @@
         themeVariants = [ "default" ];
         iconVariant = "tux";
         nautilusStyle = "glassy";
-        roundedMaxWindow = true;
       };
     };
   };
