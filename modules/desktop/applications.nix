@@ -30,6 +30,7 @@ in {
       nextcloud-client
       rustdesk
       signal-desktop
+      telegram-desktop
       tor-browser-bundle-bin
       # thunderbird is installed via thunderbird.nix
 
@@ -37,7 +38,6 @@ in {
       bitwig-studio
 
       # Office
-      libreoffice-fresh
       obsidian
       onlyoffice-bin
 
