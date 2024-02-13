@@ -19,7 +19,6 @@ let
       mkdir -p $out/bin
       makeWrapper ${pkgs.thunderbird}/bin/thunderbird $out/bin/thunderbird \
         --set TEMP "${cfg.customTempDirectory}"
-      install -D -t $out/share/icons $desktopItem/share/icons/*
       install -D -t $out/share/applications $desktopItem/share/applications/*
     '';
   };
