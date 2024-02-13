@@ -8,7 +8,6 @@ in {
     };
 
     config = {
-        
         # Earlyoom prevents systems from locking up when they run out of memory
         services.earlyoom.enable = true;
 
@@ -17,5 +16,10 @@ in {
         
         boot.consoleLogLevel = cfg.bootLogLevel;
         boot.kernelPackages = cfg.kernelPackage;
+
+        boot.kernel.sysctl = {
+            # Allow debuggers (such as IDEs) to attach to other processes.
+            "kernel.yama.ptrace_scope" = 0;
+        };
     };
 }
