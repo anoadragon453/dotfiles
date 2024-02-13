@@ -72,6 +72,19 @@
       # Close windows via Alt-Shift-Q.
       close = [ "<Shift><Alt>q" ];
 
+      # I found that if Alt-Tab was assigned to "switch-applications", then Alt-Tab
+      # would only show windows on the current monitor, and my Advanced Alt-Tab
+      # Window Switcher extension wouldn't be triggered.
+      #
+      # Moving the shortcut to the "switch-windows" action instead made things
+      # behave as expected.
+      #
+      # Solution from: https://askubuntu.com/a/1088229
+      switch-applications = [];
+      switch-applications-backward = [];
+      switch-windows = [ "<Alt>Tab" ];
+      switch-windows-backward = [ "<Shift><Alt>Tab" ];
+
       # Take a screenshot with Alt-Shift-S.
       show-screenshot-ui = [ "<Shift><Alt>s" ];
     };
@@ -87,6 +100,7 @@
     "org/gnome/settings-daemon/plugins/media-keys" = {
       custom-keybindings = ["/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"];
     };
+    # TODO: Add Alt-Shift-T to open gnome-text-editor
 
     # I was seeing errors about this key being missing, and this appeared to be
     # linked to gdm crashing... so I've added it with a random shortcut sequence.
