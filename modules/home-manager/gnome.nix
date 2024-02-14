@@ -97,10 +97,18 @@
       binding = "<Alt>Return";
       command = "alacritty";
     };
-    "org/gnome/settings-daemon/plugins/media-keys" = {
-      custom-keybindings = ["/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"];
+    # Open GNOME Text Editor with Ctrl-Alt-T.
+    "org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1" = {
+      name = "Open Text Editor";
+      binding = "<Control><Alt>T";
+      command = "gnome-text-editor";
     };
-    # TODO: Add Alt-Shift-T to open gnome-text-editor
+    "org/gnome/settings-daemon/plugins/media-keys" = {
+      custom-keybindings = [
+        "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom0/"
+        "/org/gnome/settings-daemon/plugins/media-keys/custom-keybindings/custom1/"
+      ];
+    };
 
     # I was seeing errors about this key being missing, and this appeared to be
     # linked to gdm crashing... so I've added it with a random shortcut sequence.
