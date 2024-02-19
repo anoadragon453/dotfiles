@@ -17,6 +17,7 @@
         ./security.nix
         ./shell.nix
         ./swap.nix
+        ./systemd.nix
         ./tmp.nix
         ./virtualisation.nix
         ./vpn.nix
