@@ -62,9 +62,7 @@
 
         # Allow certain insecure packages.
         permittedInsecurePackages = [
-          # The current version of obsidian uses EoL electron >:(
-          # While obsidian is this version, allow electron 25 to be installed.
-          (if (nixpkgs.legacyPackages."x86_64-linux".obsidian.version == "1.4.16") then "electron-25.9.0" else "")
+          "electron-25.9.0"
         ];
       };
       overlays = [
@@ -375,6 +373,23 @@
 
           services.postgresql.enable = true;
 
+          # Set up a very temp sliding sync proxy for trinity work.
+          services.matrix-sliding-sync = {
+            enable = true;
+            settings = {
+              SYNCV3_SERVER = "http://127.0.0.1:8081";
+              SYNCV3_BINDADDR = "0.0.0.0:8181";
+            };
+            environmentFile = builtins.toFile "sliding-sync-env" ''
+              SYNCV3_SECRET=e83246af3096dadc99372406c8f1f41de72c1e0591e3d0d54435d7eb5a28d520
+            '';
+            createDatabase = true;
+          };
+
+          # Expose both the homeserver's well-known file (which points to the
+          # proxy) and the sliding sync proxy itself to my network.
+          networking.firewall.allowedTCPPorts = [ 8081 8181 ];
+
           # Disable fingerprint reader enabled by nixos-hardware's framework service.
           # Mostly because GDM doesn't interact well with the PAM rules set by it.
           services.fprintd.enable = false;
@@ -446,6 +461,13 @@
           sys.security.sshd.enable = true;
 
           sys.virtualisation.backend = "docker";
+
+          # Disable KVM support on this machine as it's not needed. This leads
+          # to libvirt not being installed, which saves disk space.
+          sys.cpu.kvm = false;
+
+          # No need to update the firmware of cloud hosting providers' VMs.
+          services.fwupd.enable = nixpkgs.lib.mkForce false;
 
           # Services on this machine.
           sys.server = {
