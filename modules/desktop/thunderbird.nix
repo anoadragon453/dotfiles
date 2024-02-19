@@ -23,6 +23,10 @@ let
     '';
   };
   cfg = config.sys.thunderbird;
+
+  xorg = (elem "xorg" config.sys.hardware.graphics.desktopProtocols);
+  wayland = (elem "wayland" config.sys.hardware.graphics.desktopProtocols);
+  desktopMode = xorg || wayland;
 in {
   options.sys.thunderbird = {
     customTempDirectory = mkOption {
@@ -36,7 +40,7 @@ in {
     };
   };
 
-  config = {
+  config = mkIf desktopMode {
     # Install thunderbird.
     # If a custom temp directory is specified, install our wrapper around the thunderbird
     # package instead of the vanilla package.
