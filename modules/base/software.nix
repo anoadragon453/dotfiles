@@ -51,7 +51,6 @@
         gnupg
 
         # Nix tools
-        cachix
         nil
         nix-index
 
