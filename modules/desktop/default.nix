@@ -8,7 +8,6 @@
     ./picom.nix
     ./dunst.nix
     ./element.nix
-    ./terminal.nix
     ./gui.nix
     ./gnome.nix
     ./kde.nix
