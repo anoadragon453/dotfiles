@@ -142,8 +142,6 @@
           networking.interfaces."enp8s0" = { useDHCP = true; };
           networking.networkmanager.enable = true;
 
-          sys.virtualisation.backend = "docker";
-
           sys.user.users.user = {
             # TODO: Move adbusers into android.nix somehow
             groups = [ "adbusers" "audio" "docker" "networkmanager" "pipewire" "wheel" ];
@@ -277,8 +275,6 @@
           sys.kernelPackage = pkgs.linuxPackages;
 
           networking.networkmanager.enable = true;
-
-          sys.virtualisation.backend = "docker";
 
           sys.user.users.user = {
             # TODO: Move adbusers into android.nix somehow

@@ -5,7 +5,7 @@ in {
     options.sys.virtualisation = {
         backend = lib.mkOption {
             type = lib.types.enum [ "docker" "podman" ];
-            default = "podman";
+            default = "docker";
             description = "Sets the OCI container runtime backend";
         };
 
