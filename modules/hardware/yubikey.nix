@@ -54,7 +54,6 @@ in {
             gnupg.agent = {
                 enable = true;
                 enableSSHSupport = cfg.legacySSHSupport;
-                pinentryFlavor = "qt";
             };
         };
 
