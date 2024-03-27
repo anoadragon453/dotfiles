@@ -59,11 +59,6 @@
       inherit nixpkgs; 
       cfg = {
         allowUnfree = true;
-
-        # Allow certain insecure packages.
-        permittedInsecurePackages = [
-          "electron-25.9.0"
-        ];
       };
       overlays = [
         localpkgs
