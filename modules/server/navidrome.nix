@@ -52,6 +52,10 @@ in {
 
           # Allow sharing music by public link.
           EnableSharing = true;
+
+          # Enable scraping artist artwork from Spotify.
+          Spotify.ID = "3c96bd45ae1547908d43139d0fd97fdb";
+          Spotify.Secret = "c6f4edc219224716a5699e7bac488cea";
         };
       };
 
