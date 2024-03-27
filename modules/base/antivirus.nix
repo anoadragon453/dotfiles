@@ -55,7 +55,10 @@ in {
 
       # Don't start the on-access scanner until the ClamAV daemon itself has started. Similarly,
       # stop the on-access scanner if the daemon service stops.
-      requires = [ "clamav-daemon.service" ];
+      #
+      # network-online.target is needed otherwise a warning will be generated:
+      # "clamav-clamonacc.service is ordered after 'network-online.target' but doesn't depend on it"
+      requires = [ "network-online.target" "clamav-daemon.service" ];
 
       serviceConfig = {
         ExecStart = "${pkgs.clamav}/bin/clamonacc --config-file /etc/clamav/clamd.conf -F --fdpass --move=${quarantineDirectory}";
