@@ -46,6 +46,10 @@ in {
           # The level to log at.
           LogLevel = cfg.logLevel;
 
+          # Prevent frequent log outs.
+          # The largest unit of time that this configuration supports is hours...
+          SessionTimeout = "720h";
+
           # Allow sharing music by public link.
           EnableSharing = true;
         };
