@@ -1,13 +1,10 @@
 
-{pkgs, config, lib, ...}:
-with lib;
-with pkgs;
-let
-  cfg = config.sys;
-in {
+{pkgs, ...}:
+
+{
   config = {
     # Install neovim
-    sys.software = [ neovim ];
+    sys.software = [ pkgs.neovim ];
 
     # Alias vim to nvim
     environment.shellAliases = {

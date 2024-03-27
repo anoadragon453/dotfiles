@@ -7,6 +7,7 @@
         ./direnv.nix
         ./disk.nix
         ./flatpak.nix
+        ./git.nix
         ./kernel.nix
         ./neovim.nix
         ./network.nix

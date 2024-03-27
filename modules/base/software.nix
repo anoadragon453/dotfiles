@@ -16,6 +16,7 @@
         gdb
         ghostscript
         gnumake
+        gnupg
         htop
         hyperfine
         imagemagick
@@ -40,15 +41,6 @@
         strace
         ltrace
 
-        # This is in base because nix makes use of it with flakes.
-        git
-
-        # Allow access to git large-file storage repos.
-        git-lfs
-
-        # Allow decrypting secrets from our nix config
-        git-crypt
-        gnupg
 
         # Nix tools
         nil
