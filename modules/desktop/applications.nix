@@ -28,7 +28,7 @@ in {
       joplin-desktop
       qbittorrent
       nextcloud-client
-      rustdesk
+      rustdesk-flutter
       signal-desktop
       telegram-desktop
       tor-browser-bundle-bin
