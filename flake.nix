@@ -451,8 +451,6 @@
 
           sys.security.sshd.enable = true;
 
-          sys.virtualisation.backend = "docker";
-
           # Disable KVM support on this machine as it's not needed. This leads
           # to libvirt not being installed, which saves disk space.
           sys.cpu.kvm = false;
