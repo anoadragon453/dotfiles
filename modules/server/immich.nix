@@ -43,14 +43,14 @@ in {
         serverAndMicroservices = {
           imageName = "ghcr.io/immich-app/immich-server";
           imageDigest =
-            "sha256:c7b80752d48464dea1c4495ff810365a0809d89c2ac219547d3c1aed81c6411f"; # v1.94.1
-          sha256 = "sha256-Xd/dBmT9fqT1zVpAr0dfMSnBJ6LI2X5YI31cIrqPULk=";
+            "sha256:ad7a9828eb25e4f42ad17631bc81408b3fe464c4eec2300742af2e37acb4e8d6"; # v1.99.0
+          sha256 = "sha256-6hJkYK9Km8XmyWfl3MNydQVd8mnWNOta2WrLV+YUNho=";
         };
         machineLearning = {
           imageName = "ghcr.io/immich-app/immich-machine-learning";
           imageDigest =
-            "sha256:a3c612c548d5f547a31d001d97f661d7acd4a0ae354de76a70e45162d2b81014"; # v1.94.1
-          sha256 = "sha256-ePrVgaJ/QTz15TuJgp/C6UkrKKWD/yGeIn6Fs3EbXzE=";
+            "sha256:9a9d289a5fc894dad1aae6e49c09f39735846cda351e9f74879fcb0601437262"; # v1.99.0
+          sha256 = "sha256-xe9IOyxK3yxHFgG6m2j4pVNVibje+4KWkLCp1NofvZ8=";
         };
       };
       dbUsername = user;
@@ -65,6 +65,10 @@ in {
       immichWebUrl = "http://immich_web:3000";
       immichServerUrl = "http://immich_server:3001";
       immichMachineLearningUrl = "http://immich_machine_learning:3003";
+
+      # Extract the major version of the currently in-use postgres.
+      postgresPackage = config.services.postgresql.package;
+      majorPostgresVersion = builtins.head (builtins.match "([0-9]+)\..+" postgresPackage.version); 
 
       # Full environment variable docs: https://immich.app/docs/install/environment-variables
       environment = {
@@ -126,7 +130,7 @@ in {
         ensureDatabases = [ dbUsername ];
 
         extraPlugins = [
-          pkgs.pgvecto-rs
+          pkgs."postgresql${majorPostgresVersion}Packages".pgvecto-rs
         ];
         settings = { shared_preload_libraries = "vectors.so"; };
       };
