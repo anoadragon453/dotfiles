@@ -50,7 +50,7 @@
     deployPkgs = import nixpkgs {
       system = "x86_64-linux";
       overlays = [
-        inputs.deploy-rs.overlay
+        inputs.deploy-rs.overlays.default
         (self: super: { deploy-rs = { inherit (allPkgs."x86_64-linux") deploy-rs; lib = super.deploy-rs.lib; }; })
       ];
     };
