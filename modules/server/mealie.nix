@@ -40,7 +40,7 @@ in {
       # Start this container on boot.
       autoStart = true;
 
-      image = "ghcr.io/mealie-recipes/mealie:v1.0.0-RC2";
+      image = "ghcr.io/mealie-recipes/mealie:v1.4.0";
 
       # Expose port 9000 in the container to the configured port on the host.
       # TODO: We cannot set ports while the network mode is 'host' (see below).
