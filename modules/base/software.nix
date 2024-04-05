@@ -47,7 +47,9 @@
         nix-index
 
         # Scripting Languages
-        python311  # very useful to have python always available
+        # useful to have around for one-off scripts
+        python312
+        nodejs
 
         # TODO: Not sure which of these I need
         # Ported from core - need to move out to somewhere else
