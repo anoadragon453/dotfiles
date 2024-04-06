@@ -97,6 +97,14 @@ in {
             is_nsfw = false;
           };
 
+          # Allow users to update a new version of a video without changing metadata.
+          video_file.update.enabled = true;
+
+          # Bump the rate limit to allow mass uploads via the CLI.
+          rates_limit.api = {
+            max = 500;
+          };
+
           # Only allow incoming connections from local services (i.e. the reverse proxy).
           listen.hostname = "127.0.0.1";
 
