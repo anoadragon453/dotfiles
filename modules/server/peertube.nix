@@ -81,7 +81,7 @@ in {
           };
 
           instance = {
-            name = "Sweetpea";
+            name = "Peertube";
             short_description = "A personal peertube instance";
             description = ''
               Welcome to my peertube instance! Currently, this is only for hosting my own videos.
