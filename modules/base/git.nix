@@ -18,9 +18,10 @@
       gca = "git commit --amend";
       gcm = "git commit -m";
       gcp = "git cherry-pick";
+      gf = "git fetch";
       gp = "git push";
       gpf = "git push -f";
-      gpp = "git pull";
+      gpl = "git pull";
       gr = "git rebase -i";
       gs = "git stash";
       gsp = "git stash pop";
