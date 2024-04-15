@@ -42,13 +42,8 @@ in {
   config = let
     gfx = cfg.hardware.graphics;
     amd = (gfx.primaryGPU == "amd" || (elem "amd" gfx.extraGPU));
-    amdPrimary = gfx.PrimaryGPU == "amd";
-
     intel = (gfx.primaryGPU == "intel" || (elem "intel" gfx.extraGPU));
-    intelPrimary = gfx.PrimaryGPU == "intel";
-
     nvidia = (gfx.primaryGPU == "nvidia" || (elem "nvidia" gfx.extraGPU));
-    nvidiaPrimary = gfx.PrimaryGPU == "nvidia";
 
     xorg = (elem "xorg" gfx.desktopProtocols);
     desktopMode = xorg;
@@ -71,24 +66,28 @@ in {
     ];
 
     services.xserver = mkIf xorg {
+      enable = true;
+
       videoDrivers = [
         (mkIf amd "amdgpu") 
         (mkIf intel "intel")
         (mkIf nvidia "nvidia")
       ];
 
+      displayManager.lightdm.enable = gfx.displayManager == "lightdm";
+      displayManager.gdm.enable = gfx.displayManager == "gdm";
+      displayManager.gdm.wayland = true;
+
       deviceSection = mkIf (intel || amd) ''
         Option "TearFree" "true"
       '';
-
-      enable = true;
-      displayManager.lightdm.enable = gfx.displayManager == "lightdm";
-      displayManager.job.logToJournal = true;
-      displayManager.gdm.enable = gfx.displayManager == "gdm";
-      displayManager.gdm.wayland = true;
-      displayManager.sddm.enable = gfx.displayManager == "sddm";
       
       libinput.enable = true;
+    };
+
+    services.displayManager = {
+      sddm.enable = gfx.displayManager == "sddm";
+      logToJournal = true;
     };
 
     services.greetd.enable = gfx.displayManager == "greetd";    
