@@ -264,6 +264,31 @@
         inherit nixpkgs allPkgs;
         cfg = let 
           pkgs = allPkgs.x86_64-linux;
+
+          # A helper function to create an exec bind mount entry for the
+          # `fileSystems` NixOS option for each of the directories in the
+          # provided list `dirNames`.
+          #
+          # This function only expects directories under (and relative to) the
+          # `/home/work` directory to be passed.
+          createExecBindMounts = dirNames:
+            builtins.listToAttrs (map (dirName: 
+            let 
+              absoluteDirName = "/home/work/" + dirName;
+            in {
+              name = absoluteDirName;
+              value = {
+                device = absoluteDirName;
+
+                # The directory must be mounted first, as this directory will exist on it.
+                depends = ["/home/work"];
+
+                # This is a bind mount.
+                fsType = "none";
+
+                options = [ "bind" "exec" "relatime" ];
+              };
+            }) dirNames);
         in {
           boot.initrd.availableKernelModules = [ "xhci_pci" "thunderbolt" "nvme" "usb_storage" "sd_mod" ];
 
@@ -401,20 +426,68 @@
             [ { device = "/dev/disk/by-uuid/3e9a5346-b193-4bf1-b805-1cd65cb1de87"; }
             ];
 
-          # Root filesystem
-          fileSystems."/" =
-            { device = "/dev/disk/by-uuid/bda31b70-0bfb-4153-881e-98b57478241c";
-              fsType = "ext4";
-            };
-
           boot.initrd.luks.devices."luks-29870430-e228-4f4a-a39f-932382a517f6".device = "/dev/disk/by-uuid/29870430-e228-4f4a-a39f-932382a517f6";
 
-          # Boot device
-          fileSystems."/boot/efi" =
-            { device = "/dev/disk/by-uuid/725D-C6E7";
-              fsType = "vfat";
-            };
+          fileSystems = {
+            # Root filesystem
+            "/" =
+              { device = "/dev/disk/by-uuid/bda31b70-0bfb-4153-881e-98b57478241c";
+                fsType = "ext4";
+              };
 
+            # Boot device
+            "/boot/efi" =
+              { device = "/dev/disk/by-uuid/725D-C6E7";
+                fsType = "vfat";
+              };
+          
+            # Security: Re-mount /tmp as `noexec`.
+            "/tmp" = 
+              { device = "/tmp";
+
+                # The root filesystem must be mounted first, as `/tmp` exists on it.
+                depends = ["/"];
+
+                # This is a bind mount.
+                fsType = "none";
+
+                options = [
+                  "bind"
+                  "relatime"
+                  "noexec"
+                  "nosuid"
+                  "nodev"
+                ];
+              };
+          
+            # Security: Re-mount `work` user home directory as `noexec`.
+            "/home/work" = 
+              { device = "/home/work";
+
+                # The root filesystem must be mounted first, as `/home` exists on it.
+                depends = ["/"];
+
+                # This is a bind mount.
+                fsType = "none";
+
+                options = [
+                  "bind"
+                  "relatime"
+                  "noexec"
+                  "nosuid"
+                  "nodev"
+                ];
+              };
+
+            # Allow certain directories within `work`s home directory to have `exec`.
+          } // createExecBindMounts [
+            ".cache"
+            ".config"
+            ".local/bin"
+            ".local/share"
+            ".rustup"
+            "code"
+          ];
         };
       };
 
