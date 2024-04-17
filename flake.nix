@@ -269,19 +269,19 @@
           # `fileSystems` NixOS option for each of the directories in the
           # provided list `dirNames`.
           #
-          # This function only expects directories under (and relative to) the
-          # `/home/work` directory to be passed.
+          # This function only expects directories under (and relative to)
+          # `/home` to be passed.
           createExecBindMounts = dirNames:
             builtins.listToAttrs (map (dirName: 
             let 
-              absoluteDirName = "/home/work/" + dirName;
+              absoluteDirName = "/home/" + dirName;
             in {
               name = absoluteDirName;
               value = {
                 device = absoluteDirName;
 
                 # The directory must be mounted first, as this directory will exist on it.
-                depends = ["/home/work"];
+                depends = ["/home"];
 
                 # This is a bind mount.
                 fsType = "none";
@@ -460,9 +460,9 @@
                 ];
               };
           
-            # Security: Re-mount `work` user home directory as `noexec`.
-            "/home/work" = 
-              { device = "/home/work";
+            # Security: Re-mount /home as `noexec`.
+            "/home" = 
+              { device = "/home";
 
                 # The root filesystem must be mounted first, as `/home` exists on it.
                 depends = ["/"];
@@ -481,12 +481,19 @@
 
             # Allow certain directories within `work`s home directory to have `exec`.
           } // createExecBindMounts [
-            ".cache"
-            ".config"
-            ".local/bin"
-            ".local/share"
-            ".rustup"
-            "code"
+            "user/.cache"
+            "user/.config"
+            "user/.local/bin"
+            "user/.local/share"
+            "user/.rustup"
+            "user/code"
+
+            "work/.cache"
+            "work/.config"
+            "work/.local/bin"
+            "work/.local/share"
+            "work/.rustup"
+            "work/code"
           ];
         };
       };
