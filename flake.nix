@@ -487,6 +487,7 @@
             "user/.local/share"
             "user/.rustup"
             "user/code"
+            "user/go/bin"
 
             "work/.cache"
             "work/.config"
@@ -494,6 +495,7 @@
             "work/.local/share"
             "work/.rustup"
             "work/code"
+            "work/go/bin"
           ];
         };
       };
