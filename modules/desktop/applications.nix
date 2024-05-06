@@ -32,6 +32,7 @@ in {
       signal-desktop
       telegram-desktop
       tor-browser-bundle-bin
+      warp
       # thunderbird is installed via thunderbird.nix
 
       # Audio production

@@ -22,7 +22,7 @@
         imagemagick
         jq
         killall
-        magic-wormhole
+        magic-wormhole-rs
         ncdu
         nmap
         ripgrep
