@@ -12,8 +12,10 @@
 
     environment.shellAliases = {
       ga = "git add";
+      gb = "git branch";
       gc = "git commit";
       gch = "git checkout";
+      gd = "git diff";
       gl = "git log";
       gca = "git commit --amend";
       gcm = "git commit -m";
