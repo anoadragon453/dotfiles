@@ -82,8 +82,9 @@ in {
         Option "TearFree" "true"
       '';
       
-      libinput.enable = true;
     };
+
+    services.libinput.enable = true;
 
     services.displayManager = {
       sddm.enable = gfx.displayManager == "sddm";
