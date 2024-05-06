@@ -49,6 +49,7 @@ in {
       # Media
       drawpile
       easyeffects
+      gnome.gnome-sound-recorder
       inkscape
       kdenlive
       krita
@@ -74,6 +75,7 @@ in {
       gnome.gnome-boxes
       jetbrains.pycharm-community
       kid3
+      numbat
       poppler_utils  # includes pdfunite
       solaar
       winetricks
