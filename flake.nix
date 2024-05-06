@@ -264,31 +264,6 @@
         inherit nixpkgs allPkgs;
         cfg = let 
           pkgs = allPkgs.x86_64-linux;
-
-          # A helper function to create an exec bind mount entry for the
-          # `fileSystems` NixOS option for each of the directories in the
-          # provided list `dirNames`.
-          #
-          # This function only expects directories under (and relative to)
-          # `/home` to be passed.
-          createExecBindMounts = dirNames:
-            builtins.listToAttrs (map (dirName: 
-            let 
-              absoluteDirName = "/home/" + dirName;
-            in {
-              name = absoluteDirName;
-              value = {
-                device = absoluteDirName;
-
-                # The directory must be mounted first, as this directory will exist on it.
-                depends = ["/home"];
-
-                # This is a bind mount.
-                fsType = "none";
-
-                options = [ "bind" "exec" "relatime" ];
-              };
-            }) dirNames);
         in {
           boot.initrd.availableKernelModules = [ "xhci_pci" "thunderbolt" "nvme" "usb_storage" "sd_mod" ];
 
@@ -440,63 +415,7 @@
               { device = "/dev/disk/by-uuid/725D-C6E7";
                 fsType = "vfat";
               };
-          
-            # Security: Re-mount /tmp as `noexec`.
-            "/tmp" = 
-              { device = "/tmp";
-
-                # The root filesystem must be mounted first, as `/tmp` exists on it.
-                depends = ["/"];
-
-                # This is a bind mount.
-                fsType = "none";
-
-                options = [
-                  "bind"
-                  "relatime"
-                  "noexec"
-                  "nosuid"
-                  "nodev"
-                ];
-              };
-          
-            # Security: Re-mount /home as `noexec`.
-            "/home" = 
-              { device = "/home";
-
-                # The root filesystem must be mounted first, as `/home` exists on it.
-                depends = ["/"];
-
-                # This is a bind mount.
-                fsType = "none";
-
-                options = [
-                  "bind"
-                  "relatime"
-                  "noexec"
-                  "nosuid"
-                  "nodev"
-                ];
-              };
-
-            # Allow certain directories within `work`s home directory to have `exec`.
-          } // createExecBindMounts [
-            "user/.cache"
-            "user/.config"
-            "user/.local/bin"
-            "user/.local/share"
-            "user/.rustup"
-            "user/code"
-            "user/go/bin"
-
-            "work/.cache"
-            "work/.config"
-            "work/.local/bin"
-            "work/.local/share"
-            "work/.rustup"
-            "work/code"
-            "work/go/bin"
-          ];
+          };
         };
       };
 

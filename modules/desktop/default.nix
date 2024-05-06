@@ -11,6 +11,7 @@
     ./gui.nix
     ./gnome.nix
     ./kde.nix
+    ./noexec.nix
     ./applications.nix
     ./i3.nix
     ./plymouth.nix
