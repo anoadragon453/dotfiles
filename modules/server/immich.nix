@@ -25,6 +25,16 @@ in {
       description = "The port to listen on";
     };
 
+    metricsPortServer = lib.mkOption {
+      type = lib.types.int;
+      description = "The port that the server container should listen on for prometheus metrics";
+    };
+
+    metricsPortMicroservices = lib.mkOption {
+      type = lib.types.int;
+      description = "The port that the microservices container should listen on for prometheus metrics";
+    };
+
     storagePath = lib.mkOption {
       type = lib.types.path;
       description = "The filepath at which persistent Immich files should be stored";
@@ -81,6 +91,8 @@ in {
         IMMICH_WEB_URL = immichWebUrl;
         IMMICH_SERVER_URL = immichServerUrl;
         IMMICH_MACHINE_LEARNING_URL = immichMachineLearningUrl;
+
+        IMMICH_METRICS = "true";
 
         LOG_LEVEL = cfg.logLevel;
       };
@@ -171,7 +183,7 @@ in {
             PGID = toString gid;
           };
 
-          ports = [ "${toString cfg.port}:3001" ];
+          ports = [ "${toString cfg.port}:3001" "${toString cfg.metricsPortServer}:8081" ];
 
           autoStart = true;
         };
@@ -197,6 +209,8 @@ in {
             PGID = toString gid;
             REVERSE_GEOCODING_DUMP_DIRECTORY = "/tmp/reverse-geocoding-dump";
           };
+
+          ports = [ "${toString cfg.metricsPortMicroservices}:8081" ];
 
           autoStart = true;
         };
@@ -272,9 +286,25 @@ in {
           # Redirect all unencrypted traffic to HTTPS.
           forceSSL = true;
 
-          locations."/" = {
-            # Proxy all traffic straight through.
-            proxyPass = "http://127.0.0.1:${toString cfg.port}";
+          locations = {
+            "/metrics/server" = {
+              # Proxy to the immich server container's metrics port.
+              # Note: We include a trailing slash in order to drop the path from
+              # the request.
+              proxyPass = "http://127.0.0.1:${toString cfg.metricsPortServer}/";
+            };
+
+            "/metrics/microservices" = {
+              # Proxy to the immich microservices container's metrics port.
+              # Note: We include a trailing slash in order to drop the path from
+              # the request.
+              proxyPass = "http://127.0.0.1:${toString cfg.metricsPortMicroservices}/";
+            };
+
+            "/" = {
+              # Proxy all other traffic straight through.
+              proxyPass = "http://127.0.0.1:${toString cfg.port}";
+            };
           };
 
           # Allow uploading media files up to 10 gigabytes in size.

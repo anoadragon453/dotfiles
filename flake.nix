@@ -467,6 +467,8 @@
               enable = true;
               domain = "i.amorgan.xyz";
               port = 8006;
+              metricsPortServer = 8009;
+              metricsPortMicroservices = 8010;
               storagePath = "/mnt/storagebox/media/immich";
               logLevel = "log";
             };
