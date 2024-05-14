@@ -10,6 +10,10 @@
     extraConfig = {
       # Set the default branch name.
       init.defaultBranch = "main";
+
+      # No need to specify remote branch name when pushing to it for the first
+      # time.
+      push.autoSetupRemote = true;
     };
   };
 }
