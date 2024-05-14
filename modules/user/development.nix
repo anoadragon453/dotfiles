@@ -14,18 +14,6 @@ in {
     sys.user.userRoles.development = [
         (user: mergeUser user {
             files = {
-                gitconfig = {
-                    path = ".config/git/config";
-                    text = ''
-                        [init]
-                          defaultBranch = "main"
-                        [user]
-                          email = "${user.config.email}"
-                          name = "${user.config.name}"
-                          # Disabled as I'm not currently signing my commits
-                          #signingKey = "${user.config.signingKey}"
-                    '';
-                };
                 gpg = {
                     path = ".gnupg/gpg.conf";
                     text = ''
