@@ -41,6 +41,7 @@ in {
       # Office
       obsidian
       onlyoffice-bin
+      prusa-slicer
 
       # Games
       airshipper # launcher and updater for veloren
