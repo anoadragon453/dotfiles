@@ -159,7 +159,7 @@ Encrypt the file using `sops`. `sops` is already installed inside the nix shell
 of this repo, so there's no need to install it manually:
 
 ```shell
-sops -i secrets/personal_common/my_secret_file.yaml
+sops -e -i secrets/personal_common/my_secret_file.yaml
 ```
 
 Now reference this file in your nix configuration. First you need to tell
