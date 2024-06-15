@@ -115,7 +115,6 @@ in {
 
     hardware.opengl.extraPackages32 = mkIf (!headless) (with pkgs.driversi686Linux;[
       (mkIf amd amdvlk)
-      (mkIf intel vaapiIntel)
     ]);
 
     sys.software = with pkgs; [
