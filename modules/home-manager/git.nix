@@ -10,6 +10,9 @@
     difftastic.enable = true;
 
     extraConfig = {
+      # Disable rebasing by default when pulling new changes on a branch.
+      pull.rebase = false;
+
       # Set the default branch name.
       init.defaultBranch = "main";
 
