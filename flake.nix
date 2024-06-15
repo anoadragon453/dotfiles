@@ -488,13 +488,6 @@
               logLevel = "info";
             };
 
-            onlyoffice-document-server = {
-              enable = true;
-              domain = "onlyoffice.amorgan.xyz";
-              port = 8002;
-              jwtSecretFilePath = "onlyoffice-document-server-jwt-secret";
-            };
-
             peertube = {
               enable = true;
               domain = "v.amorgan.xyz";
@@ -518,18 +511,6 @@
           };
 
           sops.secrets = {
-            onlyoffice-document-server-jwt-secret = {
-              restartUnits = [ "onlyoffice-docservice.service" ];
-              sopsFile = ./secrets/plonkie/onlyoffice-document-server-jwt-secret;
-
-              # It's actually just a plaintext file containing the secret.
-              format = "binary";
-
-              # Allow the OnlyOffice DocumentService to read the file.
-              owner = "onlyoffice";
-              group = "onlyoffice";
-            };
-
             peertube-secret = {
               restartUnits = [ "peertube.service" ];
               sopsFile = ./secrets/plonkie/peertube-secret;
