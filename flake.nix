@@ -503,6 +503,7 @@
             };
 
             postgresql.backups = {
+              enable = true;
               backupLocationFilePath = "/mnt/storagebox/postgresql-backups";
             };
 
