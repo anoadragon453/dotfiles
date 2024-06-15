@@ -22,7 +22,7 @@
       gcp = "git cherry-pick";
       gf = "git fetch";
       gp = "git push";
-      gpf = "git push -f";
+      gpf = "git push --force-with-lease";
       gpl = "git pull";
       gr = "git rebase -i";
       gs = "git stash";
