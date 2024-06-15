@@ -10,7 +10,7 @@ let
 in {
   config = mkIf desktopMode {
     boot.plymouth = {
-      enable = true;
+      enable = false;
       theme = "colorful_sliced";
       themePackages = [
         # Install plymouth themes from adi1090x.
