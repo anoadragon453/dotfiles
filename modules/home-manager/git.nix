@@ -7,6 +7,8 @@
     userEmail = "andrew@amorgan.xyz";
     userName = "Andrew Morgan";
 
+    difftastic.enable = true;
+
     extraConfig = {
       # Set the default branch name.
       init.defaultBranch = "main";
