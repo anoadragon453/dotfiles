@@ -53,14 +53,14 @@ in {
         serverAndMicroservices = {
           imageName = "ghcr.io/immich-app/immich-server";
           imageDigest =
-            "sha256:10761af14a6145353169042f29d2e49943de75b57a5d19251b365fe0d41ee15a"; # v1.103.1
-          sha256 = "sha256-PW7tDSJYQqFS/MItHth4+9l7ybkShBN9flctEJfnrjo=";
+            "sha256:d39cb7ecbcc9924f2c51a3e0deb8a469075996c6ba9e1384eb2ddb550984848e"; # v1.106.4
+          sha256 = "sha256-yt0/neyBIiyr+zpX9jB2UjsBHxLKyZSbnjSa32OchNA=";
         };
         machineLearning = {
           imageName = "ghcr.io/immich-app/immich-machine-learning";
           imageDigest =
-            "sha256:708ff677ab952dda9d7cb9343a6d650a6ac02a4e6c7447015f9df95c780cfc42"; # v1.103.1
-          sha256 = "sha256-EzNLbvYk8YhjrrG849/psOseA3PcUubqTKF41WpCnLQ=";
+            "sha256:9db20e5c2033bef01fa2be50fa0a2c3d62e43f069aedde4d49a65e65a436d40b"; # v1.106.4
+          sha256 = "sha256-CB+do2YQ/HTYf40NxyM2WdpD0NAsqvCu+xG95hl5GUI=";
         };
       };
       dbUsername = user;
@@ -96,26 +96,6 @@ in {
 
         LOG_LEVEL = cfg.logLevel;
       };
-
-      # A function to wrap a docker image as a locally built container.
-      # TODO: I think this is only useful for ensuring image digests are followed?
-      wrapImage = { name, imageName, imageDigest, sha256, entrypoint }:
-        pkgs.dockerTools.buildImage ({
-          name = name;
-          tag = "release";
-          fromImage = pkgs.dockerTools.pullImage {
-            imageName = imageName;
-            imageDigest = imageDigest;
-            sha256 = sha256;
-          };
-          created = "now";
-          config = if builtins.length entrypoint == 0 then
-            null
-          else {
-            Cmd = entrypoint;
-            WorkingDir = "/usr/src/app";
-          };
-        });
 
       # A function to build a container volume mount string that maps to the
       # same place in the container as on the host.
@@ -163,12 +143,8 @@ in {
       # The containers are connected via a bridge network called "immich-bridge".
       virtualisation.oci-containers.containers = {
         immich_server = {
-          imageFile = wrapImage {
-            inherit (images.serverAndMicroservices) imageName imageDigest sha256;
-            name = "immich_server";
-            entrypoint = [ "/bin/sh" "start-server.sh" ];
-          };
-          image = "immich_server:release";
+          imageFile = pkgs.dockerTools.pullImage images.serverAndMicroservices;
+          image = "ghcr.io/immich-app/immich-server";
           extraOptions =
             [ "--network=immich-bridge" "--user=${toString uid}:${toString gid}" ];
 
@@ -184,33 +160,6 @@ in {
           };
 
           ports = [ "${toString cfg.port}:3001" "${toString cfg.metricsPortServer}:8081" ];
-
-          autoStart = true;
-        };
-
-        immich_microservices = {
-          imageFile = wrapImage {
-            inherit (images.serverAndMicroservices) imageName imageDigest sha256;
-            name = "immich_microservices";
-            entrypoint = [ "/bin/sh" "start-microservices.sh" ];
-          };
-          image = "immich_microservices:release";
-          extraOptions =
-            [ "--network=immich-bridge" "--user=${toString uid}:${toString gid}" ];
-
-          volumes = [
-            "${cfg.storagePath}:/usr/src/app/upload"
-            (mkMount "/run/postgresql")
-            (mkMount "/run/redis-${redisName}")
-          ];
-
-          environment = environment // {
-            PUID = toString uid;
-            PGID = toString gid;
-            REVERSE_GEOCODING_DUMP_DIRECTORY = "/tmp/reverse-geocoding-dump";
-          };
-
-          ports = [ "${toString cfg.metricsPortMicroservices}:8081" ];
 
           autoStart = true;
         };
