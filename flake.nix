@@ -478,6 +478,7 @@
               domain = "r.amorgan.xyz";
               storagePath = "/mnt/storagebox/mealie";
               logLevel = "INFO";
+              port = 8007;
             };
 
             navidrome = {
