@@ -7,6 +7,7 @@
     ./navidrome.nix
     ./nginx.nix
     ./onlyoffice-document-server.nix
+    ./paperless.nix
     ./peertube.nix
     ./postgresql.nix
     ./vaultwarden.nix

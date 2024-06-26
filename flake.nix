@@ -489,6 +489,15 @@
               logLevel = "info";
             };
 
+            paperless = {
+              enable = true;
+              port = 8011;
+              domain = "docs.amorgan.xyz";
+              superuserPasswordFilePath = "paperless-superuser-password";
+              appDataFilePath = "/mnt/storagebox/paperless/appdata";
+              documentsFilePath = "/mnt/storagebox/paperless/documents";
+            };
+
             peertube = {
               enable = true;
               domain = "v.amorgan.xyz";
@@ -512,6 +521,17 @@
           };
 
           sops.secrets = {
+            paperless-superuser-password = {
+              sopsFile = ./secrets/plonkie/paperless-superuser-password;
+
+              # It's actually just a plaintext file containing the secret.
+              format = "binary";
+
+              # Allow the Paperless service to read the file.
+              owner = "paperless";
+              group = "paperless";
+            };
+
             peertube-secret = {
               restartUnits = [ "peertube.service" ];
               sopsFile = ./secrets/plonkie/peertube-secret;
@@ -543,6 +563,14 @@
             # /run/secrets/storagebox-mealie. SSHFS should use that path.
             storagebox-mealie = {
               sopsFile = ./secrets/plonkie/storagebox-mealie;
+              format = "binary";
+            };
+
+            # A private component of a SSH Key to give access to the paperless
+            # folder on my hetzner storagebox. The decrypted version ends up at
+            # /run/secrets/storagebox-paperless. SSHFS should use that path.
+            storagebox-paperless = {
+              sopsFile = ./secrets/plonkie/storagebox-paperless;
               format = "binary";
             };
 
@@ -619,6 +647,31 @@
                 "ServerAliveInterval=15" # keep connections alive
                 "Port=23"
                 "IdentityFile=/run/secrets/storagebox-mealie"
+              ];
+          };
+
+          # Mount my hetzner storagebox for mealie.
+          # Note: This will only mount on live systems, not VMs.
+          fileSystems."/mnt/storagebox/paperless" = {
+            device = "u220692-sub8@u220692-sub8.your-storagebox.de:/home";
+            fsType = "sshfs";
+            options =
+              [ # Filesystem options
+                "allow_other"          # for non-root access
+                "_netdev"              # this is a network fs
+
+                # We don't mount on demand, as that will cause services like navidrome to fail
+                # as the share doesn't yet exist.
+                #"x-systemd.automount" # mount on demand, rather than boot
+
+                #"debug"               # print debug logging
+                                       # warning: this causes the one-shot service to never exit
+
+                # SSH options
+                "StrictHostKeyChecking=no"  # prevent the connection from failing if the host's key hasn't been trusted yet
+                "ServerAliveInterval=15" # keep connections alive
+                "Port=23"
+                "IdentityFile=/run/secrets/storagebox-paperless"
               ];
           };
 
