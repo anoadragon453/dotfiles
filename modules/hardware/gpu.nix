@@ -94,11 +94,12 @@ in {
     services.greetd.enable = gfx.displayManager == "greetd";    
 
     hardware.nvidia.modesetting.enable = nvidia;
-    hardware.graphics.enable = !headless;
-    hardware.graphics.enable32Bit = !headless;
+    hardware.opengl.enable = !headless;
+    hardware.opengl.driSupport = !headless;
+    hardware.opengl.driSupport32Bit = !headless;
     hardware.steam-hardware.enable = !headless;
 
-    hardware.graphics.extraPackages = mkIf (!headless) (with pkgs;[
+    hardware.opengl.extraPackages = mkIf (!headless) (with pkgs;[
       (mkIf amd amdvlk)
 
       (mkIf cfg.hardware.graphics.amd.rocm.enable rocm-opencl-icd)
@@ -112,7 +113,7 @@ in {
       libva
     ]);
 
-    hardware.graphics.extraPackages32 = mkIf (!headless) (with pkgs.driversi686Linux;[
+    hardware.opengl.extraPackages32 = mkIf (!headless) (with pkgs.driversi686Linux;[
       (mkIf amd amdvlk)
     ]);
 
