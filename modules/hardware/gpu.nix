@@ -95,8 +95,6 @@ in {
 
     hardware.nvidia.modesetting.enable = nvidia;
     hardware.opengl.enable = !headless;
-    hardware.opengl.driSupport = !headless;
-    hardware.opengl.driSupport32Bit = !headless;
     hardware.steam-hardware.enable = !headless;
 
     hardware.opengl.extraPackages = mkIf (!headless) (with pkgs;[
