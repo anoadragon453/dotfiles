@@ -64,7 +64,7 @@ in {
 
     # Install some helpful packages when using GNOME
     sys.software = (with pkgs; [
-      gnome.gnome-tweaks  # Additional configuration options for GNOME.
+      gnome-tweaks  # Additional configuration options for GNOME.
     ]) ++ cfg.commonExtensions ++ cfg.extraExtensions;
 
     # Exclude some default GNOME packages from being installed
@@ -74,12 +74,9 @@ in {
       gnome-tour
     ] ++ (with gnome; [
       atomix    # puzzle game
-      epiphany  # web browser
-      geary     # email reader
       hitori    # sudoku game
       iagno     # go game
       tali      # poker games
-      totem     # gnome videos
     ]);
 
   };
