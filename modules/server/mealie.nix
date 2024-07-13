@@ -1,8 +1,5 @@
 # Mealie - recipe management for the modern household.
 #
-# Mealie is not available as a NixOS module (yet). So deploy it as an OCI
-# container instead.
-#
 {config, lib, ...}:
 
 let
@@ -34,63 +31,45 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
-    # Based on the official mealie PostgreSQL docker-compose file:
-    # https://nightly.mealie.io/documentation/getting-started/installation/postgres/
-    virtualisation.oci-containers.containers."mealie" = {
-      # Start this container on boot.
-      autoStart = true;
+    systemd.services.mealie.serviceConfig.ReadWritePaths = lib.mkForce [ cfg.storagePath ];
+    services = {
+      mealie = {
+        enable = true;
+        port = cfg.port;
+        # user = "mealie";
+        settings = {
+          ALLOW_SIGNUP = "false";
+          TZ = config.sys.timeZone;
+          MAX_WORKERS = "1";
+          BASE_URL = "https://" + cfg.domain;
 
-      image = "ghcr.io/mealie-recipes/mealie:v1.4.0";
+          # Override the default data directory.
+          DATA_DIR = cfg.storagePath;
 
-      # Expose port 9000 in the container to the configured port on the host.
-      # TODO: We cannot set ports while the network mode is 'host' (see below).
-      # ports = [
-      #   "${toString cfg.port}:9000"
+          # Configure postgres. I found that mealie would raise errors about
+          # database contention with SQLite when bulk importing recipes.
+          #
+          # We connect to postgres over a unix socket to allow for peer authentication.
+          DB_ENGINE = "postgres";
+          POSTGRES_URL_OVERRIDE = "postgresql://mealie:@/mealie?host=/run/postgresql";
+
+          LOG_LEVEL = cfg.logLevel;
+        };
+      };
+
+      # # Create a user for mealie to run as.
+      # users.users.mealie = {
+      #   isSystemUser = true;
+      #   description = "Mealie service user";
+      #   group = "mealie";
+      #   createHome = false;
+      # };
+
+      # # Ensure that the data directory allows the mealie user to read/write to it.
+      # systemd.tmpfiles.rules = [
+      #   "d ${cfg.storagePath} 0755 mealie mealie -"
       # ];
 
-      extraOptions = [
-        # The mealie container's `/app/run.sh` script does not respond to
-        # SIGTERM, causing attempts to stop the systemd service to hang.
-        #
-        # We use an init script provided by the container backend as a
-        # workaround, which will run `/app/run.sh` but also properly
-        # respond to SIGTERM.
-        # https://github.com/mealie-recipes/mealie/issues/2723
-        "--init"
-        # TODO: We currently have to set the network mode to 'host' to work around
-        # https://github.com/NixOS/nixpkgs/issues/272480
-        "--network=host"
-      ];
-
-      volumes = [
-        "${cfg.storagePath}:/app/data/"
-        "/run/postgresql:/run/postgresql"
-      ];
-
-      # Configure mealie settings.
-      # Available options: https://nightly.mealie.io/documentation/getting-started/installation/backend-config/
-      environment = {
-        ALLOW_SIGNUP = "false";
-        # Mealie appears to run as root (uid 0) regardless, see
-        # https://github.com/mealie-recipes/mealie/issues/2845
-        PUID = "1000";
-        PGID = "1000";
-        TZ = config.sys.timeZone;
-        MAX_WORKERS = "1";
-        BASE_URL = "https://" + cfg.domain;
-
-        # Configure postgres. I found that mealie would raise errors about
-        # database contention with SQLite when bulk importing recipes.
-        DB_ENGINE = "postgres";
-        POSTGRES_USER = "mealie";
-        POSTGRES_SERVER = "localhost";
-        POSTGRES_DB = "mealie";
-
-        LOG_LEVEL = cfg.logLevel;
-      };
-    };
-
-    services = {
       # Configure the reverse proxy to route to this service.
       nginx = {
         enable = true;
@@ -105,10 +84,8 @@ in {
           forceSSL = true;
 
           locations."/" = {
-            # Proxy all other traffic straight through.
-            # TODO: Currently have to hardcode to 9000 due to using network mode in the container.
-            # proxyPass = "http://127.0.0.1:${toString cfg.port}";
-            proxyPass = "http://127.0.0.1:9000";
+            # Proxy all traffic straight through.
+            proxyPass = "http://127.0.0.1:${toString cfg.port}";
           };
         };
       };
@@ -123,19 +100,6 @@ in {
             ensureDBOwnership = true;
           }
         ];
-
-        # Since mealie is running inside a container that doesn't have a "mealie" user,
-        # and we can't do password authentication for postgres users in NixOS... let's just
-        # allow anyone connecting from localhost to access the mealie database over TCP,
-        # regardless of the password they're using.
-        authentication = ''
-          host    mealie    mealie    127.0.0.1/32    trust
-          host    mealie    mealie    ::1/128         trust
-        '';
-        settings = {
-          # Allow incoming TCP connections from localhost.
-          listen_addresses = "localhost";
-        };
       };
     };
   };
