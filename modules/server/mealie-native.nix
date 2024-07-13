@@ -31,10 +31,12 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
+    systemd.services.mealie.serviceConfig.ReadWritePaths = lib.mkForce [ cfg.storagePath ];
     services = {
       mealie = {
         enable = true;
         port = cfg.port;
+        # user = "mealie";
         settings = {
           ALLOW_SIGNUP = "false";
           TZ = config.sys.timeZone;
@@ -42,19 +44,31 @@ in {
           BASE_URL = "https://" + cfg.domain;
 
           # Override the default data directory.
-          # TODO: Might need to lib.mkForce here?
           DATA_DIR = cfg.storagePath;
 
           # Configure postgres. I found that mealie would raise errors about
           # database contention with SQLite when bulk importing recipes.
+          #
+          # We connect to postgres over a unix socket to allow for peer authentication.
           DB_ENGINE = "postgres";
-          POSTGRES_USER = "mealie";
-          POSTGRES_SERVER = "localhost";
-          POSTGRES_DB = "mealie";
+          POSTGRES_URL_OVERRIDE = "postgresql://mealie:@/mealie?host=/run/postgresql";
 
           LOG_LEVEL = cfg.logLevel;
         };
       };
+
+      # # Create a user for mealie to run as.
+      # users.users.mealie = {
+      #   isSystemUser = true;
+      #   description = "Mealie service user";
+      #   group = "mealie";
+      #   createHome = false;
+      # };
+
+      # # Ensure that the data directory allows the mealie user to read/write to it.
+      # systemd.tmpfiles.rules = [
+      #   "d ${cfg.storagePath} 0755 mealie mealie -"
+      # ];
 
       # Configure the reverse proxy to route to this service.
       nginx = {
