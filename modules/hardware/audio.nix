@@ -19,7 +19,6 @@ in {
             (mkIf (cfg.hardware.audio.server == "pipewire") pulseaudio)
         ];
 
-        sound.enable = (cfg.hardware.audio.server == "pulse");
         security.rtkit.enable = true;
 
         services.pipewire = mkIf (cfg.hardware.audio.server == "pipewire") {
