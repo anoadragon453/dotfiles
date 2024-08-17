@@ -182,13 +182,61 @@ those keys such that they are now encrypted to the new public key. Run
 `sops updatekeys path/to/secret` on each of them. This will need to be
 done from a device that can decrypt those secrets (obviously).
 
+# Storage
+
+Storage for services is currently hosted on Hetzner's Storagebox service.
+
+## Adding a new Hetzner Storagebox user for a service
+
+For increased security, it's best for each service (and ideally VPS) to be able
+to only access the files it needs, rather than those of other services. To
+enable this, I create a new Hetzner Storagebox user per service and give each
+their own folder that they cannot see outside of.
+
+Use the following steps to set up a new Hetzner Storagebox user and configure it:
+
+1. Open your favourite SFTP client and login to `u220692.your-storagebox.de:23`
+   with username `u220692` and the stored password/private key.
+
+1. Create a directory under `/home/services/` with the name of the new service.
+
+1. Login to https://robot.hetzner.com/storage and go to the "Sub-accounts" tab.
+
+1. Create a new user and set their home directory to the newly created service
+   directory.
+
+1. Create a new ED25519 keypair which the VPS will use to authenticate to
+   Hetzner Storagebox and mount the service's directory. This will be stored as
+   a sops secret:
+
+    ```
+    ssh-keygen -t ed25519 -f ./secrets/YOUR_SERVER/storagebox-YOUR_SERVICE -N ""
+    ```
+
+1. Encrypt the private key:
+
+    ```
+    sops -e -i ./secrets/YOUR_SERVER/storagebox-YOUR_SERVICE
+    ```
+
+1. Use your SFTP client to copy the public key to a file at
+   `/home/services/YOUR_SERVICE/.ssh/authorized_keys`. This will allow the
+   service to access the files using the associated private key.
+
+1. Configure the secret according to the `sops` instructions above.
+
+1. Configure the storage location and mountpoint. Here's [an
+   example](https://github.com/anoadragon453/dotfiles/blob/8d32cb970075ab10c458c750ba603b2c62871f1e/flake.nix#L615-L638)
+
+1. Configure your service to store files at the new mountpoint!
+
 # Backup
 
 Backing up systems configured by this flake is done via
 [restic](https://restic.net). Backups are stored on a
 [Hetzner Storagebox](https://www.hetzner.com/storage/storage-box) connected
 via SSHFS. Personal devices all back up to the same restic repo, which servers
-all back up to their own repo (to reduce collatoral damage in case one gets
+all back up to their own repo (to reduce collateral damage in case one gets
 compromised).
 
 Backups are typically configured to run at least once a day.
