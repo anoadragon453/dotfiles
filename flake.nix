@@ -63,9 +63,6 @@
       overlays = [
         localpkgs
         extralib
-        # Create an overlay that contains the 64-bit Linux version of devenv.
-        # TODO: There's likely a more portable way of doing this...
-        (self: super: { devenv = inputs.devenv.packages.x86_64-linux.devenv; } )
       ];
     };
 
