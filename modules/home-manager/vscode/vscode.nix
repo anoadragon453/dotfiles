@@ -29,11 +29,16 @@
     # The VSCode extensions to install.
     # Extensions come from nixpkgs.
     extensions = with pkgs.vscode-extensions; [
+      charliermarsh.ruff
+      eamodio.gitlens
       fill-labs.dependi
       golang.go
       jnoortheen.nix-ide
       jock.svg
       mkhl.direnv
+      ms-python.debugpy
+      ms-python.python
+      ms-python.vscode-pylance
       ms-vscode-remote.remote-ssh
       rust-lang.rust-analyzer
       streetsidesoftware.code-spell-checker
