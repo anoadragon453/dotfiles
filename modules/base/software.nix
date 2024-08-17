@@ -14,21 +14,25 @@
         fd
         ffmpeg
         gdb
+        gdu
         ghostscript
         gnumake
         gnupg
         htop
         hyperfine
         imagemagick
+        jless
         jq
         killall
+        lazydocker
         magic-wormhole-rs
-        ncdu
         nmap
         ripgrep
         tmux
         wget
+        yazi
         yt-dlp
+        zellij
         
         # Archive Tools
         unzip
@@ -41,6 +45,7 @@
         strace
         ltrace
 
+        opentofu
 
         # Nix tools
         nil

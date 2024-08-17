@@ -41,13 +41,6 @@ in {
         # Allow communicating to yubikey USB devices.
         services.udev.packages = [ yubikey-personalization ];
 
-        # Required to set the SSH_AUTH_SOCK env var correctly. Although this should
-        # be done by `programs.gnupg.agent.enableSSHSupport` below, something else is
-        # setting SSH_AUTH_SOCK and interfering. We just override it here instead.
-        environment.shellInit = mkIf cfg.legacySSHSupport ''
-            export SSH_AUTH_SOCK=$(gpgconf --list-dirs agent-ssh-socket)
-        '';
-
         programs = {
             # If legacy SSH support is enabled, use GPG as the SSH agent instead.
             ssh.startAgent = !cfg.legacySSHSupport;

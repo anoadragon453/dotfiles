@@ -1,6 +1,5 @@
 {
   imports = [
-    ./aliases.nix
     ./fonts.nix
     ./qt.nix
     ./kdeconnect.nix

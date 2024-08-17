@@ -4,7 +4,6 @@
         ./antivirus.nix
         ./backup.nix
         ./software.nix
-        ./direnv.nix
         ./disk.nix
         ./flatpak.nix
         ./git.nix
