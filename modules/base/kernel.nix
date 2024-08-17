@@ -20,6 +20,8 @@ in {
         boot.kernel.sysctl = {
             # Allow debuggers (such as IDEs) to attach to other processes.
             "kernel.yama.ptrace_scope" = 0;
+            # Allow tailscale VPN to route IPv6 traffic.
+            "net.ipv6.conf.all.forwarding" = 1;
         };
     };
 }
