@@ -26,6 +26,11 @@
     cat = "bat";
     n = "yazi";
     zj = "zellij";
+
+    # TODO: Don't store these IP addresses in multiple places
+    plonkie = "ssh -p16491 root@78.47.36.247";
+    sauron = "ssh -p16431 root@78.46.226.111";
+    pear = "ssh root@78.47.32.42";
   };
 
   # Enable the 'z' command (with fzf integration) to jump between directories.

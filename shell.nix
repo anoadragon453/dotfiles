@@ -11,7 +11,7 @@ pkgs.mkShell {
     age
     deploy-rs
     git
-    nixFlakes
+    nixVersions.stable
     pciutils  # to figure out sound card PCI ID
     sops
     ssh-to-age
@@ -41,7 +41,7 @@ pkgs.mkShell {
 
     # Configure nix with experimental flake support.
     PATH=${pkgs.writeShellScriptBin "nix" ''
-      ${pkgs.nixFlakes}/bin/nix --experimental-features "nix-command flakes" "$@"
+      ${pkgs.nixVersions.stable}/bin/nix --experimental-features "nix-command flakes" "$@"
     ''}/bin:$PATH
   '';
   }

@@ -2,12 +2,6 @@
   description = "anoa's system configuration";
 
   inputs = {
-    # Reproducible developer environments with nix.
-    devenv = {
-      url = "github:cachix/devenv/v0.6.2";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
-
     # Management of user-level configuration.
     home-manager = {
       url = "github:nix-community/home-manager";
@@ -19,6 +13,8 @@
 
     # Official Nix Packages repository.
     nixpkgs.url = "nixpkgs/nixos-unstable";
+    # # Update Firefox to avoid CVE-2024-9680.
+    # nixpkgs.url = "github:anoadragon453/nixpkgs/anoa/firefox_cve";
 
     # Real-time audio prduction on NixOS.
     musnix = {
@@ -59,6 +55,11 @@
       inherit nixpkgs; 
       cfg = {
         allowUnfree = true;
+
+        # Considered insecure due to libolm deprecation.
+        permittedInsecurePackages = [
+          "jitsi-meet-1.0.8043"
+        ];
       };
       overlays = [
         localpkgs
@@ -329,11 +330,6 @@
           sys.hardware.graphics.v4l2loopback = true;
 
           sys.thunderbird.customTempDirectory = "/tmp/thunderbird";
-          sys.security.antivirus.clamav = {
-            enable = true;
-            pathsToExcludeRegex = [ "(/home/user|/proc|/nix)" ];
-            pathsToIncludeOnAccess = [ "/home/work/Documents" "/home/work/Downloads" "/tmp/thunderbird" ];
-          };
 
           sys.security.yubikey = {
             enable = true;
@@ -361,22 +357,50 @@
 
           services.postgresql.enable = true;
 
-          # Set up a very temp sliding sync proxy for trinity work.
-          services.matrix-sliding-sync = {
+          services.tor = {
+            enable = true;
+            client.enable = true;
+            settings = {
+              ControlPort = 9051;
+            };
+          };
+
+          services.prometheus = {
+            enable = true;
+            globalConfig.scrape_interval = "3s";
+            scrapeConfigs = [
+              {
+                job_name = "sbg";
+                static_configs = [
+                  {
+                    targets = ["localhost:8101"];
+                  }
+                ];
+              }
+              {
+                job_name = "sidecar";
+                static_configs = [
+                  {
+                    targets = ["localhost:9089"];
+                  }
+                ];
+              }
+            ];
+          };
+
+          services.grafana = {
             enable = true;
             settings = {
-              SYNCV3_SERVER = "http://127.0.0.1:8081";
-              SYNCV3_BINDADDR = "0.0.0.0:8181";
+              server = {
+                http_addr = "127.0.0.1";
+                http_port = 3333;
+              };
             };
-            environmentFile = builtins.toFile "sliding-sync-env" ''
-              SYNCV3_SECRET=e83246af3096dadc99372406c8f1f41de72c1e0591e3d0d54435d7eb5a28d520
-            '';
-            createDatabase = true;
           };
 
           # Expose both the homeserver's well-known file (which points to the
           # proxy) and the sliding sync proxy itself to my network.
-          networking.firewall.allowedTCPPorts = [ 8081 8181 ];
+          networking.firewall.allowedTCPPorts = [ 8081 8181 8080 ];
 
           # Disable fingerprint reader enabled by nixos-hardware's framework service.
           # Mostly because GDM doesn't interact well with the PAM rules set by it.
@@ -434,6 +458,98 @@
           boot.initrd.availableKernelModules = [ "ata_piix" "uhci_hcd" "xen_blkfront" "vmw_pvscsi" ];
           boot.initrd.kernelModules = [ "nvme" ];
 
+          # Temp for ST
+          # Needed for the SillyTavern web search server plugin
+          sys.software = [
+            pkgs.firefox
+          ];
+          services.nginx = {
+            enable = true;
+
+            virtualHosts."st.amorgan.xyz" = {
+              http2 = true;
+
+              # Fetch and configure a TLS cert using the ACME protocol.
+              enableACME = true;
+
+              # Redirect all unencrypted traffic to HTTPS.
+              forceSSL = true;
+
+              locations = {
+                "/" = {
+                  # Proxy to the immich server container's metrics port.
+                  # Note: We include a trailing slash in order to drop the path from
+                  # the request.
+                  proxyPass = "http://127.0.0.1:8000/";
+                };
+              };
+            };
+
+            # Super temporary home for mothers day files.
+            # TODO: Where should these live?
+            virtualHosts."mothersday24.amorgan.xyz" = {
+              http2 = true;
+
+              # Fetch and configure a TLS cert using the ACME protocol.
+              enableACME = true;
+
+              # Redirect all unencrypted traffic to HTTPS.
+              forceSSL = true;
+
+              locations = {
+                "/" = {
+                  proxyPass = "http://127.0.0.1:9191/";
+                };
+              };
+            };
+
+            # Super temporary home for fathers day files.
+            # TODO: Where should these live?
+            virtualHosts."fathersday24.amorgan.xyz" = {
+              http2 = true;
+
+              # Fetch and configure a TLS cert using the ACME protocol.
+              enableACME = true;
+
+              # Redirect all unencrypted traffic to HTTPS.
+              forceSSL = true;
+
+              locations = {
+                "/" = {
+                  proxyPass = "http://127.0.0.1:9192/";
+                };
+              };
+            };
+
+            # Redirect Red's domain to linktree.
+            virtualHosts."redpaletteart.com" = {
+              http2 = true;
+
+              # Fetch and configure a TLS cert using the ACME protocol.
+              enableACME = true;
+
+              # Redirect all unencrypted traffic to HTTPS.
+              forceSSL = true;
+
+              extraConfig = ''
+                return 302 "https://linktr.ee/redpaletteart";
+              '';
+            };
+            virtualHosts."www.redpaletteart.com" = {
+              http2 = true;
+
+              # Fetch and configure a TLS cert using the ACME protocol.
+              enableACME = true;
+
+              # Redirect all unencrypted traffic to HTTPS.
+              forceSSL = true;
+
+              extraConfig = ''
+                return 302 "https://linktr.ee/redpaletteart";
+              '';
+            };
+          };
+
           # TODO: Switch this system to use systemd-boot or remove/fix grub
           # support in dotfiles.
           sys.bootloader = "grub";
@@ -448,6 +564,7 @@
           sys.biosType = "efi";
 
           sys.security.sshd.enable = true;
+          sys.security.sshd.serverPort = 16491;
 
           # Disable KVM support on this machine as it's not needed. This leads
           # to libvirt not being installed, which saves disk space.
@@ -467,7 +584,7 @@
               metricsPortServer = 8009;
               metricsPortMicroservices = 8010;
               storagePath = "/mnt/storagebox/media/immich";
-              logLevel = "log";
+              logLevel = "verbose";
             };
 
             mealie = {
@@ -698,19 +815,231 @@
           };
         };
       };
+
+      # Services monitoring node.
+      sauron = lib.mkNixOSConfig {
+        name = "sauron";
+        system = "x86_64-linux";
+        modules = commonModules ++ [
+          ./modules/vm/qemu-guest.nix
+          
+          # Server-specific configuration.
+          ./modules/server
+        ];
+        inherit nixpkgs allPkgs;
+        cfg = let
+          pkgs = allPkgs.x86_64-linux;
+        in {
+          boot.initrd.availableKernelModules = [ "ata_piix" "uhci_hcd" "xen_blkfront" "vmw_pvscsi" ];
+          boot.initrd.kernelModules = [ "nvme" ];
+
+          # TODO: Switch this system to use systemd-boot or remove/fix grub
+          # support in dotfiles.
+          sys.bootloader = "grub";
+          # Currently this is not set in disk.nix.
+          boot.loader.grub.device = "/dev/sda";
+
+          sys.user.root.sshPublicKeys = infrastructureSshPublicKeys;
+
+          sys.cpu.type = "intel";
+          sys.cpu.cores = 1;
+          sys.cpu.threadsPerCore = 2;
+          sys.biosType = "efi";
+
+          sys.security.sshd.enable = true;
+          sys.security.sshd.serverPort = 16431;
+
+          # TEMP: Quick thing to get my homeserver working again.
+          services.nginx.enable = true;
+          sys.server.acme.email = "andrew@amorgan.xyz";
+          services.nginx.virtualHosts."amorgan.xyz" = {
+            locations."/" = {
+              root = "/var/www/html";
+            };
+
+            http2 = true;
+
+            # Fetch and configure a TLS cert using the ACME protocol.
+            enableACME = true;
+
+            # Redirect all unencrypted traffic to HTTPS.
+            forceSSL = true;
+          };
+
+          networking.firewall.allowedTCPPorts = [ 80 443 ];
+
+          # Taken from the result of the nixos-infect script. I'm not sure how to test removing this without breaking the system.
+          # Ideally this would be put in a separate file somewhere.
+          networking = {
+            nameservers = [ "2a01:4ff:ff00::add:1"
+              "2a01:4ff:ff00::add:2"
+              "185.12.64.1"
+            ];
+            defaultGateway = "172.31.1.1";
+            defaultGateway6 = {
+              address = "fe80::1";
+              interface = "eth0";
+            };
+            dhcpcd.enable = false;
+            usePredictableInterfaceNames = nixpkgs.lib.mkForce false;
+            interfaces = {
+              eth0 = {
+                ipv4.addresses = [
+                  { address="78.46.226.111"; prefixLength=32; }
+                ];
+                ipv6.addresses = [
+                  { address="2a01:4f8:c0c:38ab::1"; prefixLength=64; }
+                  { address="fe80::9400:ff:fe3a:579f"; prefixLength=64; }
+                ];
+                ipv4.routes = [ { address = "172.31.1.1"; prefixLength = 32; } ];
+                ipv6.routes = [ { address = "fe80::1"; prefixLength = 128; } ];
+              };
+                    ens10 = {
+                ipv4.addresses = [
+                  { address="10.0.0.2"; prefixLength=32; }
+                ];
+                ipv6.addresses = [
+                  { address="fe80::8400:ff:fe3a:57a0"; prefixLength=64; }
+                ];
+                };
+            };
+          };
+          services.udev.extraRules = ''
+            ATTR{address}=="96:00:00:3a:57:9f", NAME="eth0"
+            ATTR{address}=="86:00:00:3a:57:a0", NAME="ens10"
+          '';
+
+          # Disable KVM support on this machine as it's not needed. This leads
+          # to libvirt not being installed, which saves disk space.
+          sys.cpu.kvm = false;
+
+          # No need to update the firmware of cloud hosting providers' VMs.
+          services.fwupd.enable = nixpkgs.lib.mkForce false;
+
+          # Services on this machine.
+          sys.server = {};
+
+          # Disable default disk layout magic and just use the declarations below.
+          sys.diskLayout = "disable";
+          sys.bootloaderMountPoint = "/boot/efi";
+
+          fileSystems."/" = {
+            device = "/dev/sda1";
+              fsType = "ext4";
+            };
+        };
+      };
+
+      # My tor node.
+      pear = lib.mkNixOSConfig {
+        name = "pear";
+        system = "x86_64-linux";
+        modules = commonModules ++ [
+          ./modules/vm/qemu-guest.nix
+          
+          # Server-specific configuration.
+          ./modules/server
+        ];
+        inherit nixpkgs allPkgs;
+        cfg = let
+          pkgs = allPkgs.x86_64-linux;
+        in {
+          boot.initrd.availableKernelModules = [ "ata_piix" "uhci_hcd" "xen_blkfront" "vmw_pvscsi" ];
+          boot.initrd.kernelModules = [ "nvme" ];
+
+          # TODO: Switch this system to use systemd-boot or remove/fix grub
+          # support in dotfiles.
+          sys.bootloader = "grub";
+          # Currently this is not set in disk.nix.
+          boot.loader.grub.device = "/dev/sda";
+
+          sys.user.root.sshPublicKeys = infrastructureSshPublicKeys;
+
+          sys.cpu.type = "intel";
+          sys.cpu.cores = 1;
+          sys.cpu.threadsPerCore = 2;
+          sys.biosType = "efi";
+
+          sys.security.sshd.enable = true;
+          sys.security.sshd.serverPort = 16991;
+
+          # Disable KVM support on this machine as it's not needed. This leads
+          # to libvirt not being installed, which saves disk space.
+          sys.cpu.kvm = false;
+
+          # No need to update the firmware of cloud hosting providers' VMs.
+          services.fwupd.enable = nixpkgs.lib.mkForce false;
+
+          # Services on this machine.
+          sys.server = {
+            # tor = {
+            #   enable = true;
+            #   torPort = 9001;
+            #   directoryPort = 9030;
+            #   nickname = "rolypony";
+            # };
+          };
+
+          # TODO: Sops: mount secret keys to disk.
+          # keys/secret_id_key and keys/ed25519_master_id_secret_key are most important.
+
+          # Disable default disk layout magic and just use the declarations below.
+          sys.diskLayout = "disable";
+          sys.bootloaderMountPoint = "/boot/efi";
+
+          fileSystems."/" = {
+            device = "/dev/sda1";
+              fsType = "ext4";
+            };
+        };
+      };
     };
 
     # Configuration on deploying server infrastructure using deploy-rs.
-    deploy.nodes.plonkie = {
-      sshOpts = [ ];
-      hostname = "78.47.36.247";
-      profiles = {
-        system = {
-          sshUser = "root";
-          path =
-            deployPkgs.deploy-rs.lib.activate.nixos self.nixosConfigurations.plonkie;
+    deploy.nodes = {
+      plonkie = {
+        sshOpts = [
+          "-p" "16491"
+        ];
+        hostname = "78.47.36.247";
+        profiles = {
+          system = {
+            sshUser = "root";
+            path =
+              deployPkgs.deploy-rs.lib.activate.nixos self.nixosConfigurations.plonkie;
+          };
         };
       };
+
+      sauron = {
+        sshOpts = [
+          "-p" "16431"
+        ];
+        hostname = "78.46.226.111";
+        profiles = {
+          system = {
+            sshUser = "root";
+            path =
+              deployPkgs.deploy-rs.lib.activate.nixos self.nixosConfigurations.sauron;
+          };
+        };
+      };
+
+      # NOTE: This hasn't been converted to nix yet!
+      pear = {
+        sshOpts = [
+          # "-p" "16991"
+        ];
+        hostname = "78.47.32.42";
+        profiles = {
+          system = {
+            sshUser = "root";
+            path =
+              deployPkgs.deploy-rs.lib.activate.nixos self.nixosConfigurations.pear;
+          };
+        };
+      };
+
     };
 
     checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) inputs.deploy-rs.lib;

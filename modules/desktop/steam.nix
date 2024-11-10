@@ -22,5 +22,7 @@ in {
     # Install the protonup-ng tool, which allows installing and updating custom versions
     # of the proton compatibility layer.
     sys.software = with pkgs; [ protonup-ng ];
+
+
   };
 }

@@ -26,8 +26,9 @@ in {
       mpv
       filezilla
       joplin-desktop
-      qbittorrent
       nextcloud-client
+      parsec-bin
+      qbittorrent
       rustdesk-flutter
       signal-desktop
       telegram-desktop
@@ -44,13 +45,11 @@ in {
       prusa-slicer
 
       # Games
-      airshipper # launcher and updater for veloren
-      minecraft
 
       # Media
       drawpile
       easyeffects
-      gnome.gnome-sound-recorder
+      gnome-sound-recorder
       inkscape
       kdenlive
       krita
@@ -59,6 +58,7 @@ in {
       pavucontrol
       picard
       qpwgraph
+      stremio
       yabridge
       yabridgectl
       vlc
@@ -73,16 +73,18 @@ in {
       appimage-run
       ascii
       contrast
-      gnome.gnome-boxes
       jetbrains.pycharm-community
       kid3
       numbat
       poppler_utils  # includes pdfunite
       solaar
+      virt-manager
       winetricks
       wineWowPackages.stableFull
       wireshark
+      wl-clipboard
       xournalpp
+      zed-editor
     ] ++ (if (builtins.elem "tiling" desktopGuiTypes) then [
       # Only installed when using a tiling window manager.
       feh

@@ -72,12 +72,7 @@ in {
     environment.gnome.excludePackages = [
       gnome-photos
       gnome-tour
-    ] ++ (with gnome; [
-      atomix    # puzzle game
-      hitori    # sudoku game
-      iagno     # go game
-      tali      # poker games
-    ]);
+    ];
 
   };
 

@@ -39,7 +39,8 @@
         unrar
         zip
         p7zip
-        xar
+        # Currently broken: https://github.com/NixOS/nixpkgs/issues/352453
+        # xar
 
         # System monitoring tools
         strace

@@ -104,7 +104,6 @@ in {
       (mkIf cfg.hardware.graphics.amd.rocm.enable rocm-opencl-runtime)
 
       (mkIf intel intel-media-driver)
-      (mkIf intel vaapiIntel)
       (mkIf intel vaapiVdpau)
       (mkIf intel libvdpau-va-gl)
 
