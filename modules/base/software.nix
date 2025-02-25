@@ -25,6 +25,7 @@
         jq
         killall
         lazydocker
+        lazygit
         magic-wormhole-rs
         nmap
         ripgrep

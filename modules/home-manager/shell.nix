@@ -19,6 +19,9 @@
     gs = "git stash";
     gsp = "git stash pop";
 
+    # Lazygit git tui editor.
+    lg = "lazygit";
+
     # Alias vim to nvim
     vim = "nvim";
     
