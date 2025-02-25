@@ -45,6 +45,7 @@ in {
       prusa-slicer
 
       # Games
+      prismlauncher
 
       # Media
       drawpile
@@ -74,7 +75,9 @@ in {
       ascii
       contrast
       jetbrains.pycharm-community
+      freecad
       kid3
+      nh
       numbat
       poppler_utils  # includes pdfunite
       solaar
