@@ -70,6 +70,7 @@ in {
     # Exclude some default GNOME packages from being installed
     # Full list: https://github.com/NixOS/nixpkgs/blob/release-22.05/nixos/modules/services/x11/desktop-managers/gnome.nix#L483
     environment.gnome.excludePackages = [
+      geary
       gnome-photos
       gnome-tour
     ];
