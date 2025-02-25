@@ -20,24 +20,16 @@ in {
       # These packages are always installed when building a GUI config.
 
       # Internet
-      anydesk
       chromium
       discord
       mpv
       filezilla
-      joplin-desktop
       nextcloud-client
-      parsec-bin
       qbittorrent
-      rustdesk-flutter
       signal-desktop
       telegram-desktop
       tor-browser-bundle-bin
-      warp
       # thunderbird is installed via thunderbird.nix
-
-      # Audio production
-      bitwig-studio
 
       # Office
       obsidian
@@ -48,21 +40,14 @@ in {
       prismlauncher
 
       # Media
-      drawpile
-      easyeffects
-      gnome-sound-recorder
       inkscape
       kdenlive
       krita
       mpv
       obs-studio
       pavucontrol
-      picard
       qpwgraph
       stremio
-      yabridge
-      yabridgectl
-      vlc
       (if (
         # blender-hip sets up AMD HIP rendering for Blender.
         # Only install blender-hip if we have an amd card.
@@ -70,23 +55,16 @@ in {
       ) then blender-hip else blender)
 
       # Tools
-      android-studio
       appimage-run
       ascii
       contrast
-      jetbrains.pycharm-community
       freecad
-      kid3
       nh
-      numbat
+      nixd
       poppler_utils  # includes pdfunite
       solaar
       virt-manager
-      winetricks
       wineWowPackages.stableFull
-      wireshark
-      wl-clipboard
-      xournalpp
       zed-editor
     ] ++ (if (builtins.elem "tiling" desktopGuiTypes) then [
       # Only installed when using a tiling window manager.

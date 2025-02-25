@@ -19,7 +19,6 @@
         gnumake
         gnupg
         htop
-        hyperfine
         imagemagick
         jless
         jq
@@ -40,31 +39,18 @@
         unrar
         zip
         p7zip
-        # Currently broken: https://github.com/NixOS/nixpkgs/issues/352453
-        # xar
 
         # System monitoring tools
         strace
         ltrace
 
-        opentofu
-
         # Nix tools
-        nil
         nix-index
 
         # Scripting Languages
         # useful to have around for one-off scripts
         python312
         nodejs
-
-        # TODO: Not sure which of these I need
-        # Ported from core - need to move out to somewhere else
-        fuse-overlayfs # prob not in base
-        unionfs-fuse # prob not in base
-        squashfsTools # prob not in base
-        squashfuse # prob not in base
-        pstree # prob not in base
     ];
 
     # Allow mounting sshfs filesystems.
