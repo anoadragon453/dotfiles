@@ -58,5 +58,7 @@ in {
         hardware.cpu.intel.updateMicrocode = cfg.cpu.type == "intel";
 
         virtualisation.libvirtd.enable = cfg.cpu.kvm;
+        # Allow users to use USB devices in VMs
+        virtualisation.spiceUSBRedirection.enable = true;
    };
 }
