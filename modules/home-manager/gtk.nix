@@ -22,7 +22,7 @@
       name = "WhiteSur-Dark";
       package = pkgs.whitesur-gtk-theme.override {
         altVariants = [ "all" ];
-        colorVariants = [ "Dark" ];
+        colorVariants = [ "dark" ];
         themeVariants = [ "default" ];
         iconVariant = "tux";
         nautilusStyle = "glassy";
