@@ -1,5 +1,6 @@
 {
   imports = [
+    ./cargo.nix
     ./fonts.nix
     ./qt.nix
     ./kdeconnect.nix
