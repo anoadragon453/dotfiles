@@ -70,7 +70,9 @@ in {
 
       videoDrivers = [
         (mkIf amd "amdgpu") 
-        (mkIf intel "intel")
+        # "intel" used to translate to installing the xf86videointel driver,
+        #  which is unmaintained
+        (mkIf intel "modesetting")
         (mkIf nvidia "nvidia")
       ];
 
