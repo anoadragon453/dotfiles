@@ -31,6 +31,7 @@
     extensions = with pkgs.vscode-extensions; [
       charliermarsh.ruff
       eamodio.gitlens
+      editorconfig.editorconfig
       fill-labs.dependi
       golang.go
       jnoortheen.nix-ide
