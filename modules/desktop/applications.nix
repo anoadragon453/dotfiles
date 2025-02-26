@@ -41,7 +41,7 @@ in {
 
       # Media
       inkscape
-      kdenlive
+      kdePackages.kdenlive
       krita
       mpv
       obs-studio
