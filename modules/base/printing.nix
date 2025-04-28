@@ -9,5 +9,8 @@ in {
 
   config = {
     services.printing.enable = cfg.enablePrintingSupport;
+
+    # Driver for EPSON XP-970 printer.
+    services.printing.drivers = with pkgs; [ epson-escpr2 ];
   };
 }
