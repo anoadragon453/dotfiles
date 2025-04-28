@@ -39,6 +39,7 @@ in {
       inkscape
       kdePackages.kdenlive
       krita
+      losslesscut-bin
       mpv
       obs-studio
       pavucontrol
