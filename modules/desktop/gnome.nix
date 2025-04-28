@@ -65,6 +65,7 @@ in {
     # Install some helpful packages when using GNOME
     sys.software = (with pkgs; [
       gnome-tweaks  # Additional configuration options for GNOME.
+      quintom-cursor-theme
     ]) ++ cfg.commonExtensions ++ cfg.extraExtensions;
 
     # Exclude some default GNOME packages from being installed
