@@ -58,6 +58,7 @@ in {
       nh
       poppler_utils  # includes pdfunite
       solaar
+      translatelocally
       virt-manager
       wineWowPackages.stableFull
     ];
