@@ -21,7 +21,6 @@ in {
       discord
       mpv
       filezilla
-      nextcloud-client
       qbittorrent
       signal-desktop
       telegram-desktop
