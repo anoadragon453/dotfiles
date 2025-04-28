@@ -9,14 +9,11 @@ in {
   config = lib.mkIf desktopMode {
 
     environment.sessionVariables = {
-      # Fix issue with java applications and tiling window managers.
-      "_JAVA_AWT_WM_NONREPARENTING" = lib.mkIf (builtins.elem "tiling" desktopGuiTypes) "1";
-
       # Enable smooth-scrolling in Mozilla apps
       MOZ_USE_XINPUT2 = "1";
     };
 
-    sys.software = with pkgs; ([
+    sys.software = with pkgs; [
       # These packages are always installed when building a GUI config.
 
       # Internet
@@ -64,17 +61,6 @@ in {
       solaar
       virt-manager
       wineWowPackages.stableFull
-    ] ++ (if (builtins.elem "tiling" desktopGuiTypes) then [
-      # Only installed when using a tiling window manager.
-      feh
-      libsixel
-      maim
-      pkgs.xorg.xev
-      pkgs.xorg.xhost
-      pkgs.xorg.xmodmap
-      xclip
-      xdg-desktop-portal-wlr
-    ] else [])
-    );
+    ];
   };
 }

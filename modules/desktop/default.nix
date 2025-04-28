@@ -1,27 +1,17 @@
 {
   imports = [
+    ./applications.nix
     ./cargo.nix
-    ./fonts.nix
-    ./qt.nix
-    ./kdeconnect.nix
-    ./launchers.nix
-    ./picom.nix
-    ./dunst.nix
     ./element.nix
+    ./fonts.nix
     ./gui.nix
     ./gnome.nix
     ./kde.nix
+    ./kdeconnect.nix
     ./noexec.nix
-    ./applications.nix
-    ./i3.nix
     ./plymouth.nix
-    ./sway.nix
+    ./qt.nix
     ./steam.nix
-    ./kanshi.nix
     ./thunderbird.nix
-    ./tilewm.nix
-    ./wofi-emoji.nix
-    ./script.nix
-    ./xterm-no-display.nix
   ];
 }

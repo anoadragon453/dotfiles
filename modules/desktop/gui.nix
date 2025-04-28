@@ -8,13 +8,12 @@ let
 in {
   options.sys.desktop.gui = {
     types = mkOption {
-      type = types.listOf (types.enum [ "kde" "gnome" "tiling" ]);
+      type = types.listOf (types.enum [ "kde" "gnome" ]);
       default = [ "gnome" ];
       description = ''
       Which desktop environments/window managers/compositors to use.
       `gnome` will set up a GNOME desktop with support for both Xorg and Wayland sessions.
       `kde` will set up a KDE desktop with support for both Xorg and Wayland sessions.
-      `tiling` will configure i3 (on Xorg) and sway (on Wayland).
       '';
     };
   };
