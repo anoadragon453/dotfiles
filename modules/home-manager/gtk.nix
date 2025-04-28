@@ -8,7 +8,7 @@
     # them with new files. These will need to be cleared again manually,
     # otherwise home-manager will complain about them when reloading.
     cursorTheme = {
-      name = "Breeze_Snow";
+      name = "Quintom_Snow";
       size = 24;
     };
 
@@ -22,7 +22,7 @@
       name = "WhiteSur-Dark";
       package = pkgs.whitesur-gtk-theme.override {
         altVariants = [ "all" ];
-        colorVariants = [ "dark" ];
+        colorVariants = [ "Dark" ];
         themeVariants = [ "default" ];
         iconVariant = "tux";
         nautilusStyle = "glassy";

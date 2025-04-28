@@ -84,8 +84,9 @@ rec {
     };
   in cur // ret) {} systems;
 
-  mkNixOSConfig = {name, nixpkgs, allPkgs, system, modules ? [../modules], cfg ? {}, ...}: let
+  mkNixOSConfig = {name, nixpkgs, allPkgs, allPkgsUnstable, system, modules ? [../modules], cfg ? {}, ...}: let
     pkgs = allPkgs."${system}";
+    pkgsUnstable = allPkgsUnstable."${system}";
 
     secrets = LoadRepoSecrets ../.secrets;
   in nixpkgs.lib.nixosSystem {
@@ -102,6 +103,10 @@ rec {
 
         # Disable building HTML/plain text documentation
         documentation.doc.enable = false;
+
+        _module.args = {
+          inherit pkgsUnstable;
+        };
       }
     ];
   };

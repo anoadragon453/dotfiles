@@ -10,7 +10,6 @@ in {
   config = mkIf desktopMode {
     # This is *all* nerd-fonts.
     # TODO: Separate out the fonts we actually need.
-    fonts.packages = builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerd-fonts);
 
     sys.user.allUsers.files = {
       fontconf = {
@@ -29,5 +28,6 @@ in {
         '';
       };
     };
+    fonts.packages = builtins.filter lib.attrsets.isDerivation (builtins.attrValues pkgs.nerdfonts);
   };
 }

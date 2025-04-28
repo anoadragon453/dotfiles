@@ -11,5 +11,6 @@
     ./mutability.nix
     ./shell.nix
     ./vscode
+    ./zed.nix
   ];
 }

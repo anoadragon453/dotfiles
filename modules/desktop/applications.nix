@@ -1,4 +1,4 @@
-{pkgs, config, lib, ...}:
+{pkgs, config, lib, pkgsUnstable, ...}:
 let
   xorg = (builtins.elem "xorg" config.sys.hardware.graphics.desktopProtocols);
   wayland = (builtins.elem "wayland" config.sys.hardware.graphics.desktopProtocols);
@@ -60,12 +60,10 @@ in {
       contrast
       freecad
       nh
-      nixd
       poppler_utils  # includes pdfunite
       solaar
       virt-manager
       wineWowPackages.stableFull
-      zed-editor
     ] ++ (if (builtins.elem "tiling" desktopGuiTypes) then [
       # Only installed when using a tiling window manager.
       feh

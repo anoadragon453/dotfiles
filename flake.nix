@@ -4,7 +4,7 @@
   inputs = {
     # Management of user-level configuration.
     home-manager = {
-      url = "github:nix-community/home-manager";
+      url = "github:nix-community/home-manager/release-24.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -12,11 +12,11 @@
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
     # Official Nix Packages repository.
-    nixpkgs.url = "nixpkgs/nixos-unstable";
-    # # Update Firefox to avoid CVE-2024-9680.
-    # nixpkgs.url = "github:anoadragon453/nixpkgs/anoa/firefox_cve";
+    nixpkgs.url = "nixpkgs/nixos-24.11";
+    nixpkgs-unstable.url = "nixpkgs/nixos-unstable";
+    #nixpkgs-mealie.url = "github:antonmosich/nixpkgs/mealie-update";
 
-    # Real-time audio prduction on NixOS.
+    # Real-time audio production on NixOS.
     musnix = {
       url = "github:musnix/musnix";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -34,7 +34,7 @@
     };
   };
 
-  outputs = inputs @ {self, nixpkgs, ... }:
+  outputs = inputs @ {self, nixpkgs, nixpkgs-unstable, ... }:
   let
     lib = import ./lib;
     localpkgs = import ./pkgs;
@@ -56,10 +56,18 @@
       cfg = {
         allowUnfree = true;
 
-        # Considered insecure due to libolm deprecation.
-        permittedInsecurePackages = [
-          "jitsi-meet-1.0.8043"
-        ];
+        permittedInsecurePackages = [];
+      };
+      overlays = [
+        localpkgs
+        extralib
+      ];
+    };
+    
+    allPkgsUnstable = lib.mkPkgs {
+      nixpkgs = nixpkgs-unstable; 
+      cfg = {
+        allowUnfree = true;
       };
       overlays = [
         localpkgs
@@ -122,7 +130,7 @@
             };
           }
         ];
-        inherit nixpkgs allPkgs;
+        inherit nixpkgs allPkgs allPkgsUnstable;
         cfg = let 
           pkgs = allPkgs.x86_64-linux;
         in {
@@ -238,7 +246,10 @@
         };
       };
 
-      izzy = lib.mkNixOSConfig {
+      izzy = let 
+        pkgs = allPkgs.x86_64-linux;
+        pkgsUnstable = allPkgsUnstable.x86_64-linux;
+      in lib.mkNixOSConfig {
         name = "izzy";
         system = "x86_64-linux";
         modules = commonModules ++ [
@@ -251,18 +262,24 @@
               user = {
                 home.stateVersion = "23.11";
                 imports = [ modules/home-manager ];
+                
+                _module.args = {
+                  inherit pkgsUnstable;
+                };
               };
               work = {
                 home.stateVersion = "23.11";
                 imports = [ modules/home-manager ];
+
+                _module.args = {
+                  inherit pkgsUnstable;
+                };
               };
             };
           }
         ];
-        inherit nixpkgs allPkgs;
-        cfg = let 
-          pkgs = allPkgs.x86_64-linux;
-        in {
+        inherit nixpkgs allPkgs allPkgsUnstable;
+        cfg = {
           boot.initrd.availableKernelModules = [ "xhci_pci" "thunderbolt" "nvme" "usb_storage" "sd_mod" ];
 
           sys.kernelPackage = pkgs.linuxPackages;
@@ -451,7 +468,7 @@
           # Server-specific configuration.
           ./modules/server
         ];
-        inherit nixpkgs allPkgs;
+        inherit nixpkgs allPkgs allPkgsUnstable;
         cfg = let
           pkgs = allPkgs.x86_64-linux;
         in {
@@ -826,7 +843,7 @@
           # Server-specific configuration.
           ./modules/server
         ];
-        inherit nixpkgs allPkgs;
+        inherit nixpkgs allPkgs allPkgsUnstable;
         cfg = let
           pkgs = allPkgs.x86_64-linux;
         in {
@@ -940,7 +957,7 @@
           # Server-specific configuration.
           ./modules/server
         ];
-        inherit nixpkgs allPkgs;
+        inherit nixpkgs allPkgs allPkgsUnstable;
         cfg = let
           pkgs = allPkgs.x86_64-linux;
         in {
