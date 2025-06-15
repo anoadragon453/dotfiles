@@ -593,6 +593,13 @@
           # Services on this machine.
           sys.server = {
             acme.email = "andrew@amorgan.xyz";
+            
+            actual = {
+              enable = true;
+              domain = "ab.amorgan.xyz";
+              port = 8012;
+              storagePath = "/mnt/storagebox/services/actual";
+            };
 
             immich = {
               enable = true;
@@ -713,6 +720,15 @@
               sopsFile = ./secrets/plonkie/storagebox-postgresql-plonkie;
               format = "binary";
             };
+
+            # A private component of a SSH Key to give access to the services
+            # folder on my hetzner storagebox. The decrypted version ends up at
+            # /run/secrets/storagebox-services. SSHFS should use that path.
+            storagebox-services = {
+              restartUnits = [ "actual.service" ];
+              sopsFile = ./secrets/plonkie/storagebox-services;
+              format = "binary";
+            };
           };
           # Set these to an empty list to tell sops not to try and look for
           # any ssh or gpg keys to turn into age keys.
@@ -730,6 +746,33 @@
             device = "/dev/sda1";
               fsType = "ext4";
             };
+          
+          # TODO: Make this the storagebox connection for all data that plonkie's
+          # services require, such that we don't need to keep setting up a
+          # storagebox connection per-service.
+          fileSystems."/mnt/storagebox/services" = {
+            device = "u220692-sub10@u220692-sub10.your-storagebox.de:/home";
+            fsType = "sshfs";
+            options =
+            [ # Filesystem options
+                "allow_other"          # for non-root access
+                "_netdev"              # this is a network fs
+
+                # We don't mount on demand, as that will cause services like navidrome to fail
+                # as the share doesn't yet exist.
+                #"x-systemd.automount" # mount on demand, rather than boot
+
+                #"debug"               # print debug logging
+                                       # warning: this causes the one-shot service to never exit
+
+                # SSH options
+                "StrictHostKeyChecking=no"  # prevent the connection from failing if the host's key hasn't been trusted yet
+                "ServerAliveInterval=15" # keep connections alive
+                "Port=23"
+                "IdentityFile=/run/secrets/storagebox-services"
+                "IdentitiesOnly=yes"
+            ];
+          };
 
           # Mount my hetzner storagebox for media.
           # Note: This will only mount on live systems, not VMs.
