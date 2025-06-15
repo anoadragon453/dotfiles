@@ -2,6 +2,7 @@
 {
   imports = [
     ./acme.nix
+    ./actual.nix
     ./immich.nix
     ./mealie.nix
     ./navidrome.nix
