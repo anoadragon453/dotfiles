@@ -4,11 +4,13 @@ with lib;
 with builtins;
 let
     cfg = config.sys;
+    users = builtins.attrValues cfg.user.users;
+    hasDevelopmentUser = builtins.any (u: builtins.elem "development" u.roles) users;
 in {
-    system.activationScripts = {
-      gpgpubKey.text = ''
-        ${pkgs.gnupg}/bin/gpg --import ${./public.asc}
-      '';
+    system.activationScripts = lib.mkIf hasDevelopmentUser {
+        gpgpubKey.text = ''
+          ${pkgs.gnupg}/bin/gpg --import ${./public.asc}
+        '';
     };
 
     sys.user.userRoles.development = [
