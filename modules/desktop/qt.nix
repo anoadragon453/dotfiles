@@ -8,6 +8,6 @@ let
   desktopGuiTypes = config.sys.desktop.gui.types;
 in {
   config = mkIf (desktopMode && !elem "gnome" desktopGuiTypes) {
-    sys.software = with pkgs; [ breeze-qt5 ];
+    sys.software = with pkgs.kdePackages; [ breeze ];
   };
 }
