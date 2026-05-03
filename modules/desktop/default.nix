@@ -12,6 +12,7 @@
     ./plymouth.nix
     ./qt.nix
     ./steam.nix
+    ./usbmuxd.nix
     ./xserver.nix
   ];
 }
