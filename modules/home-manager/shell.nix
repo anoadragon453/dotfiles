@@ -68,7 +68,7 @@
 
   # Fix keybindings.
   # Taken from https://wiki.archlinux.org/title/Zsh
-  programs.zsh.initExtra = ''
+  programs.zsh.initContent = ''
     # create a zkbd compatible hash;
     # to add other keys to this hash, see: man 5 terminfo
     typeset -g -A key

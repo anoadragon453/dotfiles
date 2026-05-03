@@ -50,7 +50,7 @@ in {
         # Install microcode update packages
         sys.software = [
             (mkIf (cfg.cpu.type == "amd") microcodeAmd)
-            (mkIf (cfg.cpu.type == "intel") microcodeIntel)
+            (mkIf (cfg.cpu.type == "intel") microcode-intel)
         ];
 
         # Load updated microcode

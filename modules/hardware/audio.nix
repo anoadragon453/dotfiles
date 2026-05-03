@@ -30,9 +30,9 @@ in {
             systemWide = true;
         };
 
-        hardware.pulseaudio.enable = (cfg.hardware.audio.server == "pulse");
-        hardware.pulseaudio.support32Bit = true;
-        hardware.pulseaudio.package = pulseaudioFull;
+        services.pulseaudio.enable = (cfg.hardware.audio.server == "pulse");
+        services.pulseaudio.support32Bit = true;
+        services.pulseaudio.package = pulseaudioFull;
 
     };
 }
