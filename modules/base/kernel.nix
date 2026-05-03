@@ -22,6 +22,8 @@ in {
             "kernel.yama.ptrace_scope" = 0;
             # Allow tailscale VPN to route IPv6 traffic.
             "net.ipv6.conf.all.forwarding" = 1;
+            # Set change of using the swap to 10% - prefer RAM over swap.
+            "vm.swappiness" = 10;
         };
     };
 }
