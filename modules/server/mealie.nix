@@ -1,6 +1,6 @@
 # Mealie - recipe management for the modern household.
 #
-{config, lib, ...}:
+{config, lib, pkgs, ...}:
 
 let
   cfg = config.sys.server.mealie;
@@ -31,12 +31,26 @@ in {
   };
 
   config = lib.mkIf cfg.enable {
-    systemd.services.mealie.serviceConfig.ReadWritePaths = lib.mkForce [ cfg.storagePath ];
+    # Allow mealie to write to our storage box.
+    systemd.services.mealie.serviceConfig.ReadWritePaths = lib.mkAfter [ cfg.storagePath ];
+
+    # Mealie 3.x imports NLTK while loading some Alembic migrations. NLTK wants
+    # both access to its packaged data and a writable home/cache location.
+    systemd.services.mealie.environment = {
+      NLTK_DATA = lib.mkDefault (toString pkgs.nltk-data.averaged-perceptron-tagger-eng);
+      HOME = lib.mkDefault "/var/lib/mealie";
+      XDG_CACHE_HOME = lib.mkDefault "/var/lib/mealie/.cache";
+    };
+
+    # Ensure that the data directory allows the mealie service to read/write to it.
+    systemd.tmpfiles.rules = [
+      "d ${cfg.storagePath} 0770 mealie mealie -"
+    ];
+
     services = {
       mealie = {
         enable = true;
         port = cfg.port;
-        # user = "mealie";
         settings = {
           ALLOW_SIGNUP = "false";
           TZ = config.sys.timeZone;
@@ -56,19 +70,6 @@ in {
           LOG_LEVEL = cfg.logLevel;
         };
       };
-
-      # # Create a user for mealie to run as.
-      # users.users.mealie = {
-      #   isSystemUser = true;
-      #   description = "Mealie service user";
-      #   group = "mealie";
-      #   createHome = false;
-      # };
-
-      # # Ensure that the data directory allows the mealie user to read/write to it.
-      # systemd.tmpfiles.rules = [
-      #   "d ${cfg.storagePath} 0755 mealie mealie -"
-      # ];
 
       # Configure the reverse proxy to route to this service.
       nginx = {
