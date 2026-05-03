@@ -4,6 +4,7 @@
     ./acme.nix
     ./immich.nix
     ./mealie.nix
+    ./mediawiki.nix
     ./navidrome.nix
     ./nginx.nix
     ./onlyoffice-document-server.nix

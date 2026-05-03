@@ -865,6 +865,24 @@
                   port = 8007;
                 };
 
+                mediawiki = {
+                  enable = true;
+                  name = "RAD Wiki";
+                  # TODO: Change to its own domain in the future.
+                  domain = "wiki.violetray.wang";
+                  smtp = {
+                    enable = true;
+                    host = "ssl://smtp.fastmail.com";
+                    idHost = "wiki.violetray.wang";
+                    port = 465;
+                    # The address that users will see upon receiving mail.
+                    fromAddress = "wiki@violetray.wang";
+                    # The address that will be used to authenticate over SMTP.
+                    username = "andrew@amorgan.xyz";
+                    passwordFileSecret = "mediawiki-smtp-password";
+                  };
+                };
+
                 navidrome = {
                   # Disabled due to lack of use.
                   enable = false;
