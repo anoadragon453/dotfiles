@@ -1,4 +1,4 @@
-{pkgs, config, lib, ...}:
+{pkgs, pkgsUnstable, config, lib, ...}:
 with pkgs;
 with lib;
 let
@@ -15,7 +15,14 @@ in {
   config = {
     # System daemon services.
     services.mullvad-vpn.enable = (elem "mullvad" cfg.services);
-    services.tailscale.enable = (elem "tailscale" cfg.services);
+
+    services.tailscale = {
+      enable = (elem "tailscale" cfg.services);
+
+      # Use the unstable version as work prefers this stays as
+      # up-to-date as possible.
+      package = pkgsUnstable.tailscale;
+    };
 
     # User-facing apps/cli.
     sys.software = [

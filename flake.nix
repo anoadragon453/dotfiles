@@ -590,16 +590,35 @@
               ];
               boot.initrd.kernelModules = [ "nvme" ];
 
-          # Temp for ST
-          # Needed for the SillyTavern web search server plugin
-          sys.software = [
-            pkgs.firefox
-          ];
-          services.nginx = {
-            enable = true;
+              # In case we need to VPN out and mullvad is down.
+              services.tailscale = nixpkgs.lib.mkForce {
+                # Disabled while https://github.com/NixOS/nixpkgs/issues/438765 is open.
+                enable = false;
 
-            virtualHosts."st.amorgan.xyz" = {
-              http2 = true;
+                # This sets the right sysctls and firewall rules for routing
+                useRoutingFeatures = "server";
+
+                # Advertise as an exit node at boot
+                extraUpFlags = [
+                  "--advertise-exit-node"
+                  # optional, give it a stable hostname in your tailnet
+                  # "--hostname=my-exit-node"
+                  # optional, advertise a LAN too, if you want subnet routing
+                  # "--advertise-routes=192.168.1.0/24"
+                ];
+
+                # Usually safe to leave on, opens inbound UDP 41641 if needed
+                openFirewall = true;
+
+                # Optional: auto-auth with an auth key stored securely
+                # authKeyFile = "/run/keys/tailscale-authkey";
+              };
+
+              # Helpful on some setups
+              networking.firewall = {
+                trustedInterfaces = [ "tailscale0" ];
+                checkReversePath = "loose";
+              };
 
               # Fetch and configure a TLS cert using the ACME protocol.
               enableACME = true;
