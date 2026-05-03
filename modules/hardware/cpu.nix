@@ -38,20 +38,17 @@ in {
    };
 
    config = {
-        boot.kernelParams = [
-            (mkIf (cfg.cpu.type == "intel") "intel_pstate=active")
-        ];
+        boot.kernelParams =
+            optional (cfg.cpu.type == "intel") "intel_pstate=active";
 
-        boot.kernelModules = [
-            (mkIf cfg.cpu.kvm (mkIf (cfg.cpu.type == "amd") "kvm-amd"))
-            (mkIf cfg.cpu.kvm (mkIf (cfg.cpu.type == "intel") "kvm-intel"))
-        ];
+        boot.kernelModules =
+            optional (cfg.cpu.kvm && cfg.cpu.type == "amd") "kvm-amd"
+            ++ optional (cfg.cpu.kvm && cfg.cpu.type == "intel") "kvm-intel";
 
         # Install microcode update packages
-        sys.software = [
-            (mkIf (cfg.cpu.type == "amd") microcodeAmd)
-            (mkIf (cfg.cpu.type == "intel") microcode-intel)
-        ];
+        sys.software =
+            optional (cfg.cpu.type == "amd") microcodeAmd
+            ++ optional (cfg.cpu.type == "intel") microcode-intel;
 
         # Load updated microcode
         hardware.cpu.amd.updateMicrocode = cfg.cpu.type == "amd";

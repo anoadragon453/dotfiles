@@ -19,20 +19,20 @@ in {
   };
 
   config = mkIf (desktopMode && cfg.enable) {
-    programs.kdeconnect.enable = (mkIf (cfg.implementation == "kdeconnect") true);
+    programs.kdeconnect.enable = cfg.implementation == "kdeconnect";
 
-    sys.software = (mkIf (cfg.implementation == "gsconnect") [
+    sys.software = optional (cfg.implementation == "gsconnect")
       pkgs.gnomeExtensions.gsconnect
-    ]);
+    ;
 
     # Although KDEConnect and GSConnect use the same port ranges, we only need to do this
     # for gsconnect, as programs.kdeconnect.enable already does this for us.
-    networking.firewall.allowedTCPPortRanges = (mkIf (cfg.implementation == "gsconnect") [
+    networking.firewall.allowedTCPPortRanges = optional (cfg.implementation == "gsconnect")
       { from = 1716; to = 1764; }
-    ]);
-    networking.firewall.allowedUDPPortRanges = (mkIf (cfg.implementation == "gsconnect") [
+    ;
+    networking.firewall.allowedUDPPortRanges = optional (cfg.implementation == "gsconnect")
       { from = 1716; to = 1764; }
-    ]);
+    ;
 
   };
 }

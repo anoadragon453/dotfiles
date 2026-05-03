@@ -14,10 +14,9 @@ in {
     };
 
     config = mkIf (cfg.hardware.audio.server != "none") {
-        sys.software = [
+        sys.software =
             # Need pulseaudio cli tools for pipewire.
-            (mkIf (cfg.hardware.audio.server == "pipewire") pulseaudio)
-        ];
+            optional (cfg.hardware.audio.server == "pipewire") pulseaudio;
 
         security.rtkit.enable = true;
 

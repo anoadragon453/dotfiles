@@ -34,7 +34,7 @@ in {
         # upstream openssh patches.
         services.openssh.settings.LoginGraceTime = 0;
 
-        networking.firewall.allowedTCPPorts = [ (mkIf cfg.sshd.enable cfg.sshd.serverPort) ];
+        networking.firewall.allowedTCPPorts = optional cfg.sshd.enable cfg.sshd.serverPort;
         networking.firewall.allowPing = true;
     };
 }

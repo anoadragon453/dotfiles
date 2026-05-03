@@ -25,8 +25,6 @@ in {
     };
 
     # User-facing apps/cli.
-    sys.software = [
-      (mkIf (elem "mullvad" cfg.services) mullvad-vpn)
-    ];
+    sys.software = optional (elem "mullvad" cfg.services) mullvad-vpn;
   };
 }

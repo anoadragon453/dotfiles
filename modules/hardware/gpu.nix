@@ -61,20 +61,18 @@ in {
       options v4l2loopback exclusive_caps=1 video_nr=9 card_label="obs"
     '';
 
-    boot.extraModulePackages = [
-      (mkIf gfx.v4l2loopback kernelPackage.v4l2loopback)
-    ];
+    boot.extraModulePackages =
+      optional gfx.v4l2loopback kernelPackage.v4l2loopback;
 
     services.xserver = mkIf xorg {
       enable = true;
 
-      videoDrivers = [
-        (mkIf amd "amdgpu") 
+      videoDrivers =
+        optional amd "amdgpu"
         # "intel" used to translate to installing the xf86videointel driver,
         #  which is unmaintained
-        (mkIf intel "modesetting")
-        (mkIf nvidia "nvidia")
-      ];
+        ++ optional intel "modesetting"
+        ++ optional nvidia "nvidia";
 
       displayManager.lightdm.enable = gfx.displayManager == "lightdm";
       displayManager.gdm.enable = gfx.displayManager == "gdm";
@@ -100,34 +98,29 @@ in {
     hardware.graphics.enable = !headless;
     hardware.steam-hardware.enable = !headless;
 
-    hardware.graphics.extraPackages = mkIf (!headless) (with pkgs;[
-      (mkIf amd amdvlk)
+    hardware.graphics.extraPackages = mkIf (!headless) (with pkgs;
+      optional amd amdvlk
+      ++ optional cfg.hardware.graphics.amd.rocm.enable rocm-opencl-icd
+      ++ optional cfg.hardware.graphics.amd.rocm.enable rocm-opencl-runtime
+      ++ optional intel intel-media-driver
+      ++ optional intel libva-vdpau-driver
+      ++ optional intel libvdpau-va-gl
+      ++ [ libva ]);
 
-      (mkIf cfg.hardware.graphics.amd.rocm.enable rocm-opencl-icd)
-      (mkIf cfg.hardware.graphics.amd.rocm.enable rocm-opencl-runtime)
+    hardware.graphics.extraPackages32 = mkIf (!headless) (
+      with pkgs.driversi686Linux;
+      optional amd amdvlk
+    );
 
-      (mkIf intel intel-media-driver)
-      (mkIf intel libva-vdpau-driver)
-      (mkIf intel libvdpau-va-gl)
-
-      libva
-    ]);
-
-    hardware.graphics.extraPackages32 = mkIf (!headless) (with pkgs.driversi686Linux;[
-      (mkIf amd amdvlk)
-    ]);
-
-    sys.software = with pkgs; [
-      (mkIf desktopMode vulkan-tools)
-      (mkIf desktopMode vulkan-loader)
-      (mkIf desktopMode vulkan-headers)
-      (mkIf desktopMode mesa-demos)
-      (mkIf amd radeontop)
-      (mkIf intel libva-utils)
-
-      (mkIf gfx.v4l2loopback kernelPackage.v4l2loopback)
-      (mkIf gfx.v4l2loopback libv4l)
-      (mkIf gfx.v4l2loopback xawtv)
-   ];
+    sys.software = with pkgs;
+      optional desktopMode vulkan-tools
+      ++ optional desktopMode vulkan-loader
+      ++ optional desktopMode vulkan-headers
+      ++ optional desktopMode mesa-demos
+      ++ optional amd radeontop
+      ++ optional intel libva-utils
+      ++ optional gfx.v4l2loopback kernelPackage.v4l2loopback
+      ++ optional gfx.v4l2loopback libv4l
+      ++ optional gfx.v4l2loopback xawtv;
   };
 }

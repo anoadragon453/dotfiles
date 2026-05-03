@@ -27,10 +27,7 @@ in {
             gnupg
             yubikey-personalization
             pinentry-qt
-
-            # Install required packages for OTP if enabled.
-            (mkIf cfg.otpSupport yubioath-flutter)
-        ];
+        ] ++ optional cfg.otpSupport yubioath-flutter;
 
         # Daemon to allow communicating with smartcard devices.
         services.pcscd = {
