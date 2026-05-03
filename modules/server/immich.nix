@@ -45,7 +45,7 @@ in {
       enable = true;
       port = cfg.port;
       host = "127.0.0.1";
-      mediaLocation = "/mnt/storagebox/media/immich";
+      mediaLocation = cfg.storagePath;
       settings = {
         server.externalDomain = "https://${cfg.domain}";
       };
@@ -62,7 +62,6 @@ in {
       PrivateMounts = lib.mkForce false;
       PrivateUsers = lib.mkForce false;
       WorkingDirectory = lib.mkForce cfg.storagePath;
-      RuntimeDirectory = lib.mkForce null;
     };
 
     # Configure the reverse proxy to route to this service.
