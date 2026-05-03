@@ -6,22 +6,28 @@
     enable = true;
 
     # Allow zed to download language servers on the fly.
-    # `zed-editor-fhs` is only available on nixos-unstable currently.
-    package = pkgsUnstable.zed-editor-fhs;
+    package = pkgsUnstable.zed-editor;
 
     extensions = [
       "nix"
     ];
 
-    # Only included in home-manager-unstable currently.
-    # extraPackages = with pkgsUnstable; [
-    #   go
-    #   # Nix language server support
-    #   # These must be manually installed.
-    #   nixd nil
-    #   openssl
-    #   python313Packages.python-lsp-server
-    # ];
+    extraPackages = with pkgsUnstable; [
+      go
+      # Nix language server support
+      # These must be manually installed.
+      nixd nil
+      openssl
+      pkg-config
+      
+      # The pyrefly Python type-checker written in Rust.
+      pyrefly
+      ty
+      
+      yaml-language-server
+      package-version-server
+      vscode-json-languageserver
+    ];
 
     userSettings = {
       autosave = {
@@ -29,17 +35,41 @@
           milliseconds = 500;
         };
       };
-      assistant = {
+      agent = {
         default_model = {
-          provider = "copilot_chat";
-          model = "gpt-4o";
+          provider = "zed.dev";
+          model = "claude-sonnet-4";
         };
         version = "2";
       };
       base_keymap = "JetBrains";
+      languages = {
+        Python = {
+          # Prefer PyRight over pylsp.
+          # PyRight has proper support for excluding directories from search
+          # results.
+          language_servers = ["ty" "!pyrefly" "!pyright" "!pylsp"];
+        };
+      };
+      lsp = {
+        rust-analyzer = {
+          intialization_options = {
+            cargo = {
+              allTargets = false;
+            };
+          };
+        };
+        ty = {
+          binary = {
+            path = "/nix/store/zlaxrnmiqgxp64gyz33mv18dq1b583ag-ty-0.0.1-alpha.5/bin/ty";
+            arguments = [ "server" ];
+          };
+        };
+      };
       load_direnv = "direct";
       # Turn off real-time AI edit predictions.
       show_edit_predictions = false;
+      ui_font_size = 18;
       vim_mode = true;
     };
 
