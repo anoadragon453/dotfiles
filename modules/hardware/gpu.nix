@@ -54,7 +54,7 @@ in {
   in {
     
     boot.initrd.kernelModules = [
-      (mkIf amd "amdgpu")
+      # (mkIf amd "amdgpu")
     ];
 
     boot.extraModprobeConfig = mkIf gfx.v4l2loopback ''
@@ -90,6 +90,7 @@ in {
 
     services.displayManager = {
       sddm.enable = gfx.displayManager == "sddm";
+      sddm.wayland.enable = true;
       logToJournal = true;
     };
 
@@ -106,7 +107,7 @@ in {
       (mkIf cfg.hardware.graphics.amd.rocm.enable rocm-opencl-runtime)
 
       (mkIf intel intel-media-driver)
-      (mkIf intel vaapiVdpau)
+      (mkIf intel libva-vdpau-driver)
       (mkIf intel libvdpau-va-gl)
 
       libva
@@ -120,7 +121,7 @@ in {
       (mkIf desktopMode vulkan-tools)
       (mkIf desktopMode vulkan-loader)
       (mkIf desktopMode vulkan-headers)
-      (mkIf desktopMode glxinfo)
+      (mkIf desktopMode mesa-demos)
       (mkIf amd radeontop)
       (mkIf intel libva-utils)
 
