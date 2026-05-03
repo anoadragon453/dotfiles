@@ -12,6 +12,6 @@
     ./plymouth.nix
     ./qt.nix
     ./steam.nix
-    ./thunderbird.nix
+    ./xserver.nix
   ];
 }
