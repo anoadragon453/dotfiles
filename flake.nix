@@ -672,6 +672,125 @@
                   };
                 };
 
+                virtualHosts."fathersday25.amorgan.xyz" = {
+                  http2 = true;
+
+                  # Fetch and configure a TLS cert using the ACME protocol.
+                  enableACME = true;
+
+                  # Redirect all unencrypted traffic to HTTPS.
+                  forceSSL = true;
+
+                  root = "/var/www/fathers-day-25";
+
+                  locations."/" = {
+                    extraConfig = ''
+                      try_files $uri $uri/ =404;
+                    '';
+                  };
+                };
+
+                virtualHosts."resonite.violetray.wang" = {
+                  http2 = true;
+
+                  # Fetch and configure a TLS cert using the ACME protocol.
+                  enableACME = true;
+
+                  # Redirect all unencrypted traffic to HTTPS.
+                  forceSSL = true;
+
+                  root = "/var/www/resonite";
+
+                  locations."/" = {
+                    extraConfig = ''
+                      try_files $uri $uri/ =404;
+                    '';
+                  };
+                };
+
+                virtualHosts."lauren-fathers-day-25.amorgan.xyz" = {
+                  http2 = true;
+
+                  # Fetch and configure a TLS cert using the ACME protocol.
+                  enableACME = true;
+
+                  # Redirect all unencrypted traffic to HTTPS.
+                  forceSSL = true;
+
+                  root = "/var/www/lauren-fathers-day-25";
+
+                  locations."/" = {
+                    extraConfig = ''
+                      try_files $uri $uri/ =404;
+                    '';
+                  };
+                };
+
+                virtualHosts."jason2025.amorgan.xyz" = {
+                  http2 = true;
+
+                  # Fetch and configure a TLS cert using the ACME protocol.
+                  enableACME = true;
+
+                  # Redirect all unencrypted traffic to HTTPS.
+                  forceSSL = true;
+
+                  root = "/var/www/jason2025";
+
+                  locations."/" = {
+                    extraConfig = ''
+                      try_files $uri $uri/ =404;
+                    '';
+                  };
+                };
+
+                virtualHosts."rick.amorgan.xyz" = {
+                  http2 = true;
+
+                  # Fetch and configure a TLS cert using the ACME protocol.
+                  enableACME = true;
+
+                  # Redirect all unencrypted traffic to HTTPS.
+                  forceSSL = true;
+
+                  root = "/var/www/rick-venture";
+
+                  locations."/" = {
+                    extraConfig = ''
+                      try_files $uri $uri/ =404;
+                    '';
+                  };
+                };
+
+                virtualHosts."photomap.amorgan.xyz" = {
+                  http2 = true;
+
+                  # Fetch and configure a TLS cert using the ACME protocol.
+                  enableACME = true;
+
+                  # Redirect all unencrypted traffic to HTTPS.
+                  forceSSL = true;
+
+                  # extraConfig is needed as the NixOS module can't do an exact match
+                  # on a path.
+                  extraConfig = ''
+                    # Exact match for an empty path
+                    location = / {
+                      return 301 "https://photomap.amorgan.xyz/en/map/anonymous-edit/1156575:FcUUrWcrU-vFCZ0HajwjYKgGG6YmnVubJSq5Fl7tOLo";
+                    }
+
+                    # Any path other than an empty path (proxy through to upstream)
+                    location / {
+                      proxy_pass "https://umap.openstreetmap.fr";
+
+                      proxy_set_header Host umap.openstreetmap.fr;
+                      proxy_set_header X-Real-IP $remote_addr;
+                      proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                      proxy_set_header X-Forwarded-Proto $scheme;
+                    }
+                  '';
+                };
+
                 # Redirect Red's domain to linktree.
                 virtualHosts."redpaletteart.com" = {
                   http2 = true;
