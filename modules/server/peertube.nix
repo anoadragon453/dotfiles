@@ -133,6 +133,12 @@ in {
       nginx.virtualHosts.${cfg.domain} = {
         enableACME = true;
         forceSSL = true;
+
+        locations."^~ /static/streaming-playlists/" = {
+          # Keep a trailing slash here so nginx appends the remainder of the
+          # request path correctly, e.g. ".../streaming-playlists/" + "hls/...".
+          alias = lib.mkForce "/mnt/storagebox/media/peertube/streaming-playlists/";
+        };
       };
     };
   };
