@@ -4,7 +4,7 @@
   inputs = {
     # Management of user-level configuration.
     home-manager = {
-      url = "github:nix-community/home-manager/release-24.11";
+      url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -12,7 +12,7 @@
     nixos-hardware.url = "github:NixOS/nixos-hardware/master";
 
     # Official Nix Packages repository.
-    nixpkgs.url = "nixpkgs/nixos-24.11";
+    nixpkgs.url = "nixpkgs/nixos-25.11";
     nixpkgs-unstable.url = "nixpkgs/nixos-unstable";
     #nixpkgs-mealie.url = "github:antonmosich/nixpkgs/mealie-update";
 
@@ -34,343 +34,434 @@
     };
   };
 
-  outputs = inputs @ {self, nixpkgs, nixpkgs-unstable, ... }:
-  let
-    lib = import ./lib;
-    localpkgs = import ./pkgs;
-    extralib = self: super: import ./lib/extrafn.nix;
+  outputs =
+    inputs@{
+      self,
+      nixpkgs,
+      nixpkgs-unstable,
+      ...
+    }:
+    let
+      lib = import ./lib;
+      localpkgs = import ./pkgs;
+      extralib = self: super: import ./lib/extrafn.nix;
 
-    # Create a custom instance of nixpkgs with the deploy-rs overlay in use, but
-    # the deploy-rs *package* from nixpkgs - thus allowing use of nixpkgs'
-    # binary cache for the deploy-rs package.
-    deployPkgs = import nixpkgs {
-      system = "x86_64-linux";
-      overlays = [
-        inputs.deploy-rs.overlays.default
-        (self: super: { deploy-rs = { inherit (allPkgs."x86_64-linux") deploy-rs; lib = super.deploy-rs.lib; }; })
-      ];
-    };
-
-    allPkgs = lib.mkPkgs {
-      inherit nixpkgs; 
-      cfg = {
-        allowUnfree = true;
-
-        permittedInsecurePackages = [];
-      };
-      overlays = [
-        localpkgs
-        extralib
-      ];
-    };
-    
-    allPkgsUnstable = lib.mkPkgs {
-      nixpkgs = nixpkgs-unstable; 
-      cfg = {
-        allowUnfree = true;
-      };
-      overlays = [
-        localpkgs
-        extralib
-      ];
-    };
-
-    # NixOS Modules common to all systems.
-    commonModules = [
-      ./modules
-      inputs.sops-nix.nixosModules.sops
-    ];
-
-    # The SSH keys allowed to SSH into my personal devices.
-    personalDeviceSshPublicKeys = [
-      # Personal Yubikey
-      "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIGVdcgCRUwCd83w5L+k5yhDHrLDF88GgDWdhvMqYAUiAAAAABHNzaDo="
-      # Work Yubikey
-      (builtins.concatStringsSep "" [
-        "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC2IeWa2q5ZtiZSdZw6ZCwTmaUyEfwaYl9Bef49Gj2E+p2OVu2Zqc9YDOtZldvturwWcFxqNy8shCed5vaGlQgUe2Q+"
-        "y0vxPtMTbw/6qVYd1FDXAqPk+CDwBbtP3iD3ovki8zvOZapoeUNLtLX4U1xn4eikgL4+NdRhElZqfL7VCfD7nkKp4XUVXEcKqatYphcGRBKSqiMkRhTieaOpSHxMhTloN"
-        "ZYViVFa6ugQgZVDQ7xYO02yAYczI2Uv7JH4vRS75Es+aLQG8a0W29V2ZW2OBuHRjDg0kBvR0M2KNORWC1d9Tt4P1BF/r6FDfhqWd7Zd+QNlH9/XdwuJDaha+g6bLQdC60"
-        "b+vo2lGE4Cn6i3srvXWwhv/yiP+SDekzSoEUwB+kcBgc05IARQPA8Am3r3NtTqtb/GJbj8U+8Q10mA7NJ8W/IZS8gCmbxVrkygAZgAHM+fDiT2Lh8KPrVih5Xt+n9kwZG"
-        "TklxBlfgrllzDszvrZRmLzZj8Zw1MdYwJFqes8lV3WILXpw2E3/iJSiT08/igdgQDLHywQbXd6iw18XciZa7JSxwwvxJ6h16b9JiXXyXSxMAJmDJn92MAYxGQ1hzGuT7g"
-        "MQ/M65l8qCs5Ra6fhXiwfax9CtcexmhxYriziIz0MySFTIw5wk6Ppvaz6GdKT4Y+FFTKA19GH1l5Fw=="
-      ])
-    ];
-    # The SSH keys allowed to SSH into my server infrastructure.
-    infrastructureSshPublicKeys = personalDeviceSshPublicKeys ++ [
-      # Sops SSH key (used for secrets en/decryption and auth'ing to server infrastructure).
-      "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMqiV558AS8OkEZAnxTMsRbH4sPMtK/Lou5PIJnmvkvd user@izzy"
-    ];
-
-  in {
-    # TODO: Refactor this to devShell.${sys}.default somehow.
-    devShell = lib.withDefaultSystems (sys: let
-      pkgs = allPkgs."${sys}";
-    in import ./shell.nix { inherit pkgs; });
-
-    nixosConfigurations = {
-
-      ## Personal devices
-
-      moonbow = lib.mkNixOSConfig {
-        name = "moonbow";
+      # Create a custom instance of nixpkgs with the deploy-rs overlay in use, but
+      # the deploy-rs *package* from nixpkgs - thus allowing use of nixpkgs'
+      # binary cache for the deploy-rs package.
+      deployPkgs = import nixpkgs {
         system = "x86_64-linux";
-        modules = commonModules ++ [
-          # Enable real time audio on this system for music production.
-          inputs.musnix.nixosModules.musnix
-          ./modules/desktop/real-time-audio.nix
-
-          inputs.home-manager.nixosModules.home-manager {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.users = {
-              user = {
-                home.stateVersion = "23.11";
-                imports = [ modules/home-manager ];
-              };
+        overlays = [
+          inputs.deploy-rs.overlays.default
+          (self: super: {
+            deploy-rs = {
+              inherit (allPkgs."x86_64-linux") deploy-rs;
+              lib = super.deploy-rs.lib;
             };
-          }
+          })
         ];
-        inherit nixpkgs allPkgs allPkgsUnstable;
-        cfg = let 
-          pkgs = allPkgs.x86_64-linux;
-        in {
-          boot.initrd.availableKernelModules = [ "xhci_pci" "ahci" "nvme" "usbhid" "usb_storage" "sd_mod" ];
-
-          # TODO: I had to override the realtime kernel defined in musnix as the
-          # realtime patch currently fails to apply.
-          sys.kernelPackage = pkgs.lib.mkDefault pkgs.linuxPackages_latest;
-
-          networking.interfaces."enp8s0" = { useDHCP = true; };
-          networking.networkmanager.enable = true;
-
-          sys.user.users.user = {
-            # TODO: Move adbusers into android.nix somehow
-            groups = [ "adbusers" "audio" "docker" "networkmanager" "pipewire" "wheel" ];
-            roles = ["development"];
-            sshPublicKeys = personalDeviceSshPublicKeys;
-
-            config = {
-              email = "andrew@amorgan.xyz";
-              name = "Andrew Morgan";
-              signingKey = "0xA7E4A57880C3A4A9";
-            };
-          };
-
-          # Back up home directories using restic.
-          sys.backup.restic = {
-            enable = true;
-            backupPasswordFileSecret = "restic";
-            includedPaths = [ "/home" ];
-            repository = "sftp://u220692-sub7@u220692-sub7.your-storagebox.de:23/";
-            extraOptions = [
-              "sftp.command='ssh -p23 u220692-sub7@u220692-sub7.your-storagebox.de -i /home/user/.ssh/sops-ssh -s sftp'"
-            ];
-          };
-
-          sys.cpu.type = "intel";
-          sys.cpu.cores = 8;
-          sys.cpu.threadsPerCore = 8;
-          sys.biosType = "efi";
-
-          sys.enableFlatpakSupport = true;
-          sys.enablePrintingSupport = true;
-
-          sys.desktop.gui.types = [ "gnome" ];
-
-          sys.desktop.kdeconnect.enable = true;
-          sys.desktop.kdeconnect.implementation = "gsconnect";
-
-          sys.hardware.audio.server = "pipewire";
-          sys.desktop.realTimeAudio.soundcardPciId = "00:1f.3";
-
-          sys.hardware.bluetooth = true;
-          sys.hardware.graphics.primaryGPU = "amd";
-          sys.hardware.graphics.amd.rocm.enable = true;
-          sys.hardware.graphics.displayManager = "gdm";
-          sys.hardware.graphics.desktopProtocols = [ "xorg" "wayland" ];
-          sys.hardware.graphics.v4l2loopback = true;
-
-          # Use this SSH key as the age key to decrypt secrets with.
-          sops.age.sshKeyPaths = [ "/home/user/.ssh/sops-ssh" ];
-
-          sops.secrets = {
-            restic = {
-              sopsFile = ./secrets/personal_common/restic_backup;
-              format = "binary";
-            };
-          };
-
-          sys.security.yubikey = {
-            enable = true;
-            legacySSHSupport = false;
-          };
-          sys.security.sshd.enable = false;
-
-          # Disable default disk layout magic and just use the declarations below.
-          sys.diskLayout = "disable";
-
-          sys.vpn.services = [ "mullvad" ];
-
-          # Open LUKS encrypted partitions and make available as /dev/mapper devices.
-	        # Root and /boot.
-          boot.initrd.luks.devices."luks-2dbafbac-35bd-43d4-a8ff-5af82cd4b26c".device = "/dev/disk/by-uuid/2dbafbac-35bd-43d4-a8ff-5af82cd4b26c";
-          # Swap.
-          boot.initrd.luks.devices."luks-cbfbc367-a93a-4d21-984f-c09f302528e1".device = "/dev/disk/by-uuid/cbfbc367-a93a-4d21-984f-c09f302528e1";
-
-          # Mount /dev/mapper devices to the filesystem.
-          fileSystems."/boot" =
-          { device = "/dev/disk/by-uuid/9447-C14A";
-            fsType = "vfat";
-          };
-
-          fileSystems."/" =
-          { device = "/dev/disk/by-uuid/7dcef2f7-4d44-4fff-8a60-19505454300e";
-            fsType = "ext4";
-          };
-
-          swapDevices =
-          [ { device = "/dev/disk/by-uuid/95916c33-ccd9-449f-ae3d-cccbcb88936f"; }
-          ];
-
-          # Mount other devices.
-          fileSystems."/run/media/user/Steam" =
-            { device = "/dev/disk/by-uuid/76240c8a-cf38-4663-9d0a-bf16b416f601";
-              fsType = "ext4";
-            };
-
-          fileSystems."/run/media/user/Winblows" =
-            { device = "/dev/disk/by-uuid/8028-9296";
-              fsType = "exfat";
-            };
-
-        };
       };
 
-      izzy = let 
-        pkgs = allPkgs.x86_64-linux;
-        pkgsUnstable = allPkgsUnstable.x86_64-linux;
-      in lib.mkNixOSConfig {
-        name = "izzy";
-        system = "x86_64-linux";
-        modules = commonModules ++ [
-          inputs.nixos-hardware.nixosModules.framework-11th-gen-intel
-
-          inputs.home-manager.nixosModules.home-manager {
-            home-manager.useGlobalPkgs = true;
-            home-manager.useUserPackages = true;
-            home-manager.users = {
-              user = {
-                home.stateVersion = "23.11";
-                imports = [ modules/home-manager ];
-                
-                _module.args = {
-                  inherit pkgsUnstable;
-                };
-              };
-              work = {
-                home.stateVersion = "23.11";
-                imports = [ modules/home-manager ];
-
-                _module.args = {
-                  inherit pkgsUnstable;
-                };
-              };
-            };
-          }
-        ];
-        inherit nixpkgs allPkgs allPkgsUnstable;
+      allPkgs = lib.mkPkgs {
+        inherit nixpkgs;
         cfg = {
-          boot.initrd.availableKernelModules = [ "xhci_pci" "thunderbolt" "nvme" "usb_storage" "sd_mod" ];
+          allowUnfree = true;
 
-          sys.kernelPackage = pkgs.linuxPackages;
+          permittedInsecurePackages = [ ];
+        };
+        overlays = [
+          localpkgs
+          extralib
+        ];
+      };
 
-          networking.networkmanager.enable = true;
+      allPkgsUnstable = lib.mkPkgs {
+        nixpkgs = nixpkgs-unstable;
+        cfg = {
+          allowUnfree = true;
+        };
+        overlays = [
+          localpkgs
+          extralib
+        ];
+      };
 
-          sys.user.users.user = {
-            # TODO: Move adbusers into android.nix somehow
-            groups = [ "adbusers" "audio" "docker" "networkmanager" "pipewire" "wheel" ];
-            roles = ["development"];
-            sshPublicKeys = personalDeviceSshPublicKeys;
+      # NixOS Modules common to all systems.
+      commonModules = [
+        ./modules
+        inputs.sops-nix.nixosModules.sops
+      ];
 
-            config = {
-              email = "andrew@amorgan.xyz";
-              name = "Andrew Morgan";
-              signingKey = "0xA7E4A57880C3A4A9";
-            };
-          };
+      # The SSH keys allowed to SSH into my personal devices.
+      personalDeviceSshPublicKeys = [
+        # Personal Yubikey
+        "sk-ssh-ed25519@openssh.com AAAAGnNrLXNzaC1lZDI1NTE5QG9wZW5zc2guY29tAAAAIGVdcgCRUwCd83w5L+k5yhDHrLDF88GgDWdhvMqYAUiAAAAABHNzaDo="
+        # Work Yubikey
+        (builtins.concatStringsSep "" [
+          "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC2IeWa2q5ZtiZSdZw6ZCwTmaUyEfwaYl9Bef49Gj2E+p2OVu2Zqc9YDOtZldvturwWcFxqNy8shCed5vaGlQgUe2Q+"
+          "y0vxPtMTbw/6qVYd1FDXAqPk+CDwBbtP3iD3ovki8zvOZapoeUNLtLX4U1xn4eikgL4+NdRhElZqfL7VCfD7nkKp4XUVXEcKqatYphcGRBKSqiMkRhTieaOpSHxMhTloN"
+          "ZYViVFa6ugQgZVDQ7xYO02yAYczI2Uv7JH4vRS75Es+aLQG8a0W29V2ZW2OBuHRjDg0kBvR0M2KNORWC1d9Tt4P1BF/r6FDfhqWd7Zd+QNlH9/XdwuJDaha+g6bLQdC60"
+          "b+vo2lGE4Cn6i3srvXWwhv/yiP+SDekzSoEUwB+kcBgc05IARQPA8Am3r3NtTqtb/GJbj8U+8Q10mA7NJ8W/IZS8gCmbxVrkygAZgAHM+fDiT2Lh8KPrVih5Xt+n9kwZG"
+          "TklxBlfgrllzDszvrZRmLzZj8Zw1MdYwJFqes8lV3WILXpw2E3/iJSiT08/igdgQDLHywQbXd6iw18XciZa7JSxwwvxJ6h16b9JiXXyXSxMAJmDJn92MAYxGQ1hzGuT7g"
+          "MQ/M65l8qCs5Ra6fhXiwfax9CtcexmhxYriziIz0MySFTIw5wk6Ppvaz6GdKT4Y+FFTKA19GH1l5Fw=="
+        ])
+      ];
+      # The SSH keys allowed to SSH into my server infrastructure.
+      infrastructureSshPublicKeys = personalDeviceSshPublicKeys ++ [
+        # Sops SSH key (used for secrets en/decryption and auth'ing to server infrastructure).
+        "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIMqiV558AS8OkEZAnxTMsRbH4sPMtK/Lou5PIJnmvkvd user@izzy"
+      ];
 
-          sys.user.users.work = {
-            # TODO: Move adbusers into android.nix somehow
-            groups = [ "adbusers" "audio" "docker" "networkmanager" "pipewire" "wheel" ];
-            roles = ["development"];
+    in
+    {
+      # TODO: Refactor this to devShell.${sys}.default somehow.
+      devShell = lib.withDefaultSystems (
+        sys:
+        let
+          pkgs = allPkgs."${sys}";
+        in
+        import ./shell.nix { inherit pkgs; }
+      );
 
-            sshPublicKeys = personalDeviceSshPublicKeys;
+      nixosConfigurations = {
 
-            config = {
-              email = "andrew@amorgan.xyz";
-              name = "Andrew Morgan";
-              signingKey = "0xA7E4A57880C3A4A9";
-            };
-          };
+        ## Personal devices
 
-          # Back up home directories using restic.
-          sys.backup.restic = {
-            enable = true;
-            backupPasswordFileSecret = "restic";
-            includedPaths = [ "/home" ];
-            repository = "sftp://u220692-sub7@u220692-sub7.your-storagebox.de:23/";
-            extraOptions = [
-              "sftp.command='ssh -p23 u220692-sub7@u220692-sub7.your-storagebox.de -i /home/user/.ssh/sops-ssh -s sftp'"
+        moonbow =
+          let
+            pkgs = allPkgs.x86_64-linux;
+            pkgsUnstable = allPkgsUnstable.x86_64-linux;
+          in
+          lib.mkNixOSConfig {
+            name = "moonbow";
+            system = "x86_64-linux";
+            modules = commonModules ++ [
+              # Enable real time audio on this system for music production.
+              inputs.musnix.nixosModules.musnix
+              ./modules/desktop/real-time-audio.nix
+
+              inputs.home-manager.nixosModules.home-manager
+              {
+                home-manager.useGlobalPkgs = true;
+                home-manager.useUserPackages = true;
+                home-manager.users = {
+                  user = {
+                    home.stateVersion = "23.11";
+                    imports = [ modules/home-manager ];
+
+                    _module.args = {
+                      inherit pkgsUnstable;
+                    };
+                  };
+                };
+              }
             ];
-          };
+            inherit nixpkgs allPkgs allPkgsUnstable;
+            cfg = {
+              boot.initrd.availableKernelModules = [
+                "xhci_pci"
+                "ahci"
+                "nvme"
+                "usbhid"
+                "usb_storage"
+                "sd_mod"
+              ];
 
-          sys.cpu.type = "intel";
-          sys.cpu.cores = 8;
-          sys.cpu.threadsPerCore = 8;
-          sys.biosType = "efi";
+              # TODO: I had to override the realtime kernel defined in musnix as the
+              # realtime patch currently fails to apply.
+              sys.kernelPackage = pkgs.lib.mkDefault pkgs.linuxPackages_latest;
 
-          sys.enableFlatpakSupport = true;
-          sys.enablePrintingSupport = true;
+              networking.interfaces."enp8s0" = {
+                useDHCP = true;
+              };
+              networking.networkmanager.enable = true;
 
-          sys.desktop.gui.types = [ "gnome" ];
+              sys.user.users.user = {
+                # TODO: Move adbusers into android.nix somehow
+                groups = [
+                  "adbusers"
+                  "audio"
+                  "docker"
+                  "networkmanager"
+                  "pipewire"
+                  "wheel"
+                ];
+                roles = [ "development" ];
+                sshPublicKeys = personalDeviceSshPublicKeys;
 
-          sys.desktop.kdeconnect.enable = true;
-          sys.desktop.kdeconnect.implementation = "gsconnect";
+                config = {
+                  email = "andrew@amorgan.xyz";
+                  name = "Andrew Morgan";
+                  signingKey = "0xA7E4A57880C3A4A9";
+                };
+              };
 
-          sys.hardware.audio.server = "pipewire";
-          #sys.desktop.realTimeAudio.soundcardPciId = "00:1f.3";
+              # Back up home directories using restic.
+              sys.backup.restic = {
+                enable = true;
+                backupPasswordFileSecret = "restic";
+                includedPaths = [ "/home" ];
+                repository = "sftp://u220692-sub7@u220692-sub7.your-storagebox.de:23/";
+                extraOptions = [
+                  "sftp.command='ssh -p23 u220692-sub7@u220692-sub7.your-storagebox.de -i /home/user/.ssh/sops-ssh -s sftp'"
+                ];
+              };
 
-          sys.hardware.bluetooth = true;
-          sys.hardware.graphics.primaryGPU = "intel";
-          sys.hardware.graphics.displayManager = "gdm";
-          sys.hardware.graphics.desktopProtocols = [ "xorg" "wayland" ];
-          sys.hardware.graphics.v4l2loopback = true;
+              sys.cpu.type = "intel";
+              sys.cpu.cores = 8;
+              sys.cpu.threadsPerCore = 8;
+              sys.biosType = "efi";
 
-          sys.thunderbird.customTempDirectory = "/tmp/thunderbird";
+              sys.enableFlatpakSupport = true;
+              sys.enablePrintingSupport = true;
 
-          sys.security.yubikey = {
-            enable = true;
-            legacySSHSupport = true;
-          };
-          sys.security.sshd.enable = false;
+              sys.desktop.gui.types = [ "gnome" ];
 
-          # Require that all accounts type in the root password when using 'sudo', rather than their own.
-          # This is a work-related security requirement.
-          security.sudo.extraConfig = ''
-            Defaults rootpw
-          '';
+              sys.desktop.kdeconnect.enable = true;
+              sys.desktop.kdeconnect.implementation = "gsconnect";
 
-          sys.vpn.services = [ "mullvad" "tailscale" ];
+              sys.hardware.audio.server = "pipewire";
+              sys.desktop.realTimeAudio.soundcardPciId = "00:1f.3";
 
-          # Use this SSH key as the age key to decrypt secrets with.
-          sops.age.sshKeyPaths = [ "/home/user/.ssh/sops-ssh" ];
+              sys.hardware.bluetooth = true;
+              sys.hardware.graphics.primaryGPU = "amd";
+              sys.hardware.graphics.amd.rocm.enable = true;
+              sys.hardware.graphics.displayManager = "gdm";
+              sys.hardware.graphics.desktopProtocols = [
+                "xorg"
+                "wayland"
+              ];
+              sys.hardware.graphics.v4l2loopback = true;
 
-          sops.secrets = {
-            restic = {
-              sopsFile = ./secrets/personal_common/restic_backup;
-              format = "binary";
+              # Use this SSH key as the age key to decrypt secrets with.
+              sops.age.sshKeyPaths = [ "/home/user/.ssh/sops-ssh" ];
+
+              sops.secrets = {
+                restic = {
+                  sopsFile = ./secrets/personal_common/restic_backup;
+                  format = "binary";
+                };
+              };
+
+              sys.security.yubikey = {
+                enable = true;
+                legacySSHSupport = false;
+              };
+              sys.security.sshd.enable = false;
+
+              # Disable default disk layout magic and just use the declarations below.
+              sys.diskLayout = "disable";
+
+              sys.vpn.services = [ "mullvad" ];
+
+              # Open LUKS encrypted partitions and make available as /dev/mapper devices.
+              # Root and /boot.
+              boot.initrd.luks.devices."luks-2dbafbac-35bd-43d4-a8ff-5af82cd4b26c".device =
+                "/dev/disk/by-uuid/2dbafbac-35bd-43d4-a8ff-5af82cd4b26c";
+              # Swap.
+              boot.initrd.luks.devices."luks-cbfbc367-a93a-4d21-984f-c09f302528e1".device =
+                "/dev/disk/by-uuid/cbfbc367-a93a-4d21-984f-c09f302528e1";
+
+              # Mount /dev/mapper devices to the filesystem.
+              fileSystems."/boot" = {
+                device = "/dev/disk/by-uuid/9447-C14A";
+                fsType = "vfat";
+              };
+
+              fileSystems."/" = {
+                device = "/dev/disk/by-uuid/7dcef2f7-4d44-4fff-8a60-19505454300e";
+                fsType = "ext4";
+              };
+
+              swapDevices = [
+                { device = "/dev/disk/by-uuid/95916c33-ccd9-449f-ae3d-cccbcb88936f"; }
+              ];
+
+              # Mount other devices.
+              fileSystems."/run/media/user/Steam" = {
+                device = "/dev/disk/by-uuid/76240c8a-cf38-4663-9d0a-bf16b416f601";
+                fsType = "ext4";
+              };
+
+              fileSystems."/run/media/user/Winblows" = {
+                device = "/dev/disk/by-uuid/8028-9296";
+                fsType = "exfat";
+              };
+
             };
           };
+
+        izzy =
+          let
+            pkgs = allPkgs.x86_64-linux;
+            pkgsUnstable = allPkgsUnstable.x86_64-linux;
+          in
+          lib.mkNixOSConfig {
+            name = "izzy";
+            system = "x86_64-linux";
+            modules = commonModules ++ [
+              inputs.nixos-hardware.nixosModules.framework-11th-gen-intel
+
+              inputs.home-manager.nixosModules.home-manager
+              {
+                home-manager.useGlobalPkgs = true;
+                home-manager.useUserPackages = true;
+                home-manager.users = {
+                  user = {
+                    home.stateVersion = "23.11";
+                    imports = [ modules/home-manager ];
+
+                    _module.args = {
+                      inherit pkgsUnstable;
+                    };
+                  };
+                  work = {
+                    home.stateVersion = "23.11";
+                    imports = [ modules/home-manager ];
+
+                    _module.args = {
+                      inherit pkgsUnstable;
+                    };
+                  };
+                };
+              }
+            ];
+            inherit nixpkgs allPkgs allPkgsUnstable;
+            cfg = {
+              boot.initrd.availableKernelModules = [
+                "xhci_pci"
+                "thunderbolt"
+                "nvme"
+                "usb_storage"
+                "sd_mod"
+              ];
+
+              sys.kernelPackage = pkgs.linuxPackages;
+
+              networking.networkmanager.enable = true;
+
+              sys.user.users.user = {
+                # TODO: Move adbusers into android.nix somehow
+                groups = [
+                  "adbusers"
+                  "audio"
+                  "docker"
+                  "networkmanager"
+                  "pipewire"
+                  "wheel"
+                ];
+                roles = [ "development" ];
+                sshPublicKeys = personalDeviceSshPublicKeys;
+
+                config = {
+                  email = "andrew@amorgan.xyz";
+                  name = "Andrew Morgan";
+                  signingKey = "0xA7E4A57880C3A4A9";
+                };
+              };
+
+              sys.user.users.work = {
+                # TODO: Move adbusers into android.nix somehow
+                groups = [
+                  "adbusers"
+                  "audio"
+                  "docker"
+                  "networkmanager"
+                  "pipewire"
+                  "wheel"
+                ];
+                roles = [ "development" ];
+
+                sshPublicKeys = personalDeviceSshPublicKeys;
+
+                config = {
+                  email = "andrew@amorgan.xyz";
+                  name = "Andrew Morgan";
+                  signingKey = "0xA7E4A57880C3A4A9";
+                };
+              };
+
+              # Back up home directories using restic.
+              sys.backup.restic = {
+                enable = true;
+                backupPasswordFileSecret = "restic";
+                includedPaths = [ "/home" ];
+                repository = "sftp://u220692-sub7@u220692-sub7.your-storagebox.de:23/";
+                extraOptions = [
+                  "sftp.command='ssh -p23 u220692-sub7@u220692-sub7.your-storagebox.de -i /home/user/.ssh/sops-ssh -s sftp'"
+                ];
+              };
+
+              sys.cpu.type = "intel";
+              sys.cpu.cores = 8;
+              sys.cpu.threadsPerCore = 8;
+              sys.biosType = "efi";
+
+              sys.enableFlatpakSupport = true;
+              sys.enablePrintingSupport = true;
+
+              sys.desktop.gui.types = [ "kde" ];
+
+              sys.desktop.kdeconnect.enable = true;
+              #sys.desktop.kdeconnect.implementation = "gsconnect";
+
+              sys.hardware.audio.server = "pipewire";
+              #sys.desktop.realTimeAudio.soundcardPciId = "00:1f.3";
+
+              sys.hardware.bluetooth = true;
+              sys.hardware.graphics.primaryGPU = "intel";
+              sys.hardware.graphics.displayManager = "sddm";
+              sys.hardware.graphics.desktopProtocols = [
+                "xorg"
+                "wayland"
+              ];
+              sys.hardware.graphics.v4l2loopback = true;
+
+              # sys.thunderbird.customTempDirectory = "/tmp/thunderbird";
+
+              # Work around for distrobox issue
+              security.lsm = nixpkgs.lib.mkForce [ ];
+
+              # Fix docker issue on 25.05
+              networking.firewall.extraCommands = "
+                iptables -I nixos-fw 1 -i br+ -j ACCEPT
+              ";
+              networking.firewall.extraStopCommands = "
+                iptables -D nixos-fw -i br+ -j ACCEPT
+              ";
+
+              sys.security.yubikey = {
+                enable = true;
+                legacySSHSupport = true;
+              };
+              sys.security.sshd.enable = false;
+
+              # Require that all accounts type in the root password when using 'sudo', rather than their own.
+              # This is a work-related security requirement.
+              security.sudo.extraConfig = ''
+                Defaults rootpw
+              '';
+
+              sys.vpn.services = [
+                "mullvad"
+                "tailscale"
+              ];
+
+              programs.virt-manager.enable = true;
+              users.groups.libvirtd.members = [ "user" ];
+
+              # Needed for Complement.
+              virtualisation.docker.package = pkgs.docker_28;
+
+              # Use this SSH key as the age key to decrypt secrets with.
+              sops.age.sshKeyPaths = [ "/home/user/.ssh/sops-ssh" ];
+
+              sops.secrets = {
+                restic = {
+                  sopsFile = ./secrets/personal_common/restic_backup;
+                  format = "binary";
+                };
+              };
 
           services.postgresql.enable = true;
 
@@ -415,65 +506,89 @@
             };
           };
 
-          # Expose both the homeserver's well-known file (which points to the
-          # proxy) and the sliding sync proxy itself to my network.
-          networking.firewall.allowedTCPPorts = [ 8081 8181 8080 ];
+              # Expose both the homeserver's well-known file (which points to the
+              # proxy) and the sliding sync proxy itself to my network.
+              networking.firewall.allowedTCPPorts = [
+                80
+                443
+                8081
+                8181
+              ];
 
-          # Disable fingerprint reader enabled by nixos-hardware's framework service.
-          # Mostly because GDM doesn't interact well with the PAM rules set by it.
-          services.fprintd.enable = false;
+              # Prevent Framework Ethernet adapter from disconnecting occasionally.
+              # TODO: Add to nixos-hardware?
+              services.udev.extraRules = ''
+                ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="0bda", ATTR{idProduct}=="8156", TEST=="power/control", ATTR{power/control}="on"
+                ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="0bda", ATTR{idProduct}=="8156", TEST=="power/autosuspend_delay_ms", ATTR{power/autosuspend_delay_ms}="-1"
+                ACTION=="add", SUBSYSTEM=="usb", ATTR{idVendor}=="0bda", ATTR{idProduct}=="8156", TEST=="power/autosuspend", ATTR{power/autosuspend}="-1"
+              '';
 
-          # Disable default disk layout magic and just use the declarations below.
-          sys.diskLayout = "disable";
-          sys.bootloaderMountPoint = "/boot/efi";
+              # Disable fingerprint reader enabled by nixos-hardware's framework service.
+              # Mostly because GDM doesn't interact well with the PAM rules set by it.
+              services.fprintd.enable = false;
 
-          # Setup keyfile
-          boot.initrd.secrets = {
-            "/crypto_keyfile.bin" = null;
-          };
+              # Disable default disk layout magic and just use the declarations below.
+              sys.diskLayout = "disable";
+              sys.bootloaderMountPoint = "/boot/efi";
 
-          # Swap
-          boot.initrd.luks.devices."luks-4c84c7eb-6ec2-428d-8f3e-82ce78c0f00b".device = "/dev/disk/by-uuid/4c84c7eb-6ec2-428d-8f3e-82ce78c0f00b";
-          boot.initrd.luks.devices."luks-4c84c7eb-6ec2-428d-8f3e-82ce78c0f00b".keyFile = "/crypto_keyfile.bin";
-          swapDevices =
-            [ { device = "/dev/disk/by-uuid/3e9a5346-b193-4bf1-b805-1cd65cb1de87"; }
-            ];
-
-          boot.initrd.luks.devices."luks-29870430-e228-4f4a-a39f-932382a517f6".device = "/dev/disk/by-uuid/29870430-e228-4f4a-a39f-932382a517f6";
-
-          fileSystems = {
-            # Root filesystem
-            "/" =
-              { device = "/dev/disk/by-uuid/bda31b70-0bfb-4153-881e-98b57478241c";
-                fsType = "ext4";
+              # Setup keyfile
+              boot.initrd.secrets = {
+                "/crypto_keyfile.bin" = null;
               };
 
-            # Boot device
-            "/boot/efi" =
-              { device = "/dev/disk/by-uuid/725D-C6E7";
-                fsType = "vfat";
+              # Swap
+              boot.initrd.luks.devices."luks-4c84c7eb-6ec2-428d-8f3e-82ce78c0f00b".device =
+                "/dev/disk/by-uuid/4c84c7eb-6ec2-428d-8f3e-82ce78c0f00b";
+              boot.initrd.luks.devices."luks-4c84c7eb-6ec2-428d-8f3e-82ce78c0f00b".keyFile =
+                "/crypto_keyfile.bin";
+              swapDevices = [
+                { device = "/dev/disk/by-uuid/3e9a5346-b193-4bf1-b805-1cd65cb1de87"; }
+              ];
+
+              boot.initrd.luks.devices."luks-29870430-e228-4f4a-a39f-932382a517f6".device =
+                "/dev/disk/by-uuid/29870430-e228-4f4a-a39f-932382a517f6";
+
+              fileSystems = {
+                # Root filesystem
+                "/" = {
+                  device = "/dev/disk/by-uuid/bda31b70-0bfb-4153-881e-98b57478241c";
+                  fsType = "ext4";
+                };
+
+                # Boot device
+                "/boot/efi" = {
+                  device = "/dev/disk/by-uuid/725D-C6E7";
+                  fsType = "vfat";
+                };
               };
+            };
           };
-        };
-      };
 
-      ## Server infrastructure
+        ## Server infrastructure
 
-      plonkie = lib.mkNixOSConfig {
-        name = "plonkie";
-        system = "x86_64-linux";
-        modules = commonModules ++ [
-          ./modules/vm/qemu-guest.nix
-          
-          # Server-specific configuration.
-          ./modules/server
-        ];
-        inherit nixpkgs allPkgs allPkgsUnstable;
-        cfg = let
-          pkgs = allPkgs.x86_64-linux;
-        in {
-          boot.initrd.availableKernelModules = [ "ata_piix" "uhci_hcd" "xen_blkfront" "vmw_pvscsi" ];
-          boot.initrd.kernelModules = [ "nvme" ];
+        plonkie = lib.mkNixOSConfig {
+          name = "plonkie";
+          system = "x86_64-linux";
+          modules = commonModules ++ [
+            ./modules/vm/qemu-guest.nix
+
+            # Server-specific configuration.
+            ./modules/server
+          ];
+          inherit nixpkgs allPkgs allPkgsUnstable;
+          cfg =
+            let
+              pkgs = allPkgs.x86_64-linux;
+              pkgsUnstable = allPkgsUnstable.x86_64-linux;
+            in
+            {
+              boot.initrd.availableKernelModules = [
+                "ata_piix"
+                "uhci_hcd"
+                "xen_blkfront"
+                "vmw_pvscsi"
+              ];
+              boot.initrd.kernelModules = [ "nvme" ];
 
           # Temp for ST
           # Needed for the SillyTavern web search server plugin
