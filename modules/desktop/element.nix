@@ -24,7 +24,7 @@ in {
         {
           "default_server_config": {
               "m.homeserver": {
-                  "base_url": "https://matrix.amorgan.xyz",
+                  "base_url": "https://element.ems.host",
                   "server_name": "amorgan.xyz"
               },
               "m.identity_server": {
