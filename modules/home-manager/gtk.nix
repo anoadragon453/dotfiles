@@ -1,6 +1,6 @@
 { lib, osConfig, pkgs, ... }:
 {
-  gtk = lib.mkIf (builtins.length osConfig.sys.hardware.graphics.desktopProtocols != 0) {
+  gtk = lib.mkIf (lib.elem "gnome" osConfig.sys.desktop.gui.types) {
     enable = true;
 
     # Note that changing any theme settings in GNOME Tweaks will
