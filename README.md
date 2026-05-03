@@ -230,6 +230,21 @@ Use the following steps to set up a new Hetzner Storagebox user and configure it
 
 1. Configure your service to store files at the new mountpoint!
 
+# Adding a new host
+
+1. Create a new host in flake.nix (TODO: Split these out into files?)
+1. Create a disko config.
+1. Purchase a server and get an IP address.
+1. Run the following command:
+
+```
+export SERVER_NAME=my-new-server
+export IP_ADDRESS=1.2.3.4
+nix run github:nix-community/nixos-anywhere -- --generate-hardware-config nixos-generate-config ./servers/$SERVER_NAME/hardware-configuration.nix --flake .#$SERVER_NAME --target-host root@$IP_ADDRESS
+```
+
+which uses [nixos-anywhere](https://github.com/nix-community/nixos-anywhere) to setup NixOS on a new server.
+
 # Backup
 
 Backing up systems configured by this flake is done via
