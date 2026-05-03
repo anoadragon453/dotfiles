@@ -19,6 +19,9 @@ in {
     };
 
     config = {
+        # Allow building docker images for other architectures (ARM64).
+        boot.binfmt.emulatedSystems = [ "aarch64-linux" ];
+
         virtualisation = {
             # Set the backend used for running any OCI containers.
             oci-containers.backend = cfg.backend;
