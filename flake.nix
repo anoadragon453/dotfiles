@@ -636,563 +636,613 @@
               };
             };
 
-            # Super temporary home for mothers day files.
-            # TODO: Where should these live?
-            virtualHosts."mothersday24.amorgan.xyz" = {
-              http2 = true;
+                # Super temporary home for mothers day files.
+                # TODO: Where should these live?
+                virtualHosts."mothersday24.amorgan.xyz" = {
+                  http2 = true;
 
-              # Fetch and configure a TLS cert using the ACME protocol.
-              enableACME = true;
+                  # Fetch and configure a TLS cert using the ACME protocol.
+                  enableACME = true;
 
-              # Redirect all unencrypted traffic to HTTPS.
-              forceSSL = true;
+                  # Redirect all unencrypted traffic to HTTPS.
+                  forceSSL = true;
 
-              locations = {
-                "/" = {
-                  proxyPass = "http://127.0.0.1:9191/";
+                  locations = {
+                    "/" = {
+                      proxyPass = "http://127.0.0.1:9191/";
+                    };
+                  };
+                };
+
+                # Super temporary home for fathers day files.
+                # TODO: Where should these live?
+                virtualHosts."fathersday24.amorgan.xyz" = {
+                  http2 = true;
+
+                  # Fetch and configure a TLS cert using the ACME protocol.
+                  enableACME = true;
+
+                  # Redirect all unencrypted traffic to HTTPS.
+                  forceSSL = true;
+
+                  locations = {
+                    "/" = {
+                      proxyPass = "http://127.0.0.1:9192/";
+                    };
+                  };
+                };
+
+                # Redirect Red's domain to linktree.
+                virtualHosts."redpaletteart.com" = {
+                  http2 = true;
+
+                  # Fetch and configure a TLS cert using the ACME protocol.
+                  enableACME = true;
+
+                  # Redirect all unencrypted traffic to HTTPS.
+                  forceSSL = true;
+
+                  extraConfig = ''
+                    return 302 "https://linktr.ee/redpaletteart";
+                  '';
+                };
+
+                virtualHosts."www.redpaletteart.com" = {
+                  http2 = true;
+
+                  # Fetch and configure a TLS cert using the ACME protocol.
+                  enableACME = true;
+
+                  # Redirect all unencrypted traffic to HTTPS.
+                  forceSSL = true;
+
+                  extraConfig = ''
+                    return 302 "https://linktr.ee/redpaletteart";
+                  '';
+                };
+
+              # TODO: Switch this system to use systemd-boot or remove/fix grub
+              # support in dotfiles.
+              sys.bootloader = "grub";
+              # Currently this is not set in disk.nix.
+              boot.loader.grub.device = "/dev/sda";
+
+              sys.user.root.sshPublicKeys = infrastructureSshPublicKeys;
+
+              sys.cpu.type = "intel";
+              sys.cpu.cores = 1;
+              sys.cpu.threadsPerCore = 2;
+              sys.biosType = "efi";
+
+              sys.security.sshd.enable = true;
+              sys.security.sshd.serverPort = 16491;
+
+              # Disable KVM support on this machine as it's not needed. This leads
+              # to libvirt not being installed, which saves disk space.
+              sys.cpu.kvm = false;
+
+              # No need to update the firmware of cloud hosting providers' VMs.
+              services.fwupd.enable = nixpkgs.lib.mkForce false;
+
+              # Services on this machine.
+              sys.server = {
+                acme.email = "andrew@amorgan.xyz";
+
+                immich = {
+                  enable = true;
+                  domain = "i.amorgan.xyz";
+                  port = 8006;
+                  metricsPortServer = 8009;
+                  metricsPortMicroservices = 8010;
+                  storagePath = "/mnt/storagebox/media/immich";
+                  logLevel = "verbose";
+                };
+
+                mealie = {
+                  enable = true;
+                  domain = "r.amorgan.xyz";
+                  storagePath = "/mnt/storagebox/mealie";
+                  logLevel = "INFO";
+                  port = 8007;
+                };
+
+                navidrome = {
+                  # Disabled due to lack of use.
+                  enable = false;
+                  domain = "navidrome.amorgan.xyz";
+                  port = 8001;
+                  musicLibraryFilePath = "/mnt/storagebox/media/music";
+                  logLevel = "info";
+                };
+
+                paperless = {
+                  # TODO: Can we skip tests?
+                  enable = true;
+                  port = 8011;
+                  domain = "docs.amorgan.xyz";
+                  superuserPasswordFilePath = "paperless-superuser-password";
+                  appDataFilePath = "/mnt/storagebox/paperless/appdata";
+                  documentsFilePath = "/mnt/storagebox/paperless/documents";
+                };
+
+                peertube = {
+                  enable = true;
+                  domain = "v.amorgan.xyz";
+                  httpPort = 8005;
+                  peertubeSecretFilePath = "peertube-secret";
+                };
+
+                postgresql.backups = {
+                  enable = true;
+                  backupLocationFilePath = "/mnt/storagebox/postgresql-backups";
+                };
+
+                vaultwarden = {
+                  enable = true;
+                  domain = "p.amorgan.xyz";
+                  port = 8004;
+                  websocketPort = 3012;
+                  environmentFileSecret = "vaultwardenEnv";
+                  logLevel = "info";
                 };
               };
-            };
 
-            # Super temporary home for fathers day files.
-            # TODO: Where should these live?
-            virtualHosts."fathersday24.amorgan.xyz" = {
-              http2 = true;
+              sops.secrets = {
+                mediawiki-smtp-password = {
+                  sopsFile = ./secrets/plonkie/mediawiki-smtp-password;
+                  format = "binary";
+                  owner = "mediawiki";
+                  group = "nginx";
+                };
 
-              # Fetch and configure a TLS cert using the ACME protocol.
-              enableACME = true;
+                paperless-superuser-password = {
+                  sopsFile = ./secrets/plonkie/paperless-superuser-password;
 
-              # Redirect all unencrypted traffic to HTTPS.
-              forceSSL = true;
+                  # It's actually just a plaintext file containing the secret.
+                  format = "binary";
 
-              locations = {
-                "/" = {
-                  proxyPass = "http://127.0.0.1:9192/";
+                  # Allow the Paperless service to read the file.
+                  owner = "paperless";
+                  group = "paperless";
+                };
+
+                peertube-secret = {
+                  restartUnits = [ "peertube.service" ];
+                  sopsFile = ./secrets/plonkie/peertube-secret;
+
+                  # It's actually just a plaintext file containing the secret.
+                  format = "binary";
+
+                  # Allow the PeerTube service to read the file.
+                  owner = "peertube";
+                  group = "peertube";
+                };
+
+                vaultwardenEnv = {
+                  restartUnits = [ "vaultwarden.service" ];
+                  sopsFile = ./secrets/plonkie/vaultwarden.env;
+                  format = "dotenv";
+                };
+
+                # A private component of a SSH Key to give access to the media
+                # folder on my hetzner storagebox. The decrypted version ends up at
+                # /run/secrets/storagebox-media. SSHFS should use that path.
+                storagebox-media = {
+                  sopsFile = ./secrets/plonkie/storagebox-media;
+                  format = "binary";
+                };
+
+                # A private component of a SSH Key to give access to the mealie
+                # folder on my hetzner storagebox. The decrypted version ends up at
+                # /run/secrets/storagebox-mealie. SSHFS should use that path.
+                storagebox-mealie = {
+                  sopsFile = ./secrets/plonkie/storagebox-mealie;
+                  format = "binary";
+                };
+
+                # A private component of a SSH Key to give access to the paperless
+                # folder on my hetzner storagebox. The decrypted version ends up at
+                # /run/secrets/storagebox-paperless. SSHFS should use that path.
+                storagebox-paperless = {
+                  sopsFile = ./secrets/plonkie/storagebox-paperless;
+                  format = "binary";
+                };
+
+                # A private component of a SSH Key to give access to the directory
+                # containing postgresql backups on my hetzner storagebox. The
+                # decrypted version ends up at /run/secrets/storagebox-postgresql-plonkie.
+                # SSHFS should use that path.
+                storagebox-postgresql-plonkie = {
+                  sopsFile = ./secrets/plonkie/storagebox-postgresql-plonkie;
+                  format = "binary";
                 };
               };
+              # Set these to an empty list to tell sops not to try and look for
+              # any ssh or gpg keys to turn into age keys.
+              sops.age.sshKeyPaths = [ ];
+              sops.gnupg.sshKeyPaths = [ ];
+              # The private key to decrypt sops secrets with.
+              # This file must be placed here manually.
+              sops.age.keyFile = "/var/lib/sops-nix/key.txt";
+
+              # Disable default disk layout magic and just use the declarations below.
+              sys.diskLayout = "disable";
+              sys.bootloaderMountPoint = "/boot/efi";
+
+              fileSystems."/" = {
+                device = "/dev/sda1";
+                fsType = "ext4";
+              };
+
+              # Mount my hetzner storagebox for media.
+              # Note: This will only mount on live systems, not VMs.
+              fileSystems."/mnt/storagebox/media" = {
+                device = "u220692-sub4@u220692-sub4.your-storagebox.de:/home";
+                fsType = "sshfs";
+                options = [
+                  # Filesystem options
+                  "allow_other" # for non-root access
+                  "_netdev" # this is a network fs
+
+                  # We don't mount on demand, as that will cause services like navidrome to fail
+                  # as the share doesn't yet exist.
+                  #"x-systemd.automount" # mount on demand, rather than boot
+
+                  #"debug"               # print debug logging
+                  # warning: this causes the one-shot service to never exit
+
+                  # SSH options
+                  "StrictHostKeyChecking=no" # prevent the connection from failing if the host's key hasn't been trusted yet
+                  "ServerAliveInterval=15" # keep connections alive
+                  "Port=23"
+                  "IdentityFile=/run/secrets/storagebox-media"
+                ];
+              };
+
+              # Mount my hetzner storagebox for mealie.
+              # Note: This will only mount on live systems, not VMs.
+              fileSystems."/mnt/storagebox/mealie" = {
+                device = "u220692-sub5@u220692-sub5.your-storagebox.de:/home";
+                fsType = "sshfs";
+                options = [
+                  # Filesystem options
+                  "allow_other" # for non-root access
+                  "_netdev" # this is a network fs
+
+                  # We don't mount on demand, as that will cause services like navidrome to fail
+                  # as the share doesn't yet exist.
+                  #"x-systemd.automount" # mount on demand, rather than boot
+
+                  #"debug"               # print debug logging
+                  # warning: this causes the one-shot service to never exit
+
+                  # SSH options
+                  "StrictHostKeyChecking=no" # prevent the connection from failing if the host's key hasn't been trusted yet
+                  "ServerAliveInterval=15" # keep connections alive
+                  "Port=23"
+                  "IdentityFile=/run/secrets/storagebox-mealie"
+                ];
+              };
+
+              # Mount my hetzner storagebox for paperless.
+              # Note: This will only mount on live systems, not VMs.
+              fileSystems."/mnt/storagebox/paperless" = {
+                device = "u220692-sub8@u220692-sub8.your-storagebox.de:/home";
+                fsType = "sshfs";
+                options = [
+                  # Filesystem options
+                  "allow_other" # for non-root access
+                  "_netdev" # this is a network fs
+
+                  # We don't mount on demand, as that will cause services like navidrome to fail
+                  # as the share doesn't yet exist.
+                  #"x-systemd.automount" # mount on demand, rather than boot
+
+                  #"debug"               # print debug logging
+                  # warning: this causes the one-shot service to never exit
+
+                  # SSH options
+                  "StrictHostKeyChecking=no" # prevent the connection from failing if the host's key hasn't been trusted yet
+                  "ServerAliveInterval=15" # keep connections alive
+                  "Port=23"
+                  "IdentityFile=/run/secrets/storagebox-paperless"
+                ];
+              };
+
+              # Mount my hetzner storagebox for postgresql backups.
+              # Note: This will only mount on live systems, not VMs.
+              fileSystems."/mnt/storagebox/postgresql-backups" = {
+                device = "u220692-sub6@u220692-sub6.your-storagebox.de:/home";
+                fsType = "sshfs";
+                options = [
+                  # Filesystem options
+                  "allow_other" # for non-root access
+                  "_netdev" # this is a network fs
+
+                  # We don't mount on demand, as that will cause services like navidrome to fail
+                  # as the share doesn't yet exist.
+                  #"x-systemd.automount" # mount on demand, rather than boot
+
+                  #"debug"               # print debug logging
+                  # warning: this causes the one-shot service to never exit
+
+                  # SSH options
+                  "StrictHostKeyChecking=no" # prevent the connection from failing if the host's key hasn't been trusted yet
+                  "ServerAliveInterval=15" # keep connections alive
+                  "Port=23"
+                  "IdentityFile=/run/secrets/storagebox-postgresql-plonkie"
+                ];
+              };
             };
+        };
 
-            # Redirect Red's domain to linktree.
-            virtualHosts."redpaletteart.com" = {
-              http2 = true;
+        # Services monitoring node.
+        sauron = lib.mkNixOSConfig {
+          name = "sauron";
+          system = "x86_64-linux";
+          modules = commonModules ++ [
+            ./modules/vm/qemu-guest.nix
 
-              # Fetch and configure a TLS cert using the ACME protocol.
-              enableACME = true;
+            # Server-specific configuration.
+            ./modules/server
+          ];
+          inherit nixpkgs allPkgs allPkgsUnstable;
+          cfg =
+            let
+              pkgs = allPkgs.x86_64-linux;
+            in
+            {
+              boot.initrd.availableKernelModules = [
+                "ata_piix"
+                "uhci_hcd"
+                "xen_blkfront"
+                "vmw_pvscsi"
+              ];
+              boot.initrd.kernelModules = [ "nvme" ];
 
-              # Redirect all unencrypted traffic to HTTPS.
-              forceSSL = true;
+              # TODO: Switch this system to use systemd-boot or remove/fix grub
+              # support in dotfiles.
+              sys.bootloader = "grub";
+              # Currently this is not set in disk.nix.
+              boot.loader.grub.device = "/dev/sda";
 
-              extraConfig = ''
-                return 302 "https://linktr.ee/redpaletteart";
+              sys.user.root.sshPublicKeys = infrastructureSshPublicKeys;
+
+              sys.cpu.type = "intel";
+              sys.cpu.cores = 1;
+              sys.cpu.threadsPerCore = 2;
+              sys.biosType = "efi";
+
+              sys.security.sshd.enable = true;
+              sys.security.sshd.serverPort = 16431;
+
+              # TEMP: Quick thing to get my homeserver working again.
+              services.nginx.enable = true;
+              sys.server.acme.email = "andrew@amorgan.xyz";
+              services.nginx.virtualHosts."amorgan.xyz" = {
+                locations."/" = {
+                  root = "/var/www/html";
+                };
+
+                http2 = true;
+
+                # Fetch and configure a TLS cert using the ACME protocol.
+                enableACME = true;
+
+                # Redirect all unencrypted traffic to HTTPS.
+                forceSSL = true;
+              };
+
+              networking.firewall.allowedTCPPorts = [
+                80
+                443
+              ];
+
+              # Taken from the result of the nixos-infect script. I'm not sure how to test removing this without breaking the system.
+              # Ideally this would be put in a separate file somewhere.
+              networking = {
+                nameservers = [
+                  "2a01:4ff:ff00::add:1"
+                  "2a01:4ff:ff00::add:2"
+                  "185.12.64.1"
+                ];
+                defaultGateway = "172.31.1.1";
+                defaultGateway6 = {
+                  address = "fe80::1";
+                  interface = "eth0";
+                };
+                dhcpcd.enable = false;
+                usePredictableInterfaceNames = nixpkgs.lib.mkForce false;
+                interfaces = {
+                  eth0 = {
+                    ipv4.addresses = [
+                      {
+                        address = "78.46.226.111";
+                        prefixLength = 32;
+                      }
+                    ];
+                    ipv6.addresses = [
+                      {
+                        address = "2a01:4f8:c0c:38ab::1";
+                        prefixLength = 64;
+                      }
+                      {
+                        address = "fe80::9400:ff:fe3a:579f";
+                        prefixLength = 64;
+                      }
+                    ];
+                    ipv4.routes = [
+                      {
+                        address = "172.31.1.1";
+                        prefixLength = 32;
+                      }
+                    ];
+                    ipv6.routes = [
+                      {
+                        address = "fe80::1";
+                        prefixLength = 128;
+                      }
+                    ];
+                  };
+                  ens10 = {
+                    ipv4.addresses = [
+                      {
+                        address = "10.0.0.2";
+                        prefixLength = 32;
+                      }
+                    ];
+                    ipv6.addresses = [
+                      {
+                        address = "fe80::8400:ff:fe3a:57a0";
+                        prefixLength = 64;
+                      }
+                    ];
+                  };
+                };
+              };
+              services.udev.extraRules = ''
+                ATTR{address}=="96:00:00:3a:57:9f", NAME="eth0"
+                ATTR{address}=="86:00:00:3a:57:a0", NAME="ens10"
               '';
-            };
-            virtualHosts."www.redpaletteart.com" = {
-              http2 = true;
 
-              # Fetch and configure a TLS cert using the ACME protocol.
-              enableACME = true;
+              # Disable KVM support on this machine as it's not needed. This leads
+              # to libvirt not being installed, which saves disk space.
+              sys.cpu.kvm = false;
 
-              # Redirect all unencrypted traffic to HTTPS.
-              forceSSL = true;
+              # No need to update the firmware of cloud hosting providers' VMs.
+              services.fwupd.enable = nixpkgs.lib.mkForce false;
 
-              extraConfig = ''
-                return 302 "https://linktr.ee/redpaletteart";
-              '';
-            };
-          };
+              # Services on this machine.
+              sys.server = { };
 
-          # TODO: Switch this system to use systemd-boot or remove/fix grub
-          # support in dotfiles.
-          sys.bootloader = "grub";
-          # Currently this is not set in disk.nix.
-          boot.loader.grub.device = "/dev/sda";
+              # Disable default disk layout magic and just use the declarations below.
+              sys.diskLayout = "disable";
+              sys.bootloaderMountPoint = "/boot/efi";
 
-          sys.user.root.sshPublicKeys = infrastructureSshPublicKeys;
-
-          sys.cpu.type = "intel";
-          sys.cpu.cores = 1;
-          sys.cpu.threadsPerCore = 2;
-          sys.biosType = "efi";
-
-          sys.security.sshd.enable = true;
-          sys.security.sshd.serverPort = 16491;
-
-          # Disable KVM support on this machine as it's not needed. This leads
-          # to libvirt not being installed, which saves disk space.
-          sys.cpu.kvm = false;
-
-          # No need to update the firmware of cloud hosting providers' VMs.
-          services.fwupd.enable = nixpkgs.lib.mkForce false;
-
-          # Services on this machine.
-          sys.server = {
-            acme.email = "andrew@amorgan.xyz";
-
-            immich = {
-              enable = true;
-              domain = "i.amorgan.xyz";
-              port = 8006;
-              metricsPortServer = 8009;
-              metricsPortMicroservices = 8010;
-              storagePath = "/mnt/storagebox/media/immich";
-              logLevel = "verbose";
-            };
-
-            mealie = {
-              enable = true;
-              domain = "r.amorgan.xyz";
-              storagePath = "/mnt/storagebox/mealie";
-              logLevel = "INFO";
-              port = 8007;
-            };
-
-            navidrome = {
-              enable = true;
-              domain = "navidrome.amorgan.xyz";
-              port = 8001;
-              musicLibraryFilePath = "/mnt/storagebox/media/music";
-              logLevel = "info";
-            };
-
-            paperless = {
-              enable = true;
-              port = 8011;
-              domain = "docs.amorgan.xyz";
-              superuserPasswordFilePath = "paperless-superuser-password";
-              appDataFilePath = "/mnt/storagebox/paperless/appdata";
-              documentsFilePath = "/mnt/storagebox/paperless/documents";
-            };
-
-            peertube = {
-              enable = true;
-              domain = "v.amorgan.xyz";
-              httpPort = 8005;
-              peertubeSecretFilePath = "peertube-secret";
-            };
-
-            postgresql.backups = {
-              enable = true;
-              backupLocationFilePath = "/mnt/storagebox/postgresql-backups";
-            };
-
-            vaultwarden = {
-              enable = true;
-              domain = "p.amorgan.xyz";
-              port = 8004;
-              websocketPort = 3012;
-              environmentFileSecret = "vaultwardenEnv";
-              logLevel = "info";
-            };
-          };
-
-          sops.secrets = {
-            paperless-superuser-password = {
-              sopsFile = ./secrets/plonkie/paperless-superuser-password;
-
-              # It's actually just a plaintext file containing the secret.
-              format = "binary";
-
-              # Allow the Paperless service to read the file.
-              owner = "paperless";
-              group = "paperless";
-            };
-
-            peertube-secret = {
-              restartUnits = [ "peertube.service" ];
-              sopsFile = ./secrets/plonkie/peertube-secret;
-
-              # It's actually just a plaintext file containing the secret.
-              format = "binary";
-
-              # Allow the PeerTube service to read the file.
-              owner = "peertube";
-              group = "peertube";
-            };
-
-            vaultwardenEnv = {
-              restartUnits = [ "vaultwarden.service" ];
-              sopsFile = ./secrets/plonkie/vaultwarden.env;
-              format = "dotenv";
-            };
-
-            # A private component of a SSH Key to give access to the media
-            # folder on my hetzner storagebox. The decrypted version ends up at
-            # /run/secrets/storagebox-media. SSHFS should use that path.
-            storagebox-media = {
-              sopsFile = ./secrets/plonkie/storagebox-media;
-              format = "binary";
-            };
-
-            # A private component of a SSH Key to give access to the mealie
-            # folder on my hetzner storagebox. The decrypted version ends up at
-            # /run/secrets/storagebox-mealie. SSHFS should use that path.
-            storagebox-mealie = {
-              sopsFile = ./secrets/plonkie/storagebox-mealie;
-              format = "binary";
-            };
-
-            # A private component of a SSH Key to give access to the paperless
-            # folder on my hetzner storagebox. The decrypted version ends up at
-            # /run/secrets/storagebox-paperless. SSHFS should use that path.
-            storagebox-paperless = {
-              sopsFile = ./secrets/plonkie/storagebox-paperless;
-              format = "binary";
-            };
-
-            # A private component of a SSH Key to give access to the directory
-            # containing postgresql backups on my hetzner storagebox. The
-            # decrypted version ends up at /run/secrets/storagebox-postgresql-plonkie.
-            # SSHFS should use that path.
-            storagebox-postgresql-plonkie = {
-              sopsFile = ./secrets/plonkie/storagebox-postgresql-plonkie;
-              format = "binary";
-            };
-          };
-          # Set these to an empty list to tell sops not to try and look for
-          # any ssh or gpg keys to turn into age keys.
-          sops.age.sshKeyPaths = [];
-          sops.gnupg.sshKeyPaths = [];
-          # The private key to decrypt sops secrets with.
-          # This file must be placed here manually.
-          sops.age.keyFile = "/var/lib/sops-nix/key.txt";
-
-          # Disable default disk layout magic and just use the declarations below.
-          sys.diskLayout = "disable";
-          sys.bootloaderMountPoint = "/boot/efi";
-
-          fileSystems."/" = {
-            device = "/dev/sda1";
-              fsType = "ext4";
-            };
-
-          # Mount my hetzner storagebox for media.
-          # Note: This will only mount on live systems, not VMs.
-          fileSystems."/mnt/storagebox/media" = {
-            device = "u220692-sub4@u220692-sub4.your-storagebox.de:/home";
-            fsType = "sshfs";
-            options =
-              [ # Filesystem options
-                "allow_other"          # for non-root access
-                "_netdev"              # this is a network fs
-
-                # We don't mount on demand, as that will cause services like navidrome to fail
-                # as the share doesn't yet exist.
-                #"x-systemd.automount" # mount on demand, rather than boot
-
-                #"debug"               # print debug logging
-                                       # warning: this causes the one-shot service to never exit
-
-                # SSH options
-                "StrictHostKeyChecking=no"  # prevent the connection from failing if the host's key hasn't been trusted yet
-                "ServerAliveInterval=15" # keep connections alive
-                "Port=23"
-                "IdentityFile=/run/secrets/storagebox-media"
-              ];
-          };
-
-          # Mount my hetzner storagebox for mealie.
-          # Note: This will only mount on live systems, not VMs.
-          fileSystems."/mnt/storagebox/mealie" = {
-            device = "u220692-sub5@u220692-sub5.your-storagebox.de:/home";
-            fsType = "sshfs";
-            options =
-              [ # Filesystem options
-                "allow_other"          # for non-root access
-                "_netdev"              # this is a network fs
-
-                # We don't mount on demand, as that will cause services like navidrome to fail
-                # as the share doesn't yet exist.
-                #"x-systemd.automount" # mount on demand, rather than boot
-
-                #"debug"               # print debug logging
-                                       # warning: this causes the one-shot service to never exit
-
-                # SSH options
-                "StrictHostKeyChecking=no"  # prevent the connection from failing if the host's key hasn't been trusted yet
-                "ServerAliveInterval=15" # keep connections alive
-                "Port=23"
-                "IdentityFile=/run/secrets/storagebox-mealie"
-              ];
-          };
-
-          # Mount my hetzner storagebox for mealie.
-          # Note: This will only mount on live systems, not VMs.
-          fileSystems."/mnt/storagebox/paperless" = {
-            device = "u220692-sub8@u220692-sub8.your-storagebox.de:/home";
-            fsType = "sshfs";
-            options =
-              [ # Filesystem options
-                "allow_other"          # for non-root access
-                "_netdev"              # this is a network fs
-
-                # We don't mount on demand, as that will cause services like navidrome to fail
-                # as the share doesn't yet exist.
-                #"x-systemd.automount" # mount on demand, rather than boot
-
-                #"debug"               # print debug logging
-                                       # warning: this causes the one-shot service to never exit
-
-                # SSH options
-                "StrictHostKeyChecking=no"  # prevent the connection from failing if the host's key hasn't been trusted yet
-                "ServerAliveInterval=15" # keep connections alive
-                "Port=23"
-                "IdentityFile=/run/secrets/storagebox-paperless"
-              ];
-          };
-
-          # Mount my hetzner storagebox for postgresql backups.
-          # Note: This will only mount on live systems, not VMs.
-          fileSystems."/mnt/storagebox/postgresql-backups" = {
-            device = "u220692-sub6@u220692-sub6.your-storagebox.de:/home";
-            fsType = "sshfs";
-            options =
-              [ # Filesystem options
-                "allow_other"          # for non-root access
-                "_netdev"              # this is a network fs
-
-                # We don't mount on demand, as that will cause services like navidrome to fail
-                # as the share doesn't yet exist.
-                #"x-systemd.automount" # mount on demand, rather than boot
-
-                #"debug"               # print debug logging
-                                       # warning: this causes the one-shot service to never exit
-
-                # SSH options
-                "StrictHostKeyChecking=no"  # prevent the connection from failing if the host's key hasn't been trusted yet
-                "ServerAliveInterval=15" # keep connections alive
-                "Port=23"
-                "IdentityFile=/run/secrets/storagebox-postgresql-plonkie"
-              ];
-          };
-        };
-      };
-
-      # Services monitoring node.
-      sauron = lib.mkNixOSConfig {
-        name = "sauron";
-        system = "x86_64-linux";
-        modules = commonModules ++ [
-          ./modules/vm/qemu-guest.nix
-          
-          # Server-specific configuration.
-          ./modules/server
-        ];
-        inherit nixpkgs allPkgs allPkgsUnstable;
-        cfg = let
-          pkgs = allPkgs.x86_64-linux;
-        in {
-          boot.initrd.availableKernelModules = [ "ata_piix" "uhci_hcd" "xen_blkfront" "vmw_pvscsi" ];
-          boot.initrd.kernelModules = [ "nvme" ];
-
-          # TODO: Switch this system to use systemd-boot or remove/fix grub
-          # support in dotfiles.
-          sys.bootloader = "grub";
-          # Currently this is not set in disk.nix.
-          boot.loader.grub.device = "/dev/sda";
-
-          sys.user.root.sshPublicKeys = infrastructureSshPublicKeys;
-
-          sys.cpu.type = "intel";
-          sys.cpu.cores = 1;
-          sys.cpu.threadsPerCore = 2;
-          sys.biosType = "efi";
-
-          sys.security.sshd.enable = true;
-          sys.security.sshd.serverPort = 16431;
-
-          # TEMP: Quick thing to get my homeserver working again.
-          services.nginx.enable = true;
-          sys.server.acme.email = "andrew@amorgan.xyz";
-          services.nginx.virtualHosts."amorgan.xyz" = {
-            locations."/" = {
-              root = "/var/www/html";
-            };
-
-            http2 = true;
-
-            # Fetch and configure a TLS cert using the ACME protocol.
-            enableACME = true;
-
-            # Redirect all unencrypted traffic to HTTPS.
-            forceSSL = true;
-          };
-
-          networking.firewall.allowedTCPPorts = [ 80 443 ];
-
-          # Taken from the result of the nixos-infect script. I'm not sure how to test removing this without breaking the system.
-          # Ideally this would be put in a separate file somewhere.
-          networking = {
-            nameservers = [ "2a01:4ff:ff00::add:1"
-              "2a01:4ff:ff00::add:2"
-              "185.12.64.1"
-            ];
-            defaultGateway = "172.31.1.1";
-            defaultGateway6 = {
-              address = "fe80::1";
-              interface = "eth0";
-            };
-            dhcpcd.enable = false;
-            usePredictableInterfaceNames = nixpkgs.lib.mkForce false;
-            interfaces = {
-              eth0 = {
-                ipv4.addresses = [
-                  { address="78.46.226.111"; prefixLength=32; }
-                ];
-                ipv6.addresses = [
-                  { address="2a01:4f8:c0c:38ab::1"; prefixLength=64; }
-                  { address="fe80::9400:ff:fe3a:579f"; prefixLength=64; }
-                ];
-                ipv4.routes = [ { address = "172.31.1.1"; prefixLength = 32; } ];
-                ipv6.routes = [ { address = "fe80::1"; prefixLength = 128; } ];
+              fileSystems."/" = {
+                device = "/dev/sda1";
+                fsType = "ext4";
               };
-                    ens10 = {
-                ipv4.addresses = [
-                  { address="10.0.0.2"; prefixLength=32; }
-                ];
-                ipv6.addresses = [
-                  { address="fe80::8400:ff:fe3a:57a0"; prefixLength=64; }
-                ];
-                };
-            };
-          };
-          services.udev.extraRules = ''
-            ATTR{address}=="96:00:00:3a:57:9f", NAME="eth0"
-            ATTR{address}=="86:00:00:3a:57:a0", NAME="ens10"
-          '';
-
-          # Disable KVM support on this machine as it's not needed. This leads
-          # to libvirt not being installed, which saves disk space.
-          sys.cpu.kvm = false;
-
-          # No need to update the firmware of cloud hosting providers' VMs.
-          services.fwupd.enable = nixpkgs.lib.mkForce false;
-
-          # Services on this machine.
-          sys.server = {};
-
-          # Disable default disk layout magic and just use the declarations below.
-          sys.diskLayout = "disable";
-          sys.bootloaderMountPoint = "/boot/efi";
-
-          fileSystems."/" = {
-            device = "/dev/sda1";
-              fsType = "ext4";
             };
         };
-      };
 
-      # My tor node.
-      pear = lib.mkNixOSConfig {
-        name = "pear";
-        system = "x86_64-linux";
-        modules = commonModules ++ [
-          ./modules/vm/qemu-guest.nix
-          
-          # Server-specific configuration.
-          ./modules/server
-        ];
-        inherit nixpkgs allPkgs allPkgsUnstable;
-        cfg = let
-          pkgs = allPkgs.x86_64-linux;
-        in {
-          boot.initrd.availableKernelModules = [ "ata_piix" "uhci_hcd" "xen_blkfront" "vmw_pvscsi" ];
-          boot.initrd.kernelModules = [ "nvme" ];
+        # My tor node.
+        pear = lib.mkNixOSConfig {
+          name = "pear";
+          system = "x86_64-linux";
+          modules = commonModules ++ [
+            ./modules/vm/qemu-guest.nix
 
-          # TODO: Switch this system to use systemd-boot or remove/fix grub
-          # support in dotfiles.
-          sys.bootloader = "grub";
-          # Currently this is not set in disk.nix.
-          boot.loader.grub.device = "/dev/sda";
+            # Server-specific configuration.
+            ./modules/server
+          ];
+          inherit nixpkgs allPkgs allPkgsUnstable;
+          cfg =
+            let
+              pkgs = allPkgs.x86_64-linux;
+            in
+            {
+              boot.initrd.availableKernelModules = [
+                "ata_piix"
+                "uhci_hcd"
+                "xen_blkfront"
+                "vmw_pvscsi"
+              ];
+              boot.initrd.kernelModules = [ "nvme" ];
 
-          sys.user.root.sshPublicKeys = infrastructureSshPublicKeys;
+              # TODO: Switch this system to use systemd-boot or remove/fix grub
+              # support in dotfiles.
+              sys.bootloader = "grub";
+              # Currently this is not set in disk.nix.
+              boot.loader.grub.device = "/dev/sda";
 
-          sys.cpu.type = "intel";
-          sys.cpu.cores = 1;
-          sys.cpu.threadsPerCore = 2;
-          sys.biosType = "efi";
+              sys.user.root.sshPublicKeys = infrastructureSshPublicKeys;
 
-          sys.security.sshd.enable = true;
-          sys.security.sshd.serverPort = 16991;
+              sys.cpu.type = "intel";
+              sys.cpu.cores = 1;
+              sys.cpu.threadsPerCore = 2;
+              sys.biosType = "efi";
 
-          # Disable KVM support on this machine as it's not needed. This leads
-          # to libvirt not being installed, which saves disk space.
-          sys.cpu.kvm = false;
+              sys.security.sshd.enable = true;
+              sys.security.sshd.serverPort = 16991;
 
-          # No need to update the firmware of cloud hosting providers' VMs.
-          services.fwupd.enable = nixpkgs.lib.mkForce false;
+              # Disable KVM support on this machine as it's not needed. This leads
+              # to libvirt not being installed, which saves disk space.
+              sys.cpu.kvm = false;
 
-          # Services on this machine.
-          sys.server = {
-            # tor = {
-            #   enable = true;
-            #   torPort = 9001;
-            #   directoryPort = 9030;
-            #   nickname = "rolypony";
-            # };
-          };
+              # No need to update the firmware of cloud hosting providers' VMs.
+              services.fwupd.enable = nixpkgs.lib.mkForce false;
 
-          # TODO: Sops: mount secret keys to disk.
-          # keys/secret_id_key and keys/ed25519_master_id_secret_key are most important.
+              # Services on this machine.
+              sys.server = {
+                # tor = {
+                #   enable = true;
+                #   torPort = 9001;
+                #   directoryPort = 9030;
+                #   nickname = "rolypony";
+                # };
+              };
 
-          # Disable default disk layout magic and just use the declarations below.
-          sys.diskLayout = "disable";
-          sys.bootloaderMountPoint = "/boot/efi";
+              # TODO: Sops: mount secret keys to disk.
+              # keys/secret_id_key and keys/ed25519_master_id_secret_key are most important.
 
-          fileSystems."/" = {
-            device = "/dev/sda1";
-              fsType = "ext4";
+              # Disable default disk layout magic and just use the declarations below.
+              sys.diskLayout = "disable";
+              sys.bootloaderMountPoint = "/boot/efi";
+
+              fileSystems."/" = {
+                device = "/dev/sda1";
+                fsType = "ext4";
+              };
             };
         };
-      };
+
+      # Configuration on deploying server infrastructure using deploy-rs.
+      deploy.nodes = {
+        plonkie = {
+          sshOpts = [
+            "-p"
+            "16491"
+          ];
+          hostname = "78.47.36.247";
+          profiles = {
+            system = {
+              sshUser = "root";
+              path = deployPkgs.deploy-rs.lib.activate.nixos self.nixosConfigurations.plonkie;
+            };
+          };
+        };
+
+        sauron = {
+          sshOpts = [
+            "-p"
+            "16431"
+          ];
+          hostname = "78.46.226.111";
+          profiles = {
+            system = {
+              sshUser = "root";
+              path = deployPkgs.deploy-rs.lib.activate.nixos self.nixosConfigurations.sauron;
+            };
+          };
+        };
+
+        # NOTE: This hasn't been converted to nix yet!
+        pear = {
+          sshOpts = [
+            # "-p" "16991"
+          ];
+          hostname = "78.47.32.42";
+          profiles = {
+            system = {
+              sshUser = "root";
+              path = deployPkgs.deploy-rs.lib.activate.nixos self.nixosConfigurations.pear;
+            };
+          };
+        };
+
+      checks = builtins.mapAttrs (
+        system: deployLib: deployLib.deployChecks self.deploy
+      ) inputs.deploy-rs.lib;
     };
-
-    # Configuration on deploying server infrastructure using deploy-rs.
-    deploy.nodes = {
-      plonkie = {
-        sshOpts = [
-          "-p" "16491"
-        ];
-        hostname = "78.47.36.247";
-        profiles = {
-          system = {
-            sshUser = "root";
-            path =
-              deployPkgs.deploy-rs.lib.activate.nixos self.nixosConfigurations.plonkie;
-          };
-        };
-      };
-
-      sauron = {
-        sshOpts = [
-          "-p" "16431"
-        ];
-        hostname = "78.46.226.111";
-        profiles = {
-          system = {
-            sshUser = "root";
-            path =
-              deployPkgs.deploy-rs.lib.activate.nixos self.nixosConfigurations.sauron;
-          };
-        };
-      };
-
-      # NOTE: This hasn't been converted to nix yet!
-      pear = {
-        sshOpts = [
-          # "-p" "16991"
-        ];
-        hostname = "78.47.32.42";
-        profiles = {
-          system = {
-            sshUser = "root";
-            path =
-              deployPkgs.deploy-rs.lib.activate.nixos self.nixosConfigurations.pear;
-          };
-        };
-      };
-
-    };
-
-    checks = builtins.mapAttrs (system: deployLib: deployLib.deployChecks self.deploy) inputs.deploy-rs.lib;
-  };
 }
