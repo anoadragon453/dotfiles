@@ -3,146 +3,158 @@
   programs.vscode = {
     enable = builtins.length osConfig.sys.hardware.graphics.desktopProtocols != 0;
 
-    # Don't allow vscode to update extensions.
-    mutableExtensionsDir = false;
+    # Allow the Extensions directory to be modified by vscode. This is required by
+    # some extensions.
+    #
+    # Despite what the documentation may say, this is allowed when only defining
+    # the "default" profile.
+    mutableExtensionsDir = true;
 
-    # A minur (-) before a command disables that command.
-    keybindings = [
-      # Disable the vim extension's control over the Ctrl+P shortcut, such that it
-      # falls through to the file search.
-      {
-        key = "ctrl+p";
-        command = "-extension.vim_ctrl+p";
-      }
-      # Disable the editor's Ctrl+E shortcut, such that Ctrl+E goes to the end of
-      # the line in the terminal.
-      {
-        key = "ctrl+e";
-        command = "-workbench.action.quickOpen";
-      }
-      # Disable the vim extension's control over the Ctrl+B shortcut, such that it
-      # falls through to the default action of opening and closing the file browser.
-      {
-        key = "ctrl+b";
-        command = "-extension.vim_ctrl+b";
-        when = "editorTextFocus && vim.active && vim.use<C-b> && !inDebugRepl && vim.mode != 'Insert'";
-      }
-    ];
+    profiles.default = {
+      # A minus (-) before a command disables that command.
+      keybindings = [
+        # Disable the vim extension's control over the Ctrl+P shortcut, such that it
+        # falls through to the file search.
+        {
+          key = "ctrl+p";
+          command = "-extension.vim_ctrl+p";
+        }
+        # Disable the editor's Ctrl+E shortcut, such that Ctrl+E goes to the end of
+        # the line in the terminal.
+        {
+          key = "ctrl+e";
+          command = "-workbench.action.quickOpen";
+        }
+        # Disable the vim extension's control over the Ctrl+B shortcut, such that it
+        # falls through to the default action of opening and closing the file browser.
+        {
+          key = "ctrl+b";
+          command = "-extension.vim_ctrl+b";
+          when = "editorTextFocus && vim.active && vim.use<C-b> && !inDebugRepl && vim.mode != 'Insert'";
+        }
+      ];
 
-    # The VSCode extensions to install.
-    # Extensions come from nixpkgs.
-    extensions = with pkgs.vscode-extensions; [
-      charliermarsh.ruff
-      eamodio.gitlens
-      editorconfig.editorconfig
-      fill-labs.dependi
-      golang.go
-      jnoortheen.nix-ide
-      jock.svg
-      mkhl.direnv
-      ms-python.debugpy
-      ms-python.python
-      ms-python.vscode-pylance
-      ms-vscode-remote.remote-ssh
-      rust-lang.rust-analyzer
-      streetsidesoftware.code-spell-checker
-      svelte.svelte-vscode
-      tamasfe.even-better-toml
-      timonwong.shellcheck
-      vadimcn.vscode-lldb
-      vscodevim.vim
-      waderyan.gitblame
-    ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
-      {
-        name = "dragon-jinja";
-        publisher = "hongquan";
-        version = "0.21.3";
-        sha256 = "sha256-uPhkazR1qhOeN+sWBEQbh6nDN4pUwUaxwAVI7vqkf9c=";
-      }
-    ];
+      # The VSCode extensions to install.
+      # Extensions come from nixpkgs.
+      extensions = with pkgs.vscode-extensions; [
+        charliermarsh.ruff
+        eamodio.gitlens
+        editorconfig.editorconfig
+        fill-labs.dependi
+        golang.go
+        jnoortheen.nix-ide
+        jock.svg
+        mkhl.direnv
+        ms-python.debugpy
+        ms-python.python
+        ms-python.vscode-pylance
+        ms-vscode-remote.remote-ssh
+        rust-lang.rust-analyzer
+        streetsidesoftware.code-spell-checker
+        svelte.svelte-vscode
+        tamasfe.even-better-toml
+        timonwong.shellcheck
+        vadimcn.vscode-lldb
+        vscodevim.vim
+        waderyan.gitblame
+      ] ++ pkgs.vscode-utils.extensionsFromVscodeMarketplace [
+        {
+          name = "dragon-jinja";
+          publisher = "hongquan";
+          version = "0.21.3";
+          sha256 = "sha256-uPhkazR1qhOeN+sWBEQbh6nDN4pUwUaxwAVI7vqkf9c=";
+        }
+      ];
 
-    userSettings = {
-      # Automatically save files after editing has ceased for a few moments.
-      "files.autoSave" = "afterDelay";
+      userSettings = {
+        # Prevent VSCode from auto-updating extensions.
+        # We delegate this to nix.
+        "extensions.autoUpdate" = false;
 
-      # Show the welcome page on startup.
-      "workbench.startupEditor" = "welcomePage";
+        # Automatically save files after editing has ceased for a few moments.
+        "files.autoSave" = "afterDelay";
 
-      # Allow breakpoints to be set in any file.
-      "debug.allowBreakpointsEverywhere" = true;
+        # Show the welcome page on startup.
+        "workbench.startupEditor" = "welcomePage";
 
-      # Turn off extension recommendation pop-ups.
-      "extensions.ignoreRecommendations" = true;
-      "lldb.suppressUpdateNotifications" = true;
+        # Allow breakpoints to be set in any file.
+        "debug.allowBreakpointsEverywhere" = true;
 
-      # Show inline suggestions in the editor.
-      "editor.inlineSuggest.enabled" = true;
+        # Turn off extension recommendation pop-ups.
+        "extensions.ignoreRecommendations" = true;
+        "lldb.suppressUpdateNotifications" = true;
 
-      # Format files upon saving them.
-      "editor.formatOnSave" = true;
+        # Show inline suggestions in the editor.
+        "editor.inlineSuggest.enabled" = true;
 
-      # Disable telemetry other than crash reports.
-      "telemetry.telemetryLevel" = "crash";
+        # Format files upon saving them.
+        "editor.formatOnSave" = true;
 
-      # Don't show release notes after every update.
-      "update.showReleaseNotes" = false;
+        # Disable telemetry other than crash reports.
+        "telemetry.telemetryLevel" = "crash";
 
-      # Don't check for updates, as we'll update through our package manager anyhow.
-      "update.mode" = "none";
+        # Don't show release notes after every update.
+        "update.showReleaseNotes" = false;
 
-      # Ignore leading and trailing whitespace changes in the diff editor.
-      "diffEditor.ignoreTrimWhitespace" = false;
+        # Don't check for updates, as we'll update through our package manager anyhow.
+        "update.mode" = "none";
 
-      # Nicer title bar with more options.
-      "window.titleBarStyle" = "custom";
-      "window.menuBarVisibility" = "toggle";
-      "window.zoomLevel" = -1;
+        # Ignore leading and trailing whitespace changes in the diff editor.
+        "diffEditor.ignoreTrimWhitespace" = false;
 
-      # Don't ask for confirmation when moving files via drag-and-drop.
-      "explorer.confirmDragAndDrop" = false;
+        # Nicer title bar with more options.
+        "window.titleBarStyle" = "custom";
+        "window.menuBarVisibility" = "toggle";
+        "window.zoomLevel" = -1;
 
-      # Automatically restart the extension host when direnv detects a change in
-      # the environment. This prevents annoying manual extension restart messages
-      # from constantly popping up while changing flake files.
-      "direnv.restart.automatic" = true;
+        # Don't ask for confirmation when moving files via drag-and-drop.
+        "explorer.confirmDragAndDrop" = false;
 
-      # Settings for the nix language server.
-      "nix.enableLanguageServer" = true;
-      "nix.serverPath" = "nil";
-      "nix.serverSettings" = {
-        "nil" = {
-          "nix" = {
-            "flake" = {
-              # Auto-download nix flake archives. Without this, the Nix-IDE
-              # extension will ask to do so every time a flake input changes.
-              "autoArchive" = true;
+        # Automatically restart the extension host when direnv detects a change in
+        # the environment. This prevents annoying manual extension restart messages
+        # from constantly popping up while changing flake files.
+        "direnv.restart.automatic" = true;
+
+        # Settings for the nix language server.
+        "nix.enableLanguageServer" = true;
+        "nix.serverPath" = "nil";
+        "nix.serverSettings" = {
+          "nil" = {
+            "nix" = {
+              "flake" = {
+                # Auto-download nix flake archives. Without this, the Nix-IDE
+                # extension will ask to do so every time a flake input changes.
+                "autoArchive" = true;
+              };
             };
           };
         };
+
+        # Give the integrated terminal much more scrollback.
+        "terminal.integrated.scrollback" = "100000";
+
+        # Additional words to ignore for spell-checking.
+        "cSpell.userWords" = [
+          "actix"
+          "homeserver"
+          "protobuf"
+          "protobufs"
+          "shortcode"
+        ];
+
+        # Allow British English words as well as American.
+        "cSpell.language" = "en,en-GB";
+
+        # Additional filetypes to be spell-checked.
+        "cSpell.enableFileTypes" = [
+          "nix"
+        ];
+
+        # Show some lifetime elision hints in the editor, but not the trivial ones.
+        "rust-analyzer.inlayHints.lifetimeElisionHints.enable" = "skip_trivial";
+
+        "python.analysis.typeCheckingMode" = "standard";
       };
-
-      # Give the integrated terminal much more scrollback.
-      "terminal.integrated.scrollback" = "100000";
-
-      # Additional words to ignore for spell-checking.
-      "cSpell.userWords" = [
-        "actix"
-        "homeserver"
-        "protobuf"
-        "protobufs"
-        "shortcode"
-      ];
-
-      # Allow British English words as well as American.
-      "cSpell.language" = "en,en-GB";
-
-      # Additional filetypes to be spell-checked.
-      "cSpell.enableFileTypes" = [
-        "nix"
-      ];
-
-      # Show some lifetime elision hints in the editor, but not the trivial ones.
-      "rust-analyzer.inlayHints.lifetimeElisionHints.enable" = "skip_trivial";
     };
   };
 }
