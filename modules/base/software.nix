@@ -7,8 +7,9 @@
         bat
         bintools
         bottom
+        devenv
         distrobox
-        docker-compose  # Named docker-compose_2 in nixos 22.05
+        docker-compose
         dnsutils
         file
         fd
@@ -27,6 +28,7 @@
         lazygit
         magic-wormhole-rs
         nmap
+        openssl
         ripgrep
         tmux
         wget
