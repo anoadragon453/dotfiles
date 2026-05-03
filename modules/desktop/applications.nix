@@ -1,11 +1,18 @@
-{pkgs, config, lib, pkgsUnstable, ...}:
+{
+  pkgs,
+  config,
+  lib,
+  pkgsUnstable,
+  ...
+}:
 let
   xorg = (builtins.elem "xorg" config.sys.hardware.graphics.desktopProtocols);
   wayland = (builtins.elem "wayland" config.sys.hardware.graphics.desktopProtocols);
   desktopMode = xorg || wayland;
   desktopGuiTypes = config.sys.desktop.gui.types;
   cfg = config.sys;
-in {
+in
+{
   config = lib.mkIf desktopMode {
 
     environment.sessionVariables = {
