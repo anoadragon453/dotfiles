@@ -165,6 +165,8 @@ in {
           'Links'           => [ 'enabled' => false ],
           'TermsOfService'  => [ 'enabled' => false ],
         ];
+
+        wfLoadExtension( 'ParserFunctions' );
       '';
 
       skins = {
