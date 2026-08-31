@@ -52,9 +52,9 @@ in
 
       # Games
       prismlauncher
+      vintagestory
 
       # Media
-      audacity
       inkscape
       kdePackages.kdenlive
       krita
@@ -77,23 +77,56 @@ in
       )
 
       # Tools
-      android-studio
       appimage-run
       ascii
+      bubblewrap # for sandboxing AI agent commands
       pkgsUnstable.codex
       contrast
       freecad
       git-absorb
       gnome-disk-utility
+      gramps
       nh
+      nil # for vscode 'nil' extension
       notify-desktop # for having codex-cli send desktop notifications
       poppler-utils # includes pdfunite
+      shellcheck
       solaar
       translatelocally
       virt-manager
       vscode
-      wineWowPackages.stableFull
+      # wineWowPackages.stableFull
+      xournalpp
+
+      # Work
+      android-studio
       pkgsUnstable.zizmor
+      sops
+      mitmproxy
+
+      # K8s/Helm
+      k9s
+      k3d
+      chart-testing
+      kubeconform
+      envchain
+      skopeo
+      kubectl
+      kubelogin
+      kubelogin-oidc
+      kubectx
+      yq-go
+      (wrapHelm kubernetes-helm {
+        plugins = with pkgs.kubernetes-helmPlugins; [
+          helm-secrets
+          helm-diff
+          helm-s3
+          helm-git
+        ];
+      }) 
+      helmfile-wrapped
+      kind
+      vault
     ];
   };
 }
