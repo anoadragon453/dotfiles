@@ -91,6 +91,12 @@ in {
                         description = "Directory of the users path";
                     };
 
+                    uid = mkOption {
+                        type = types.nullOr types.int;
+                        default = null;
+                        description = "Numeric UID for this user. Leave null to let NixOS allocate one.";
+                    };
+
                     config = mkOption {
                         type = types.attrs;
                         default = {};
@@ -286,6 +292,7 @@ in {
             isNormalUser = true;
             isSystemUser = false;
             extraGroups = compiledUser.groups;
+            uid = compiledUser.uid;
             initialPassword = "P@ssw0rd01";
             packages = compiledUser.software;
             shell = shellpkg;

@@ -327,7 +327,7 @@
               }
             ];
             inherit nixpkgs allPkgs allPkgsUnstable;
-            cfg = {
+            cfg = { config, lib, ... }: {
               boot.initrd.availableKernelModules = [
                 "xhci_pci"
                 "thunderbolt"
@@ -341,6 +341,8 @@
               networking.networkmanager.enable = true;
 
               sys.user.users.user = {
+                uid = 1000;
+
                 # TODO: Move adbusers into android.nix somehow
                 groups = [
                   "adbusers"
@@ -361,6 +363,8 @@
               };
 
               sys.user.users.work = {
+                uid = 1001;
+
                 # TODO: Move adbusers into android.nix somehow
                 groups = [
                   "adbusers"
