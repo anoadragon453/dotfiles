@@ -455,7 +455,7 @@
               users.groups.libvirtd.members = [ "user" ];
 
               # Needed for Complement.
-              virtualisation.docker.package = pkgs.docker_28;
+              virtualisation.docker.package = pkgs.docker;
 
               # Use this SSH key as the age key to decrypt secrets with.
               sops.age.sshKeyPaths = [ "/home/user/.ssh/sops-ssh" ];
