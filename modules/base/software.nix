@@ -51,7 +51,8 @@
 
         # Scripting Languages
         # useful to have around for one-off scripts
-        python312
+        python314
+        uv
         nodejs
     ];
 
