@@ -943,6 +943,8 @@
                   format = "binary";
 
                   # Allow the Paperless service to read the file.
+                  # Note: If the paperless service is disabled, this will cause sops-install
+                  # to fail as it can't find the paperless user.
                   owner = "paperless";
                   group = "paperless";
                 };
