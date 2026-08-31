@@ -76,7 +76,6 @@ in {
 
       displayManager.lightdm.enable = gfx.displayManager == "lightdm";
       displayManager.gdm.enable = gfx.displayManager == "gdm";
-      displayManager.gdm.wayland = true;
 
       deviceSection = mkIf (intel || amd) ''
         Option "TearFree" "true"
