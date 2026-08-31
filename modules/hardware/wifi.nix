@@ -11,7 +11,7 @@ in {
 
   config = {
     networking.networkmanager.enable = true;
-    networking.wireless.enable = cfg.wifi;
+    networking.wireless.enable = lib.mkIf cfg.wifi true;
     networking.wireless.allowAuxiliaryImperativeNetworks = cfg.wifi;
     # networking.wireless.networks = wifiNetworks; #TODO: add networks to wifi via activation script.
 
