@@ -11,6 +11,15 @@ let
   desktopMode = xorg || wayland;
   desktopGuiTypes = config.sys.desktop.gui.types;
   cfg = config.sys;
+
+  obsidian = pkgs.obsidian.overrideAttrs (previous: {
+    # Fix the desktop icon for Obsidian being the default Wayland icon.
+    postInstall = (previous.postInstall or "") + ''
+      # KWin resolves native Wayland windows using this desktop file ID.
+      mv $out/share/applications/obsidian.desktop \
+        $out/share/applications/md.Obsidian.desktop
+    '';
+  });
 in
 {
   config = lib.mkIf desktopMode {
