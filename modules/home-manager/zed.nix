@@ -1,4 +1,4 @@
-{ pkgs, pkgsUnstable, ... }:
+{ config, pkgs, pkgsUnstable, ... }:
 {
   # Consolidate all rust build files into a single directory on disk, to prevent
   # duplicate built dependencies across different projects.
@@ -16,14 +16,15 @@
       go
       # Nix language server support
       # These must be manually installed.
-      nixd nil
+      nixd
+      nil
       openssl
       pkg-config
-      
+
       # The pyrefly Python type-checker written in Rust.
       pyrefly
       ty
-      
+
       yaml-language-server
       package-version-server
       vscode-json-languageserver
@@ -36,29 +37,42 @@
         };
       };
       agent = {
-        default_model = {
-          provider = "zed.dev";
-          model = "claude-sonnet-4";
+        sandbox_permissions = {
+          write_paths = [
+            # Set the config separately for each user.
+            #
+            # If we put a directory for one user in the config for another, Zed
+            # will complain when executing its AI agent, as when building the
+            # sandbox it will try to check that each configured allowed
+            # directory exists. And it can't do that for those in other users'
+            # home directory's, which it can't read.
+            "${config.home.homeDirectory}/.cargo/target"
+          ];
         };
-        version = "2";
+        default_model = {
+          provider = "openai-subscribed";
+          speed = "fast";
+          effort = "xhigh";
+          enable_thinking = true;
+          model = "gpt-5.6-sol";
+        };
       };
-      base_keymap = "JetBrains";
+      base_keymap = "VSCode";
       languages = {
         Python = {
           # Prefer PyRight over pylsp.
           # PyRight has proper support for excluding directories from search
           # results.
-          language_servers = ["ty" "!pyrefly" "!pyright" "!pylsp"];
+          language_servers = [
+            "basedpyright"
+            "!ty"
+            "!pyrefly"
+            "!pyright"
+            "!pylsp"
+          ];
         };
       };
       lsp = {
-        rust-analyzer = {
-          intialization_options = {
-            cargo = {
-              allTargets = false;
-            };
-          };
-        };
         ty = {
           binary = {
             path = "/nix/store/zlaxrnmiqgxp64gyz33mv18dq1b583ag-ty-0.0.1-alpha.5/bin/ty";
@@ -66,7 +80,7 @@
           };
         };
       };
-      load_direnv = "direct";
+      load_direnv = "shell_hook";
       # Turn off real-time AI edit predictions.
       show_edit_predictions = false;
       ui_font_size = 18;
@@ -80,6 +94,30 @@
           # Toggle the terminal.
           "ctrl-`" = "workspace::ToggleBottomDock";
         };
+      }
+    ];
+
+    userTasks = [
+      {
+        "label" = "copy .envrc into new worktree";
+        "command" = "cp";
+        "args" = [
+          "$ZED_MAIN_GIT_WORKTREE/.envrc"
+          "$ZED_WORKTREE_ROOT/.envrc"
+        ];
+        "hooks" = ["create_worktree"];
+        "reveal" = "no_focus";
+        "hide" = "on_success";
+      }
+      {
+        "label" = "auto `direnv allow` the new .envrc file";
+        "command" = "direnv";
+        "args" = [
+          "allow"
+        ];
+        "hooks" = ["create_worktree"];
+        "reveal" = "no_focus";
+        "hide" = "on_success";
       }
     ];
   };
