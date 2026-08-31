@@ -24,6 +24,8 @@ with builtins;
 
         home = user.home;
 
+        uid = user.uid;
+
         config = user.config;
 
         sshPublicKeys = user.sshPublicKeys;
